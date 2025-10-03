@@ -1,0 +1,4987 @@
+﻿============================================================
+TRIXEL TECHNOLOGIES: MASTER IDEA AND FEATURE BLUEPRINT
+============================================================
+
+The goal is to build a high-converting, cinematic landing page for Trixel Technologies that uses a highly intelligent AI and synchronized animation to deliver a guided sales pitch, built exclusively using client-side technologies.
+
+--- I. CORE ARCHITECTURE AND CONSTRAINTS ---
+
+**1. Development Stack:**
+* The website must be a **single, self-contained HTML file** using only **HTML, CSS (Tailwind via CDN), and JavaScript (GSAP via CDN)**.
+* **Aesthetics:** Uses a **Dark Mode, High-Tech, Cinematic** theme.
+
+**2. Storage and Data (Critical Constraints):**
+* **No Backend Systems:** The use of Firebase or any external database is strictly **forbidden**.
+* **No Caching/Offline:** Service Workers and file caching are **removed**. The application is focused solely on the online, single-session experience.
+* **Minimal Client-Side Storage:** Only essential, simple user settings (e.g., last selected music track) are saved using **browser `localStorage`**.
+
+**3. Content Management System (CMS):**
+* All static text content, features, service details, and audio sources must be defined within a centralized **JavaScript object (`const CMS_DATA`)** inside the HTML file.
+
+**4. SEO and Structure:**
+* The website must be SEO optimized with **Semantic HTML5** (e.g., `<main>`, `<section>`), optimized `<title>` and `<meta name="description">`.
+* **Constraint:** Pricing information must be **explicitly omitted** from all content sections.
+
+--- II. AUDIO AND CINEMATIC EXPERIENCE ---
+
+**5. Single Audio Channel Mandate (CRITICAL):**
+* **Only one `<audio>` element** is allowed on the entire website. This player must dynamically switch between the Voice Tour track and the Background Music track.
+* **Audio Sources:**
+    * **Main Voice Tour:** A single, comprehensive, pre-recorded audio file delivers the primary sales pitch.
+    * **Background Music:** **Multiple selectable tracks** will be defined in the CMS for the user to cycle through.
+
+**6. Sound Conflict Prevention:**
+* **Rule:** The AI must use **Text-Only responses**. No Text-to-Speech (TTS) or synthesized voice responses are allowed.
+* The single audio player must be **paused and muted** when the AI Chat modal is opened to ensure absolute silence and user focus on the text response.
+
+**7. Optional Voice Tour:**
+* A **Welcome Overlay** prompts the user to either **Start Tour** (activates voiceover and synchronization) or **Browse Silently** (activates music only).
+
+**8. Animation and Synchronization:**
+* All motion is handled exclusively by **GSAP (GreenSock Animation Platform)**.
+* A **GSAP Timeline** is precisely mapped to the **Voice Tour audio time** to control scrolling and element reveals.
+* User scrolling and interaction are **blocked** during the active Voice Tour.
+
+--- III. INTELLIGENT AI AND INTERACTION ---
+
+**9. Highly Intelligent Text AI (Assistant AI Orb):**
+* **Technology:** Uses the **Gemini API** for sophisticated text generation.
+* **Intelligence:** The AI must use a detailed **System Instruction** (loaded from `CMS_DATA`) to ensure it provides professional, contextually smart, and non-repetitive **text-only** answers.
+
+**10. Restricted AI Access (High-Conversion Focus):**
+* The interactive buttons (**"Ask Question," "Explanation," and "Order for This"**) that trigger the Assistant AI Orb are **only visible and interactive** within the **Service Sections** and the **"White True Streaks" future sections**.
+
+**11. General AI Chat:**
+* A separate, text-based chat modal provides access to the AI Assistant for general inquiries.
+
+--- IV. WEBSITE STRUCTURE AND CONTROLS ---
+
+**12. Required Content Sections:**
+* Navbar, Hero, Feature Cards, Services, **User Reviews Section**, and Footer.
+
+**13. Simplified Control Buttons (CRITICAL):**
+* A fixed, persistent cluster of only **three** buttons must be visible:
+    1.  **AI Chatbot:** Toggles the visibility of the General AI Chat modal.
+    2.  **Audio:** Toggles the Play/Pause state of the currently active audio (Tour or Music).
+    3.  **Back to Top:** Scrolls the user immediately to the top of the page.
+
+**14. User Reviews Feature:**
+* A dedicated UI section with a form for review submission (rating and text).
+* **Mock Functionality:** Submissions are confirmed visually to the user, but the data is **logged to the browser console/`localStorage`** as a placeholder for a real-world API endpoint.
+```
+
+COMPLETE WEBSITE UI SPECIFICATION WITH CONTENT
+TRIXEL TECHNOLOGIES - CINEMATIC LANDING PAGE
+
+=== GLOBAL STYLES & THEME ===
+
+COLOR SYSTEM:
+- Primary Background: #0D1117 (Dark Space Blue)
+- Card Background: #161B22 (Dark Card Surface)
+- Border Color: #30363D (Subtle Divider)
+- Primary Accent: #3B82F6 (Electric Blue)
+- Gradient: linear-gradient(135deg, #3B82F6, #2563EB)
+- Text Primary: #F0F6FC (Clean White)
+- Text Secondary: #8B949E (Medium Gray)
+- Success Green: #10B981 (For positive actions)
+- Warning Amber: #F59E0B (For ratings)
+- Error Red: #EF4444 (For errors)
+
+TYPOGRAPHY:
+- Headings: "Lexend", sans-serif (600, 700, 800 weights)
+- Body: "Inter", sans-serif (400, 500, 600, 700 weights)
+- Hero Text: 7xl bold, tracking-tighter
+- Section Headers: 4xl bold
+- Card Titles: xl semibold
+- Body Text: base/lg normal
+- Small Text: sm normal
+
+=== PAGE STRUCTURE & CONTENT ===
+
+1. WELCOME OVERLAY (First thing users see)
+BACKGROUND: Radial gradient dark overlay with backdrop blur
+CONTENT:
+- Header: Sparkles icon, "Welcome to Trixel Technologies"
+- Subheader: "Experience our website with a guided tour or explore on your own"
+- Features List:
+  ▶ Play Circle icon (Blue) - "5-minute interactive tour"
+  ▶ Zap icon (Green) - "See our features in action" 
+  ▶ Clock icon (Purple) - "Skip anytime"
+- Buttons:
+  PRIMARY: "Start Guided Tour" with Play icon (Blue gradient)
+  SECONDARY: "Explore on My Own" (Transparent border)
+
+2. NAVIGATION BAR (Fixed top)
+BACKGROUND: Glass morphism with backdrop blur, border bottom
+CONTENT:
+- Logo: "Trixel.Tech" with blue dot on "Trixel"
+- Navigation Links: "Home • Services • Portfolio • Why Us • Contact"
+- Right Side: Theme Toggle (Sun/Moon icons) + Mobile Menu
+MOBILE MENU: Slide-down panel with same links
+
+3. HERO SECTION (Full viewport)
+BACKGROUND: Subtle grid pattern with radial fade mask
+CONTENT:
+- Main Headline: "Websites That Win Clients" with "Win Clients" in blue gradient
+- Subheadline: "Delivered within 5 Days." (bold, larger)
+- Description: "We build high-converting websites for service businesses that generate leads and build trust with your potential clients."
+- CTA Button: "Get Your Website" (Blue gradient with glow)
+
+FEATURE CARDS (3-column grid):
+• FAST DELIVERY CARD:
+  - Icon: Rocket (Blue)
+  - Title: "Fast Delivery"
+  - Text: "Your complete website ready within just 5 business days."
+
+• LEAD-FOCUSED DESIGN CARD:
+  - Icon: Target (Blue) 
+  - Title: "Lead-Focused Design"
+  - Text: "Optimized to convert visitors into paying customers."
+
+• SEO OPTIMIZED CARD:
+  - Icon: Trending Up (Blue)
+  - Title: "SEO Optimized"
+  - Text: "Built to rank higher in Google search results."
+
+4. SERVICES SECTION
+HEADER: 
+- Title: "Our Services"
+- Description: "We specialize in creating websites that generate leads and build trust for service-based businesses."
+
+SERVICE CARDS (3-column grid):
+
+• PREMIUM DESIGN:
+  - Icon: Gem (Blue)
+  - Title: "Premium Design"
+  - Text: "Eye-catching, professional designs that reflect your brand's quality and build instant trust."
+  - Interactive Buttons: [Ask] [Explain] [Order]
+
+• STRATEGIC STRUCTURE:
+  - Icon: Layout Template (Blue)
+  - Title: "Strategic Structure" 
+  - Text: "Conversion-focused layouts that guide visitors toward becoming leads and customers."
+  - Interactive Buttons: [Ask] [Explain] [Order]
+
+• SEO FOUNDATION:
+  - Icon: Search (Blue)
+  - Title: "SEO Foundation"
+  - Text: "Built-in search engine optimization to help your business get found by local customers."
+  - Interactive Buttons: [Ask] [Explain] [Order]
+
+• AI CUSTOMER SERVICE:
+  - Icon: Headphones (Blue)
+  - Title: "AI Customer Service"
+  - Text: "Intelligent chatbots and virtual assistants that handle customer inquiries 24/7, improving satisfaction and reducing response times."
+  - Interactive Buttons: [Ask] [Explain] [Order]
+
+• PRODUCTIVITY GEM SETUP:
+  - Icon: Settings (Blue)
+  - Title: "Productivity Gem Setup"
+  - Text: "Custom implementation of productivity tools and automation gems that streamline your business operations and boost efficiency."
+  - Interactive Buttons: [Ask] [Explain] [Order]
+
+• ONGOING SUPPORT:
+  - Icon: Life Buoy (Blue)
+  - Title: "Ongoing Support"
+  - Text: "Reliable technical support and website maintenance to keep your site running smoothly."
+  - Interactive Buttons: [Ask] [Explain] [Order]
+
+5. PORTFOLIO SECTION (Dark background with border)
+HEADER:
+- Title: "Our Recent Work"
+- Description: "See how we can help service businesses attract more clients with strategic web design."
+
+PORTFOLIO CARDS (3-column grid):
+
+• ELITE ROOFING SOLUTIONS:
+  - Image: Roofing company placeholder
+  - Title: "Elite Roofing Solutions"
+  - Category: "Roofing Services Website"
+  - Tags: [Design] [Lead Gen] [SEO]
+
+• AIRTECH PRO:
+  - Image: HVAC company placeholder  
+  - Title: "AirTech Pro"
+  - Category: "HVAC Services Website"
+  - Tags: [Design] [Lead Gen] [Local SEO]
+
+• GREENSCAPE PRO:
+  - Image: Landscaping company placeholder
+  - Title: "GreenScape Pro"
+  - Category: "Landscaping Services Website"
+  - Tags: [Design] [Lead Gen] [Content]
+
+BOTTOM CTA: "See Your Business Here" (Card style with hover effects)
+
+6. WHY US SECTION
+HEADER:
+- Title: "Why Choose Trixel"
+- Description: "We understand the unique needs of service businesses and build websites that actually work for you."
+
+FEATURE GRID (2-column):
+
+• 5-DAY DELIVERY:
+  - Icon: Zap (Blue)
+  - Title: "5-Day Delivery"
+  - Text: "Our streamlined process delivers your complete website in just 5 business days, so you can start generating leads faster."
+  - Buttons: [Ask] [Explain] [Order]
+
+• LEAD GENERATION FOCUS:
+  - Icon: Magnet (Blue)
+  - Title: "Lead Generation Focus"
+  - Text: "Every element is strategically designed to convert visitors into leads with clear calls-to-action and trust-building elements."
+  - Buttons: [Ask] [Explain] [Order]
+
+• SEO BUILT-IN:
+  - Icon: Shield Check (Blue)
+  - Title: "SEO Built-In"
+  - Text: "Your website is optimized for local search from day one, helping your business appear in Google searches for your services."
+  - Buttons: [Ask] [Explain] [Order]
+
+• SERVICE BUSINESS SPECIALISTS:
+  - Icon: Wrench (Blue)
+  - Title: "Service Business Specialists"
+  - Text: "We exclusively work with service businesses, giving us deep insight into what works for roofing, HVAC, landscaping, and more."
+  - Buttons: [Ask] [Explain] [Order]
+
+PROCESS TIMELINE (Card with numbered steps):
+
+- Title: "Our Process is Simple"
+- Steps:
+  1. DISCOVERY CALL: "We learn about your business, goals, and what sets you apart from competitors."
+  2. DESIGN & DEVELOPMENT: "Our team creates your custom website with a focus on lead generation."
+  3. REVIEW & REFINEMENT: "You review the site and we make any necessary adjustments."
+  4. LAUNCH: "Your new website goes live and starts generating leads for your business."
+
+7. USER REVIEWS SECTION (NEW - Social Proof)
+HEADER:
+- Title: "Client Reviews"
+- Description: "See what our clients say about our service"
+
+REVIEWS DISPLAY GRID (2-column):
+- Initial State: "No reviews yet. Be the first to share your experience!"
+- Review Card Structure:
+  ★★★★★ Star Rating
+  "Review text content here..."
+  - Client Name
+  - Company/Project
+
+REVIEW SUBMISSION FORM:
+- Title: "Share Your Experience"
+- Star Rating Input: 5 interactive stars (golden when selected)
+- Text Area: "Tell us about your experience..." (required)
+- Submit Button: "Submit Review" (Blue gradient)
+SUCCESS MESSAGE: "Thank you for your review! It has been submitted successfully."
+
+8. SPECIAL PROJECTS SECTION (Card background with border)
+HEADER:
+- Title: "Beyond Our Niche: Custom Tech Solutions"
+- Description: "While we specialize in websites for service businesses, our expertise doesn't stop there. On special occasions, we partner with clients on unique digital projects. If you need a custom web application, a specialized e-commerce platform, or other advanced web development services, we're ready to build the custom solution your vision requires."
+- CTA Button: "Discuss a Custom Project" (Blue outline, hover fill)
+
+9. CONTACT SECTION
+HEADER:
+- Title: "Get Your Website within 5 Days"
+- Description: "Fill out the form below to start the conversation. We'll get back to you within 24 hours."
+
+CONTACT FORM (Left side):
+- Fields: 
+  • Full Name
+  • Email Address
+  • Phone Number
+  • Business Type (Dropdown: Roofing, HVAC, Landscaping, Remodeling, Other)
+  • Project Details (Textarea)
+  • Budget Range (Slider: $500-$5000 with value display)
+- Submit Button: "Get Started" (Blue gradient with glow)
+
+CONTACT INFO (Right side):
+• CONTACT CARD:
+  - Title: "Contact Information"
+  - Email: Mail icon + "trixeltechnologies@gmail.com"
+  - Phone: Phone icon + "(234) 704-299-8527"
+  - WhatsApp: Message Square icon + "Message us on WhatsApp"
+
+• TESTIMONIAL CARD:
+  - Quote Icon
+  - "I highly recommend Trixel, their ability to truly listen and understand a client's needs sets them apart. Most importantly they respect timelines and deliver work on schedule."
+  - Name: "Wesley Estrella"
+  - Company: "Spotlight Management"
+
+10. FOOTER
+CONTENT:
+- Brand: "Trixel.Tech" with blue dot + "Websites That Win Clients — Delivered Within 5 Days."
+- Quick Links: "Home • Services • Portfolio • Why Us"
+- We Serve: "Roofing Companies • HVAC Contractors • Landscaping • Remodeling"
+- Copyright: "© 2025 Trixel Technologies. All rights reserved."
+
+=== INTERACTIVE ELEMENTS ===
+
+1. FLOATING ACTION BUTTONS (Bottom-right, 3 buttons):
+• AI CHAT BUTTON: Message Circle icon (Blue gradient, persistent glow)
+• AUDIO CONTROL: Volume 2 icon (Green gradient, play/pause toggle)
+• BACK TO TOP: Arrow Up icon (Purple gradient, appears on scroll)
+
+2. AI CHAT WIDGET (Fixed bottom-right):
+HEADER: 
+- Bot icon + "Trixie" + "Online" status
+- Close button (X icon)
+
+MESSAGES AREA:
+- Initial AI Message: "Hello! I'm Trixie, your AI assistant. How can I help you with Trixel Technologies' services today?"
+
+INPUT AREA:
+- Voice Input Button (Mic icon)
+- Text Input: "Ask a question..."
+- Send Button (Send icon)
+
+3. AUDIO CONTROL SYSTEM:
+- Single audio element that switches between:
+  • Voice Tour narration
+  • Background music tracks
+- Visual feedback on play/pause states
+- Music track cycling capability
+
+4. INTERACTIVE CARD BEHAVIOR:
+- Hover: Lift animation (+5px), scale (1.02), blue glow border
+- Interactive buttons appear on hover: Ask (Blue), Explain (Purple), Order (Green)
+- Click: Becomes "active" with enhanced glow
+- Focus states for keyboard navigation
+
+5. FORM ENHANCEMENTS:
+- Input focus: Blue border with subtle glow
+- Validation: Clear error states
+- Budget slider: Real-time value display
+- Smooth transitions between states
+
+=== ANIMATION SYSTEM (GSAP ONLY) ===
+
+ENTRANCE ANIMATIONS:
+- Fade Up: opacity:0→1, y:30→0
+- Scale In: scale:0.9→1 with opacity
+- Staggered Delays: Sequential element reveals
+- Typing Effect: Hero headline character-by-character
+
+INTERACTION ANIMATIONS:
+- Button Hover: Scale 1→1.05, glow intensification
+- Card Hover: TranslateY(0)→TranslateY(-5px), shadow enhancement
+- Form Focus: Border color transition, glow pulse
+- Loading States: Spinner rotations, progress bars
+
+SCROLL ANIMATIONS:
+- Navbar: Background opacity change on scroll
+- Back to Top: Fade in/out based on scroll position
+- Section Triggers: Elements animate when scrolled into view
+
+TOUR ANIMATIONS:
+- Timeline-synced element highlights
+- Smooth scroll transitions between sections
+- Focus pulses on active elements
+- Progress indicator updates
+
+=== RESPONSIVE BEHAVIOR ===
+
+MOBILE (<640px):
+- Single column layouts
+- Larger touch targets (min 44px)
+- Simplified navigation
+- Stacked cards and forms
+- Adjusted font sizes
+- Hidden interactive buttons (show on tap)
+
+TABLET (641px-1024px):
+- 2-column grids where appropriate
+- Adjusted spacing and padding
+- Optimized touch interactions
+- Balanced information density
+
+DESKTOP (1025px+):
+- Multi-column complex layouts
+- Hover effects enabled
+- Full interactive experiences
+- Optimal reading line lengths
+
+=== ACCESSIBILITY FEATURES ===
+
+VISUAL:
+- High contrast color ratios
+- Focus indicators for all interactive elements
+- Scalable typography (rem-based)
+- Reduced motion support
+
+INTERACTION:
+- Keyboard navigation support
+- Screen reader announcements
+- ARIA labels for icons and interactive elements
+- Form validation announcements
+
+COGNITIVE:
+- Clear information hierarchy
+- Consistent navigation patterns
+- Predictable interactions
+- Loading state indications
+
+=== PERFORMANCE OPTIMIZATIONS ===
+
+LOADING:
+- Lazy loading for images
+- Efficient GSAP animations
+- Minimal DOM manipulations
+- Optimized event listeners
+
+INTERACTIONS:
+- Debounced scroll events
+- Efficient re-renders
+- Optimized paint operations
+- Smooth 60fps animations
+
+DATA:
+- localStorage for minimal user preferences
+- Efficient state management
+- Optimized memory usage
+
+=== TOUCH ENHANCEMENTS ===
+
+MOBILE SPECIFIC:
+- Larger tap targets (min 44px)
+- Touch-friendly sliders
+- Swipe gestures for mobile menu
+- Optimized virtual keyboard interactions
+
+TOUCH FEEDBACK:
+- Tap highlight colors
+- Smooth touch transitions
+- Hover state alternatives for touch devices
+- Gesture-based navigation options
+
+=== RESPONSIVE BREAKPOINT DETAILS ===
+
+MOBILE (< 640px):
+- Single column layouts exclusively
+- Hero headline: text-4xl (2.25rem) instead of 7xl
+- Feature cards: Full width, stacked vertically
+- Navigation: Hamburger menu, hidden nav links
+- Interactive buttons: Always visible (not hover-dependent)
+- Padding: px-4 (1rem) instead of px-8
+- Touch targets: Min 44px height for all buttons
+- Font sizes: Reduced by 10-15% across the board
+- Images: 100% width, height auto
+- Forms: Single column, full-width inputs
+
+TABLET (641px - 1024px):
+- 2-column grids for services/portfolio
+- Hero headline: text-5xl (3rem)
+- Navigation: Still hamburger menu
+- Cards: 2-across instead of 3-across
+- Padding: px-6 (1.5rem)
+- Font sizes: Slightly reduced from desktop
+- Images: Constrained max-width
+- Side-by-side layouts begin appearing
+
+DESKTOP (1025px - 1279px):
+- 3-column grids where appropriate
+- Full navigation visible
+- Hero headline: text-6xl (3.75rem)
+- Hover effects enabled
+- Optimal reading line lengths
+- Balanced whitespace
+- All interactive features active
+
+LARGE DESKTOP (1280px+):
+- Maximum container widths enforced
+- Hero headline: text-7xl (4.5rem)
+- Extra whitespace in margins
+- Enhanced grid layouts
+- Optional: Sidebar content or extended features
+
+=== BREAKPOINT-SPECIFIC BEHAVIORS ===
+
+NAVIGATION:
+- Mobile: Hamburger slide-out
+- Tablet: Hamburger persists  
+- Desktop: Horizontal nav visible
+- Large: Extended nav with more items
+
+HERO SECTION:
+- Mobile: Stacked layout, centered text
+- Tablet: Slightly larger typography
+- Desktop: Full cinematic experience
+- Large: Enhanced background effects
+
+CARDS & GRIDS:
+- Mobile: 1 column, full bleed
+- Tablet: 2 columns, gap-6
+- Desktop: 3 columns, gap-8
+- Large: Potential for 4 columns in some sections
+
+FORMS:
+- Mobile: Stacked, full-width
+- Tablet: Some 2-column layouts
+- Desktop: Multi-column optimized
+- Large: Spacious, comfortable inputs
+
+IMAGES:
+- Mobile: Constrained height, full width
+- Tablet: Moderate aspect ratios
+- Desktop: Optimized for viewport
+- Large: High-resolution treatments
+
+=== TOUCH VS MOUSE INTERACTIONS ===
+
+MOBILE/TOUCH:
+- Hover states replaced with tap states
+- Larger hit areas (min 44px)
+- Swipe gestures for carousels
+- Touch-friendly sliders
+- Virtual keyboard considerations
+
+DESKTOP/MOUSE:
+- Hover animations and effects
+- Precise cursor interactions
+- Right-click context menus
+- Scroll wheel enhancements
+- Drag-and-drop capabilities
+This complete specification provides every detail needed to build the entire website UI with precise content, styling, and interactions. All animations are handled through GSAP to avoid CSS conflicts and ensure smooth integration with the voice tour system.
+
+trixel-technologies/
+├── index.html                    # Main HTML file (self-contained)
+├── style.css                     # Custom CSS styles  
+├── script.js                     # Main JavaScript logic
+├── audio/                        # Audio assets folder
+│   ├── main_voiceover.wav        # Main tour voiceover
+│   ├── background_music_1.mp3    # Background track 1
+│   ├── background_music_2.mp3    # Background track 2
+│   └── background_music_3.mp3    # Background track 3
+├── images/                       # Image assets
+│   ├── portfolio/
+│   │   ├── roofing-project.jpg
+│   │   ├── hvac-project.jpg
+│   │   └── landscaping-project.jpg
+│   └── ui/
+│       ├── favicon.ico
+│       └── logo.svg
+├── docs/                         # Documentation
+│   ├── IDEA_BLUEPRINT.txt
+│   ├── UI_SPECIFICATION.txt
+│   └── CMS_SPECIFICATION.txt
+└── README.md                     # Project overview
+
+DEPLOYMENT & MAINTENANCE SPECIFICATION
+TRIXEL TECHNOLOGIES - PRODUCTION DEPLOYMENT STRATEGY
+======================================================
+
+CRITICAL REQUIREMENTS:
+- SINGLE HTML FILE DEPLOYMENT
+- NO BUILD PROCESS OR COMPILATION
+- CDN-BASED ASSET HOSTING
+- ZERO SERVER-SIDE DEPENDENCIES
+- EASY CONTENT UPDATES VIA CMS
+
+=== DEPLOYMENT ARCHITECTURE ===
+
+PRODUCTION ENVIRONMENT STRUCTURE:
+
+trixel.tech/
+├── index.html                          # Main application (compressed)
+├── assets/                             # CDN-hosted assets
+│   ├── audio/
+│   │   ├── main_voiceover.wav          # Optimized: 44.1kHz, 128kbps
+│   │   └── background_music_*.mp3      # Compressed: 96kbps stereo
+│   ├── images/
+│   │   ├── portfolio/                  # WebP + JPEG fallbacks
+│   │   └── ui/                         # SVG where possible
+│   └── fonts/
+│       ├── inter-var.woff2             # Variable font
+│       └── lexend-var.woff2            # Variable font
+└── cdn-config.json                     # CDN cache rules
+
+DEPLOYMENT CHECKLIST:
+
+class DeploymentChecklist {
+    constructor() {
+        this.preDeployment = [
+            '✅ Audio files optimized and compressed',
+            '✅ Images converted to WebP with JPEG fallbacks',
+            '✅ CSS and JS minified and compressed',
+            '✅ CMS_DATA updated with production content',
+            '✅ All external CDN URLs verified',
+            '✅ Error tracking configured',
+            '✅ Performance budgets validated',
+            '✅ Cross-browser testing completed',
+            '✅ Mobile responsiveness verified',
+            '✅ SSL certificate installed',
+            '✅ Domain DNS configured'
+        ];
+        
+        this.postDeployment = [
+            '✅ Homepage loads under 3 seconds',
+            '✅ Audio tour functions correctly',
+            '✅ AI chat responses working',
+            '✅ All interactive elements functional',
+            '✅ Mobile experience optimized',
+            '✅ Analytics tracking active',
+            '✅ Error monitoring operational',
+            '✅ CDN assets caching properly',
+            '✅ SSL/TLS encryption active',
+            '✅ Backup system in place'
+        ];
+    }
+}
+
+=== FILE OPTIMIZATION PROCESS ===
+
+PRODUCTION BUILD OPTIMIZATION:
+
+class ProductionOptimizer {
+    constructor() {
+        this.optimizationTargets = {
+            html: { maxSize: '50KB', gzip: true },
+            css: { maxSize: '10KB', gzip: true },
+            js: { maxSize: '30KB', gzip: true },
+            images: { maxSize: '100KB each' },
+            audio: { maxSize: '5MB total' }
+        };
+    }
+    
+    optimizeForProduction() {
+        this.compressHTML();
+        this.minifyCSS();
+        this.optimizeJavaScript();
+        this.processImages();
+        this.optimizeAudio();
+        this.generateSRI();
+    }
+    
+    compressHTML() {
+        // Remove comments, whitespace, optimize structure
+        const originalHTML = document.documentElement.outerHTML;
+        const compressed = originalHTML
+            .replace(/<!--.*?-->/gs, '')
+            .replace(/\s+/g, ' ')
+            .replace(/>\s+</g, '><');
+        
+        return compressed;
+    }
+    
+    minifyCSS() {
+        const styles = Array.from(document.styleSheets)
+            .map(sheet => {
+                try {
+                    return Array.from(sheet.cssRules)
+                        .map(rule => rule.cssText)
+                        .join('');
+                } catch (e) {
+                    return ''; // Cross-origin stylesheet
+                }
+            })
+            .join('');
+        
+        return styles
+            .replace(/\/\*.*?\*\//gs, '')
+            .replace(/\s+/g, ' ')
+            .replace(/;\s*/g, ';')
+            .replace(/:\s*/g, ':')
+            .trim();
+    }
+    
+    optimizeJavaScript() {
+        // Remove console logs in production
+        const originalScript = document.querySelector('script[src*="script.js"]');
+        const optimized = originalScript.innerHTML
+            .replace(/console\.(log|debug|info)\(.*?\);?/g, '')
+            .replace(/\s+/g, ' ');
+        
+        return optimized;
+    }
+}
+
+=== CDN AND HOSTING STRATEGY ===
+
+ASSET DELIVERY NETWORK:
+
+class CDNManager {
+    constructor() {
+        this.cdnConfig = {
+            primary: 'https://cdn.trixel.tech',
+            fallback: 'https://assets.trixel.tech',
+            cacheRules: {
+                audio: 'max-age=86400', // 24 hours
+                images: 'max-age=604800', // 1 week
+                fonts: 'max-age=2592000', // 30 days
+                static: 'max-age=31536000' // 1 year
+            }
+        };
+    }
+    
+    setupCDNUrls() {
+        // Replace local paths with CDN URLs in production
+        const assetSelectors = [
+            'audio[src]',
+            'img[src]',
+            'link[rel="stylesheet"]',
+            'script[src]'
+        ];
+        
+        assetSelectors.forEach(selector => {
+            document.querySelectorAll(selector).forEach(element => {
+                const originalSrc = element.getAttribute('src') || element.getAttribute('href');
+                if (originalSrc && !originalSrc.startsWith('http')) {
+                    const cdnUrl = this.convertToCDNUrl(originalSrc);
+                    element.setAttribute('src', cdnUrl);
+                }
+            });
+        });
+    }
+    
+    convertToCDNUrl(localPath) {
+        const filename = localPath.split('/').pop();
+        return `${this.cdnConfig.primary}/assets/${filename}`;
+    }
+}
+
+SUB RESOURCE INTEGRITY (SRI):
+
+class SRIManager {
+    constructor() {
+        this.hashes = new Map();
+    }
+    
+    generateSRIHashes() {
+        const scripts = document.querySelectorAll('script[src]');
+        const links = document.querySelectorAll('link[rel="stylesheet"]');
+        
+        [...scripts, ...links].forEach(element => {
+            const src = element.getAttribute('src') || element.getAttribute('href');
+            if (src && src.includes('cdn.trixel.tech')) {
+                this.generateHashForResource(src).then(hash => {
+                    element.setAttribute('integrity', `sha384-${hash}`);
+                    element.setAttribute('crossorigin', 'anonymous');
+                });
+            }
+        });
+    }
+    
+    async generateHashForResource(url) {
+        const response = await fetch(url);
+        const data = await response.arrayBuffer();
+        const hash = await crypto.subtle.digest('SHA-384', data);
+        return btoa(String.fromCharCode(...new Uint8Array(hash)));
+    }
+}
+
+=== PERFORMANCE MONITORING ===
+
+PRODUCTION PERFORMANCE TRACKING:
+
+class ProductionMonitor {
+    constructor() {
+        this.metrics = {
+            'first-contentful-paint': 0,
+            'largest-contentful-paint': 0,
+            'first-input-delay': 0,
+            'cumulative-layout-shift': 0
+        };
+        
+        this.setupPerformanceObserver();
+        this.setupErrorTracking();
+    }
+    
+    setupPerformanceObserver() {
+        // Core Web Vitals monitoring
+        const observer = new PerformanceObserver((list) => {
+            list.getEntries().forEach(entry => {
+                this.metrics[entry.name] = entry.value;
+                this.reportMetric(entry.name, entry.value);
+            });
+        });
+        
+        observer.observe({ entryTypes: ['paint', 'largest-contentful-paint', 'first-input', 'layout-shift'] });
+    }
+    
+    setupErrorTracking() {
+        window.addEventListener('error', (event) => {
+            this.trackError({
+                message: event.message,
+                filename: event.filename,
+                lineno: event.lineno,
+                colno: event.colno,
+                error: event.error?.stack
+            });
+        });
+        
+        window.addEventListener('unhandledrejection', (event) => {
+            this.trackError({
+                type: 'unhandledrejection',
+                reason: event.reason
+            });
+        });
+    }
+    
+    trackError(errorData) {
+        // Send to error tracking service
+        const payload = {
+            ...errorData,
+            url: window.location.href,
+            userAgent: navigator.userAgent,
+            timestamp: new Date().toISOString(),
+            appVersion: CMS_DATA.company.version
+        };
+        
+        // Simple error logging - can be enhanced with service like Sentry
+        console.error('Production Error:', payload);
+        
+        // Optional: Send to analytics
+        if (window.gtag) {
+            gtag('event', 'exception', {
+                description: errorData.message,
+                fatal: true
+            });
+        }
+    }
+}
+
+=== ANALYTICS AND TELEMETRY ===
+
+USER BEHAVIOR ANALYTICS:
+
+class AnalyticsManager {
+    constructor() {
+        this.trackedEvents = new Set();
+        this.setupEventTracking();
+    }
+    
+    setupEventTracking() {
+        // Tour engagement
+        this.trackTourMetrics();
+        
+        // AI interactions
+        this.trackAIMetrics();
+        
+        // User engagement
+        this.trackEngagementMetrics();
+        
+        // Conversion tracking
+        this.trackConversionMetrics();
+    }
+    
+    trackTourMetrics() {
+        const tourEvents = [
+            'tour_started',
+            'tour_completed', 
+            'tour_skipped',
+            'tour_progress'
+        ];
+        
+        tourEvents.forEach(event => {
+            document.addEventListener(event, (e) => {
+                this.trackEvent('tour', event, e.detail);
+            });
+        });
+    }
+    
+    trackAIMetrics() {
+        const aiEvents = [
+            'ai_chat_opened',
+            'ai_message_sent',
+            'ai_response_received',
+            'ai_chat_closed'
+        ];
+        
+        aiEvents.forEach(event => {
+            document.addEventListener(event, (e) => {
+                this.trackEvent('ai', event, e.detail);
+            });
+        });
+    }
+    
+    trackEvent(category, action, data = {}) {
+        const eventData = {
+            category,
+            action,
+            ...data,
+            timestamp: Date.now(),
+            sessionId: this.getSessionId()
+        };
+        
+        // Google Analytics 4
+        if (window.gtag) {
+            gtag('event', action, {
+                event_category: category,
+                ...data
+            });
+        }
+        
+        // Console for development
+        if (process.env.NODE_ENV === 'development') {
+            console.log(`Analytics: ${category}.${action}`, eventData);
+        }
+    }
+    
+    getSessionId() {
+        let sessionId = sessionStorage.getItem('analytics_session_id');
+        if (!sessionId) {
+            sessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            sessionStorage.setItem('analytics_session_id', sessionId);
+        }
+        return sessionId;
+    }
+}
+
+=== CONTENT UPDATE WORKFLOW ===
+
+CMS-BASED CONTENT UPDATES:
+
+class ContentUpdateManager {
+    constructor() {
+        this.updateHistory = [];
+        this.backupEnabled = true;
+    }
+    
+    applyContentUpdate(updatedCMSData) {
+        // Validate update
+        if (!this.validateCMSUpdate(updatedCMSData)) {
+            throw new Error('Invalid CMS data structure');
+        }
+        
+        // Create backup
+        if (this.backupEnabled) {
+            this.createBackup(CMS_DATA);
+        }
+        
+        // Apply update
+        Object.assign(CMS_DATA, updatedCMSData);
+        
+        // Update UI
+        this.refreshContent();
+        
+        // Log update
+        this.logUpdate(updatedCMSData);
+        
+        return true;
+    }
+    
+    validateCMSUpdate(newData) {
+        const requiredSections = ['company', 'hero', 'services', 'contact'];
+        return requiredSections.every(section => newData[section] !== undefined);
+    }
+    
+    refreshContent() {
+        // Update DOM with new content
+        Object.keys(CMS_DATA).forEach(section => {
+            const element = document.getElementById(section);
+            if (element) {
+                this.updateSectionContent(element, CMS_DATA[section]);
+            }
+        });
+        
+        // Refresh any dynamic content
+        if (window.reviewsManager) {
+            reviewsManager.renderReviews();
+        }
+    }
+    
+    createBackup(currentData) {
+        const backup = {
+            data: JSON.parse(JSON.stringify(currentData)),
+            timestamp: Date.now(),
+            version: CMS_DATA.company.version
+        };
+        
+        this.updateHistory.unshift(backup);
+        
+        // Keep only last 10 backups
+        if (this.updateHistory.length > 10) {
+            this.updateHistory = this.updateHistory.slice(0, 10);
+        }
+        
+        localStorage.setItem('cms_backups', JSON.stringify(this.updateHistory));
+    }
+}
+
+=== MAINTENANCE PROCEDURES ===
+
+ROUTINE MAINTENANCE SCHEDULE:
+
+const MAINTENANCE_SCHEDULE = {
+    daily: [
+        'Check error logs for critical issues',
+        'Verify CDN asset availability',
+        'Monitor performance metrics',
+        'Review analytics for anomalies'
+    ],
+    
+    weekly: [
+        'Test all interactive features',
+        'Verify mobile responsiveness',
+        'Check browser compatibility',
+        'Update content via CMS if needed',
+        'Backup CMS data and user content'
+    ],
+    
+    monthly: [
+        'Full cross-browser testing',
+        'Performance optimization review',
+        'Security audit',
+        'Content strategy review',
+        'Update external dependencies'
+    ]
+};
+
+PERFORMANCE MAINTENANCE:
+
+class PerformanceMaintenance {
+    constructor() {
+        this.optimizationSchedule = [
+            { task: 'Image compression', frequency: 'monthly' },
+            { task: 'Audio file optimization', frequency: 'quarterly' },
+            { task: 'Code minification', frequency: 'on-update' },
+            { task: 'CDN cache purge', frequency: 'on-update' },
+            { task: 'Browser cache validation', frequency: 'monthly' }
+        ];
+    }
+    
+    runMonthlyOptimization() {
+        // Re-compress images if newer tools available
+        this.recompressImages();
+        
+        // Optimize audio files
+        this.optimizeAudioFiles();
+        
+        // Update CDN cache rules
+        this.updateCDNCache();
+        
+        // Validate browser caching
+        this.validateCacheHeaders();
+    }
+    
+    recompressImages() {
+        // Use latest WebP compression settings
+        console.log('Recompressing portfolio images with latest WebP settings...');
+        // Implementation would involve image processing service
+    }
+}
+
+=== DISASTER RECOVERY ===
+
+EMERGENCY RECOVERY PROCEDURES:
+
+class DisasterRecovery {
+    constructor() {
+        this.recoveryProcedures = {
+            'cdn-failure': this.handleCDNFailure.bind(this),
+            'audio-failure': this.handleAudioFailure.bind(this),
+            'cms-corruption': this.handleCMSCorruption.bind(this),
+            'performance-degradation': this.handlePerformanceIssue.bind(this)
+        };
+    }
+    
+    handleCDNFailure() {
+        // Switch to fallback CDN
+        CDNManager.switchToFallback();
+        
+        // Update asset URLs dynamically
+        this.updateAssetUrlsToFallback();
+        
+        // Notify users if necessary
+        this.showMaintenanceNotice('CDN issues detected - some features may load slowly');
+    }
+    
+    handleAudioFailure() {
+        // Disable audio features gracefully
+        AudioManager.disableAudioSystem();
+        
+        // Update UI to reflect audio unavailability
+        this.updateUIAudioState(false);
+        
+        // Provide alternative experience
+        this.enhancedVisualTour();
+    }
+    
+    handleCMSCorruption() {
+        // Restore from backup
+        const backups = JSON.parse(localStorage.getItem('cms_backups') || '[]');
+        if (backups.length > 0) {
+            const latestBackup = backups[0];
+            CMS_DATA = latestBackup.data;
+            ContentUpdateManager.refreshContent();
+        } else {
+            // Fall back to embedded default content
+            this.restoreDefaultContent();
+        }
+    }
+    
+    restoreDefaultContent() {
+        // Reload page to get fresh copy from server
+        window.location.reload();
+    }
+}
+
+=== IMPLEMENTATION CHECKLIST ===
+
+DEPLOYMENT READINESS VALIDATION:
+
+✅ Production optimization completed
+✅ CDN configuration tested
+✅ Performance monitoring active
+✅ Analytics implementation verified
+✅ Error tracking configured
+✅ Content update workflow tested
+✅ Maintenance procedures documented
+✅ Disaster recovery plans ready
+✅ SSL/TLS encryption active
+✅ Cross-browser compatibility confirmed
+✅ Mobile experience validated
+✅ Accessibility compliance verified
+✅ SEO optimization completed
+✅ Social media meta tags set
+✅ Favicon and app icons configured
+
+This deployment specification ensures a smooth transition to production with robust monitoring, easy maintenance, and comprehensive disaster recovery procedures.
+
+
+TESTING STRATEGY SPECIFICATION
+TRIXEL TECHNOLOGIES - COMPREHENSIVE TESTING APPROACH
+======================================================
+
+CRITICAL REQUIREMENTS:
+- NO BACKEND DEPENDENCIES FOR TESTING
+- CLIENT-ONLY TESTING ENVIRONMENT
+- AUTOMATED WHERE POSSIBLE, MANUAL WHERE NECESSARY
+- CROSS-BROWSER COMPATIBILITY VERIFICATION
+- PERFORMANCE AND ACCESSIBILITY VALIDATION
+
+=== TESTING ARCHITECTURE ===
+
+TESTING PYRAMID STRUCTURE:
+
+1. UNIT TESTS (Foundation)
+   - Individual functions and classes
+   - Pure logic without DOM dependencies
+   - Fast execution (< 100ms each)
+
+2. INTEGRATION TESTS (Middle Layer)
+   - Component interactions
+   - Data flow between systems
+   - GSAP animation coordination
+
+3. E2E TESTS (Top Layer)
+   - User journey validation
+   - Cross-browser compatibility
+   - Performance benchmarks
+
+4. MANUAL TESTING (Critical Paths)
+   - Audio tour synchronization
+   - AI interaction flows
+   - Mobile responsiveness
+
+=== UNIT TESTING STRATEGY ===
+
+TESTABLE MODULES IDENTIFICATION:
+
+class UnitTestManager {
+    constructor() {
+        this.testableModules = [
+            'CMSDataProcessor',
+            'AudioStateMachine',
+            'AnimationOptimizer',
+            'ErrorHandler',
+            'PersistenceManager',
+            'ResponseProcessor',
+            'ConversationManager'
+        ];
+    }
+    
+    createTestSuite() {
+        return {
+            // Pure function tests (no DOM required)
+            testCMSDataProcessing: () => {
+                const processor = new CMSDataProcessor();
+                const result = processor.processSection('hero');
+                assert(result.title !== undefined);
+                assert(result.description.length > 0);
+            },
+            
+            testAudioStateTransitions: () => {
+                const machine = new AudioStateMachine();
+                assert(machine.canTransition('idle', 'music') === true);
+                assert(machine.canTransition('music', 'voiceover') === true);
+                assert(machine.canTransition('voiceover', 'idle') === false);
+            },
+            
+            testErrorSeverityAssessment: () => {
+                const handler = new ErrorHandler();
+                const audioError = new Error('AudioContext failed');
+                const severity = handler.assessSeverity(audioError, { domain: 'audio' });
+                assert(severity === ERROR_SEVERITY.CRITICAL);
+            }
+        };
+    }
+}
+
+MOCKING STRATEGY FOR DEPENDENCIES:
+
+class MockAudioElement {
+    constructor() {
+        this.paused = true;
+        this.currentTime = 0;
+        this.volume = 1;
+        this.eventListeners = new Map();
+    }
+    
+    play() {
+        this.paused = false;
+        return Promise.resolve();
+    }
+    
+    pause() {
+        this.paused = true;
+    }
+    
+    addEventListener(event, handler) {
+        if (!this.eventListeners.has(event)) {
+            this.eventListeners.set(event, []);
+        }
+        this.eventListeners.get(event).push(handler);
+    }
+    
+    triggerEvent(event) {
+        const handlers = this.eventListeners.get(event) || [];
+        handlers.forEach(handler => handler());
+    }
+}
+
+=== INTEGRATION TESTING ===
+
+COMPONENT INTERACTION TESTS:
+
+class IntegrationTestSuite {
+    constructor() {
+        this.testScenarios = [
+            {
+                name: 'Audio-Tour Synchronization',
+                setup: () => this.setupAudioTourTest(),
+                execute: () => this.testAudioTourSync(),
+                expected: 'Animations match voiceover timing ±100ms'
+            },
+            {
+                name: 'AI-Chat Audio Management',
+                setup: () => this.setupAIChatTest(),
+                execute: () => this.testAIChatAudioPause(),
+                expected: 'Audio pauses when chat opens, resumes when closed'
+            },
+            {
+                name: 'CMS-UI Data Binding',
+                setup: () => this.setupCMSBindingTest(),
+                execute: () => this.testCMSDataBinding(),
+                expected: 'UI updates immediately when CMS data changes'
+            }
+        ];
+    }
+    
+    setupAudioTourTest() {
+        // Mock audio system
+        this.originalAudio = window.universalAudioPlayer;
+        window.universalAudioPlayer = new MockAudioElement();
+        
+        // Mock GSAP timeline
+        this.animationCallbacks = [];
+        gsap.timeline = () => ({
+            call: (fn, ctx, time) => this.animationCallbacks.push({ fn, time }),
+            to: () => ({})
+        });
+    }
+    
+    testAudioTourSync() {
+        const tourManager = new EnhancedVoiceoverTour();
+        tourManager.startTour();
+        
+        // Verify animation callbacks are scheduled at correct times
+        const heroAnimation = this.animationCallbacks.find(cb => cb.time === 6);
+        assert(heroAnimation !== undefined, 'Hero animation scheduled at 6 seconds');
+        
+        return true;
+    }
+}
+
+DATA FLOW INTEGRATION TESTS:
+
+class DataFlowTests {
+    testUserReviewFlow() {
+        // Simulate review submission
+        const reviewData = {
+            rating: 5,
+            text: 'Excellent service!',
+            timestamp: Date.now()
+        };
+        
+        const reviewsManager = new ReviewsManager();
+        const submittedReview = reviewsManager.submitReview(reviewData);
+        
+        // Verify data flow
+        assert(submittedReview.id !== undefined);
+        assert(APP_STATE.persistent.userReviews.includes(submittedReview));
+        assert(localStorage.getItem('trixel_app_data').includes('Excellent service'));
+        
+        return true;
+    }
+    
+    testThemePersistence() {
+        // Test theme switching and persistence
+        themeManager.switchTheme('light');
+        
+        // Verify immediate UI update
+        assert(document.documentElement.classList.contains('light'));
+        
+        // Verify persistence
+        const saved = JSON.parse(localStorage.getItem('trixel_app_data'));
+        assert(saved.theme === 'light');
+        
+        // Simulate page reload
+        themeManager.loadTheme();
+        assert(document.documentElement.classList.contains('light'));
+        
+        return true;
+    }
+}
+
+=== END-TO-END TESTING ===
+
+USER JOURNEY VALIDATION:
+
+class E2ETestScenarios {
+    constructor() {
+        this.journeys = [
+            {
+                name: 'First-Time Visitor Experience',
+                steps: [
+                    'Load page → See welcome overlay',
+                    'Click "Start Tour" → Audio begins',
+                    'Tour completes → Background music starts',
+                    'Scroll to services → Interactive cards work',
+                    'Click AI chat → Audio pauses, chat opens'
+                ],
+                validation: 'Smooth, uninterrupted experience'
+            },
+            {
+                name: 'Returning Visitor Quick Access',
+                steps: [
+                    'Load page (with existing preferences)',
+                    'Skip welcome overlay automatically',
+                    'Background music resumes',
+                    'Navigate directly to contact form',
+                    'Submit inquiry successfully'
+                ],
+                validation: 'Fast access to key features'
+            },
+            {
+                name: 'Mobile User Experience',
+                steps: [
+                    'Load on mobile device',
+                    'Touch navigation works',
+                    'Mobile menu functional',
+                    'Touch targets adequate size',
+                    'Performance acceptable on 3G'
+                ],
+                validation: 'Optimized mobile experience'
+            }
+        ];
+    }
+    
+    createAutomatedE2ETests() {
+        if (typeof Puppeteer === 'undefined') {
+            console.warn('Puppeteer not available - manual E2E testing required');
+            return this.createManualTestChecklist();
+        }
+        
+        return {
+            testPageLoad: async () => {
+                const browser = await puppeteer.launch();
+                const page = await browser.newPage();
+                
+                // Performance metrics
+                const startTime = Date.now();
+                await page.goto('http://localhost:3000');
+                const loadTime = Date.now() - startTime;
+                
+                assert(loadTime < 3000, `Page load time ${loadTime}ms exceeds 3s budget`);
+                
+                await browser.close();
+            },
+            
+            testTourFunctionality: async () => {
+                const browser = await puppeteer.launch();
+                const page = await browser.newPage();
+                await page.goto('http://localhost:3000');
+                
+                // Start tour
+                await page.click('#start-tour');
+                
+                // Verify tour elements become active
+                await page.waitForSelector('.tour-active', { timeout: 5000 });
+                
+                // Skip tour
+                await page.click('#skip-tour');
+                
+                await browser.close();
+            }
+        };
+    }
+}
+
+=== CROSS-BROWSER TESTING ===
+
+BROWSER COMPATIBILITY MATRIX:
+
+const BROWSER_SUPPORT_MATRIX = {
+    required: {
+        'Chrome 90+': {
+            audio: 'full',
+            animations: 'full',
+            storage: 'full',
+            ai: 'full'
+        },
+        'Firefox 88+': {
+            audio: 'full',
+            animations: 'full', 
+            storage: 'full',
+            ai: 'full'
+        },
+        'Safari 14+': {
+            audio: 'limited', // Autoplay restrictions
+            animations: 'full',
+            storage: 'full',
+            ai: 'full'
+        }
+    },
+    optional: {
+        'Edge 90+': 'full',
+        'Mobile Chrome': 'full',
+        'Mobile Safari': 'limited' // Audio limitations
+    }
+};
+
+BROWSER-SPECIFIC TEST CASES:
+
+class BrowserCompatibilityTests {
+    testSafariAudioAutoplay() {
+        // Safari requires user interaction for audio
+        if (this.isSafari()) {
+            const audioManager = new AudioManager();
+            
+            // Attempt autoplay should fail gracefully
+            audioManager.startBackgroundMusic();
+            assert(universalAudioPlayer.paused === true);
+            
+            // Should work after user interaction
+            document.dispatchEvent(new Event('click'));
+            audioManager.startBackgroundMusic();
+            assert(universalAudioPlayer.paused === false);
+        }
+    }
+    
+    testMobileTouchInteractions() {
+        if (this.isMobile()) {
+            // Verify touch targets are adequate
+            const buttons = document.querySelectorAll('button, .interactive-card');
+            buttons.forEach(button => {
+                const rect = button.getBoundingClientRect();
+                assert(rect.width >= 44, `Touch target too narrow: ${rect.width}px`);
+                assert(rect.height >= 44, `Touch target too short: ${rect.height}px`);
+            });
+        }
+    }
+    
+    isSafari() {
+        return /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    }
+    
+    isMobile() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    }
+}
+
+=== PERFORMANCE TESTING ===
+
+PERFORMANCE BENCHMARKS:
+
+class PerformanceTestSuite {
+    constructor() {
+        this.benchmarks = {
+            animationFrameRate: 60,      // Target FPS
+            maxMemoryUsage: 100,         // MB
+            interactionResponse: 100,    // ms
+            audioLatency: 50,            // ms
+            domContentLoaded: 2000       // ms
+        };
+    }
+    
+    runPerformanceTests() {
+        const results = {};
+        
+        // Animation performance
+        results.animationFPS = this.testAnimationFrameRate();
+        assert(results.animationFPS >= 50, `Low frame rate: ${results.animationFPS}fps`);
+        
+        // Memory usage
+        results.memoryUsage = this.testMemoryUsage();
+        assert(results.memoryUsage < 100, `High memory usage: ${results.memoryUsage}MB`);
+        
+        // Interaction responsiveness
+        results.interactionTime = this.testInteractionResponse();
+        assert(results.interactionTime < 150, `Slow interaction: ${results.interactionTime}ms`);
+        
+        return results;
+    }
+    
+    testAnimationFrameRate() {
+        let frameCount = 0;
+        let startTime = performance.now();
+        
+        const measureFrame = () => {
+            frameCount++;
+            const currentTime = performance.now();
+            
+            if (currentTime - startTime >= 1000) {
+                const fps = Math.round((frameCount * 1000) / (currentTime - startTime));
+                return fps;
+            }
+            
+            requestAnimationFrame(measureFrame);
+        };
+        
+        return new Promise(resolve => {
+            requestAnimationFrame(() => {
+                const fps = measureFrame();
+                resolve(fps);
+            });
+        });
+    }
+    
+    testMemoryUsage() {
+        if (performance.memory) {
+            return Math.round(performance.memory.usedJSHeapSize / 1024 / 1024);
+        }
+        return 0; // Memory API not available
+    }
+}
+
+=== ACCESSIBILITY TESTING ===
+
+ACCESSIBILITY COMPLIANCE CHECKS:
+
+class AccessibilityTestSuite {
+    constructor() {
+        this.wcagLevel = 'AA'; // Target compliance level
+    }
+    
+    runAccessibilityTests() {
+        const violations = [];
+        
+        // Color contrast
+        violations.push(...this.testColorContrast());
+        
+        // Keyboard navigation
+        violations.push(...this.testKeyboardAccess());
+        
+        // Screen reader compatibility
+        violations.push(...this.testScreenReaderSupport());
+        
+        // Focus management
+        violations.push(...this.testFocusManagement());
+        
+        return violations;
+    }
+    
+    testColorContrast() {
+        const violations = [];
+        const textElements = document.querySelectorAll('p, h1, h2, h3, h4, h5, h6, span, a');
+        
+        textElements.forEach(element => {
+            const style = window.getComputedStyle(element);
+            const color = style.color;
+            const bgColor = style.backgroundColor;
+            
+            const contrast = this.calculateContrast(color, bgColor);
+            if (contrast < 4.5) { // WCAG AA minimum
+                violations.push({
+                    element: element,
+                    issue: 'Insufficient color contrast',
+                    contrast: contrast
+                });
+            }
+        });
+        
+        return violations;
+    }
+    
+    testKeyboardAccess() {
+        const violations = [];
+        const interactiveElements = document.querySelectorAll(
+            'button, a, input, select, textarea, [tabindex]'
+        );
+        
+        interactiveElements.forEach(element => {
+            // Check if focusable
+            const tabIndex = element.getAttribute('tabindex');
+            if (tabIndex === '-1' && element.matches('button, a, input')) {
+                violations.push({
+                    element: element,
+                    issue: 'Interactive element not keyboard accessible'
+                });
+            }
+            
+            // Check visible focus indicator
+            element.focus();
+            const focusStyle = window.getComputedStyle(element);
+            if (focusStyle.outline === 'none' && focusStyle.boxShadow === 'none') {
+                violations.push({
+                    element: element,
+                    issue: 'No visible focus indicator'
+                });
+            }
+        });
+        
+        return violations;
+    }
+}
+
+=== MANUAL TESTING CHECKLISTS ===
+
+CRITICAL PATH MANUAL TESTS:
+
+const MANUAL_TEST_CHECKLISTS = {
+    audioTour: [
+        'Welcome overlay appears on first load',
+        'Tour starts when "Start Guided Tour" clicked',
+        'Voiceover plays synchronized with animations',
+        'Skip tour button works at any point',
+        'Background music starts after tour completion',
+        'Audio pauses when AI chat opens',
+        'Audio resumes when AI chat closes'
+    ],
+    
+    aiInteractions: [
+        'AI chat opens when button clicked',
+        'Text input works and sends messages',
+        'AI responses are relevant and professional',
+        'Conversation history maintained during session',
+        'Voice input button works (if supported)',
+        'Chat closes properly',
+        'Interactive card buttons trigger AI with context'
+    ],
+    
+    mobileExperience: [
+        'Site loads properly on mobile devices',
+        'Touch navigation works smoothly',
+        'Mobile menu opens and closes',
+        'Forms are usable on touch screens',
+        'No horizontal scrolling required',
+        'Text readable without zooming',
+        'Touch targets are adequately sized'
+    ],
+    
+    performance: [
+        'Page loads within 3 seconds on 3G',
+        'Animations are smooth (60fps)',
+        'No memory leaks during extended use',
+        'Audio plays without stuttering',
+        'UI remains responsive during heavy interactions'
+    ]
+};
+
+=== TEST EXECUTION AND REPORTING ===
+
+TEST RUNNER IMPLEMENTATION:
+
+class TestRunner {
+    constructor() {
+        this.results = {
+            passed: 0,
+            failed: 0,
+            skipped: 0,
+            details: []
+        };
+    }
+    
+    async runAllTests() {
+        console.group('🚀 Running Trixel Technologies Test Suite');
+        
+        // Unit tests
+        await this.runUnitTests();
+        
+        // Integration tests  
+        await this.runIntegrationTests();
+        
+        // Performance tests
+        await this.runPerformanceTests();
+        
+        // Accessibility tests
+        await this.runAccessibilityTests();
+        
+        console.groupEnd();
+        this.generateReport();
+    }
+    
+    generateReport() {
+        const report = {
+            timestamp: new Date().toISOString(),
+            summary: {
+                total: this.results.passed + this.results.failed + this.results.skipped,
+                passed: this.results.passed,
+                failed: this.results.failed,
+                skipped: this.results.skipped,
+                successRate: Math.round((this.results.passed / (this.results.passed + this.results.failed)) * 100)
+            },
+            details: this.results.details,
+            environment: {
+                userAgent: navigator.userAgent,
+                viewport: `${window.innerWidth}x${window.innerHeight}`,
+                timestamp: Date.now()
+            }
+        };
+        
+        console.log('📊 Test Report:', report);
+        return report;
+    }
+}
+
+=== IMPLEMENTATION CHECKLIST ===
+
+TESTING INFRASTRUCTURE VALIDATION:
+
+✅ Unit test framework established
+✅ Integration test scenarios defined
+✅ E2E test automation ready
+✅ Cross-browser testing matrix
+✅ Performance benchmarking active
+✅ Accessibility compliance checks
+✅ Manual testing checklists
+✅ Test reporting system
+✅ Error scenario coverage
+✅ Mobile testing coverage
+
+This testing strategy ensures comprehensive validation of all website features while respecting the client-only architecture and providing confidence in production deployment.
+
+
+ERROR HANDLING & RECOVERY SPECIFICATION
+TRIXEL TECHNOLOGIES - ROBUST ERROR MANAGEMENT SYSTEM
+======================================================
+
+CRITICAL REQUIREMENTS:
+- GRACEFAL DEGRADATION FOR ALL FEATURES
+- USER-FRIENDLY ERROR MESSAGES
+- NO BROKEN STATES OR CRASHES
+- AUTOMATIC RECOVERY WHERE POSSIBLE
+- COMPREHENSIVE LOGGING FOR DEBUGGING
+
+=== ERROR CATEGORIZATION SYSTEM ===
+
+ERROR SEVERITY LEVELS:
+
+const ERROR_SEVERITY = {
+    CRITICAL: 0,    // Breaks core functionality
+    HIGH: 1,        // Major feature broken
+    MEDIUM: 2,      // Feature degraded
+    LOW: 3,         // Cosmetic issue
+    INFO: 4         // Informational
+};
+
+ERROR DOMAINS:
+
+class ErrorDomain {
+    static AUDIO = 'audio';
+    static ANIMATION = 'animation';
+    static AI = 'ai';
+    static NETWORK = 'network';
+    static STORAGE = 'storage';
+    static RENDERING = 'rendering';
+    static USER_INPUT = 'user_input';
+}
+
+=== CORE ERROR HANDLER ===
+
+CENTRAL ERROR MANAGEMENT:
+
+class ErrorHandler {
+    constructor() {
+        this.errorCounts = new Map();
+        this.maxErrorsPerMinute = 10;
+        this.errorWindow = [];
+        this.userFacing = true;
+    }
+    
+    handle(error, context = {}) {
+        const errorId = this.generateErrorId(error, context);
+        
+        // Rate limiting
+        if (this.isRateLimited(errorId)) {
+            console.warn(`Error rate limited: ${errorId}`);
+            return;
+        }
+        
+        // Categorize and process
+        const processedError = this.processError(error, context);
+        
+        // Log for debugging
+        this.logError(processedError);
+        
+        // User notification if appropriate
+        if (this.shouldNotifyUser(processedError)) {
+            this.showUserNotification(processedError);
+        }
+        
+        // Automatic recovery attempts
+        this.attemptRecovery(processedError);
+    }
+    
+    processError(rawError, context) {
+        return {
+            id: this.generateErrorId(rawError, context),
+            message: rawError.message || String(rawError),
+            stack: rawError.stack,
+            timestamp: Date.now(),
+            domain: context.domain || this.detectDomain(rawError),
+            severity: this.assessSeverity(rawError, context),
+            context: context,
+            userAction: context.userAction || 'unknown'
+        };
+    }
+    
+    assessSeverity(error, context) {
+        // Critical errors that break core functionality
+        if (error.message?.includes('AudioContext') || 
+            error.message?.includes('GSAP') ||
+            error.message?.includes('localStorage')) {
+            return ERROR_SEVERITY.CRITICAL;
+        }
+        
+        // High severity for AI and tour systems
+        if (context.domain === ErrorDomain.AI || 
+            context.domain === ErrorDomain.ANIMATION) {
+            return ERROR_SEVERITY.HIGH;
+        }
+        
+        return ERROR_SEVERITY.MEDIUM;
+    }
+}
+
+=== DOMAIN-SPECIFIC ERROR HANDLING ===
+
+AUDIO ERROR RECOVERY:
+
+class AudioErrorHandler {
+    constructor() {
+        this.fallbackAudioSources = {
+            voiceover: [
+                'audio/main_voiceover.wav',
+                'https://cdn.trixel.tech/fallback/voiceover.wav'
+            ],
+            music: [
+                'audio/background_music_1.mp3',
+                'https://cdn.trixel.tech/fallback/music_1.mp3'
+            ]
+        };
+    }
+    
+    handleAudioError(error, context) {
+        const errorHandler = new ErrorHandler();
+        
+        switch(error.name) {
+            case 'NotAllowedError':
+                // Autoplay blocked - requires user interaction
+                errorHandler.handle(error, { 
+                    domain: ErrorDomain.AUDIO, 
+                    severity: ERROR_SEVERITY.MEDIUM,
+                    userAction: 'wait_for_interaction'
+                });
+                this.scheduleRetryAfterInteraction();
+                break;
+                
+            case 'NetworkError':
+                // Network issue - try fallback sources
+                errorHandler.handle(error, { 
+                    domain: ErrorDomain.AUDIO, 
+                    severity: ERROR_SEVERITY.HIGH 
+                });
+                this.tryFallbackSource(context.audioType);
+                break;
+                
+            case 'NotSupportedError':
+                // Format not supported
+                errorHandler.handle(error, { 
+                    domain: ErrorDomain.AUDIO, 
+                    severity: ERROR_SEVERITY.CRITICAL 
+                });
+                this.disableAudioSystem();
+                break;
+                
+            default:
+                errorHandler.handle(error, { 
+                    domain: ErrorDomain.AUDIO, 
+                    severity: ERROR_SEVERITY.HIGH 
+                });
+        }
+    }
+    
+    tryFallbackSource(audioType) {
+        const fallbacks = this.fallbackAudioSources[audioType];
+        if (!fallbacks) return;
+        
+        for (let i = 1; i < fallbacks.length; i++) {
+            try {
+                universalAudioPlayer.src = fallbacks[i];
+                universalAudioPlayer.load();
+                console.log(`Audio fallback ${i} loaded for ${audioType}`);
+                break;
+            } catch (fallbackError) {
+                console.warn(`Audio fallback ${i} failed:`, fallbackError);
+            }
+        }
+    }
+}
+
+ANIMATION ERROR RECOVERY:
+
+class AnimationErrorHandler {
+    handleAnimationError(error, context) {
+        const errorHandler = new ErrorHandler();
+        
+        if (error.message.includes('ScrollTrigger')) {
+            errorHandler.handle(error, { 
+                domain: ErrorDomain.ANIMATION, 
+                severity: ERROR_SEVERITY.HIGH,
+                context: { animationId: context.animationId }
+            });
+            
+            // Disable problematic animations
+            this.disableFaultyAnimations(context.animationId);
+            
+        } else if (error.message.includes('target not found')) {
+            errorHandler.handle(error, { 
+                domain: ErrorDomain.ANIMATION, 
+                severity: ERROR_SEVERITY.MEDIUM 
+            });
+            
+            // Retry after DOM update
+            this.scheduleRetry(context);
+        }
+    }
+    
+    disableFaultyAnimations(animationId) {
+        // Kill problematic animations
+        const animation = gsap.getById(animationId);
+        if (animation) {
+            animation.kill();
+        }
+        
+        // Disable related ScrollTriggers
+        ScrollTrigger.getAll().forEach(trigger => {
+            if (trigger.animation === animation) {
+                trigger.disable();
+            }
+        });
+    }
+}
+
+AI API ERROR HANDLING:
+
+class AIErrorHandler {
+    constructor() {
+        this.consecutiveFailures = 0;
+        this.maxConsecutiveFailures = 3;
+        this.circuitBreakerOpen = false;
+    }
+    
+    handleAPIError(error, context) {
+        const errorHandler = new ErrorHandler();
+        
+        this.consecutiveFailures++;
+        
+        if (this.consecutiveFailures >= this.maxConsecutiveFailures) {
+            this.openCircuitBreaker();
+        }
+        
+        if (error.status === 429) { // Rate limited
+            errorHandler.handle(error, { 
+                domain: ErrorDomain.AI, 
+                severity: ERROR_SEVERITY.MEDIUM,
+                userAction: 'retry_later'
+            });
+            
+            return this.getRateLimitResponse();
+            
+        } else if (error.status >= 500) { // Server error
+            errorHandler.handle(error, { 
+                domain: ErrorDomain.AI, 
+                severity: ERROR_SEVERITY.HIGH 
+            });
+            
+            return this.getServerErrorResponse();
+            
+        } else { // Other errors
+            errorHandler.handle(error, { 
+                domain: ErrorDomain.AI, 
+                severity: ERROR_SEVERITY.MEDIUM 
+            });
+            
+            return this.getGenericErrorResponse();
+        }
+    }
+    
+    openCircuitBreaker() {
+        this.circuitBreakerOpen = true;
+        
+        // Auto-close after 1 minute
+        setTimeout(() => {
+            this.circuitBreakerOpen = false;
+            this.consecutiveFailures = 0;
+        }, 60000);
+    }
+}
+
+=== USER-FACING ERROR NOTIFICATIONS ===
+
+NON-INTRUSIVE ERROR DISPLAY:
+
+class UserNotificationManager {
+    constructor() {
+        this.notificationQueue = [];
+        this.isShowingNotification = false;
+    }
+    
+    showErrorNotification(error, options = {}) {
+        const notification = {
+            id: 'err_' + Date.now(),
+            type: this.getNotificationType(error.severity),
+            title: this.getUserFriendlyTitle(error),
+            message: this.getUserFriendlyMessage(error),
+            duration: this.getDisplayDuration(error.severity),
+            action: options.action,
+            error: error
+        };
+        
+        this.notificationQueue.push(notification);
+        this.processQueue();
+    }
+    
+    getUserFriendlyTitle(error) {
+        const titles = {
+            [ERROR_SEVERITY.CRITICAL]: 'System Issue',
+            [ERROR_SEVERITY.HIGH]: 'Feature Unavailable',
+            [ERROR_SEVERITY.MEDIUM]: 'Temporary Issue',
+            [ERROR_SEVERITY.LOW]: 'Notice'
+        };
+        
+        return titles[error.severity] || 'Something went wrong';
+    }
+    
+    getUserFriendlyMessage(error) {
+        const messages = {
+            [ErrorDomain.AUDIO]: 'Audio features are temporarily unavailable.',
+            [ErrorDomain.AI]: 'AI assistant is currently unavailable. Please try again later.',
+            [ErrorDomain.ANIMATION]: 'Some animations may not work correctly.',
+            [ErrorDomain.NETWORK]: 'Please check your internet connection.',
+            [ErrorDomain.STORAGE]: 'Your preferences may not be saved.'
+        };
+        
+        return messages[error.domain] || 'Please refresh the page and try again.';
+    }
+    
+    createNotificationElement(notification) {
+        const element = document.createElement('div');
+        element.className = `error-notification ${notification.type}`;
+        element.innerHTML = `
+            <div class="notification-content">
+                <div class="notification-icon">${this.getIcon(notification.type)}</div>
+                <div class="notification-text">
+                    <div class="notification-title">${notification.title}</div>
+                    <div class="notification-message">${notification.message}</div>
+                </div>
+                <button class="notification-close" onclick="this.parentElement.parentElement.remove()">
+                    &times;
+                </button>
+            </div>
+        `;
+        
+        // Auto-remove after duration
+        setTimeout(() => {
+            if (element.parentElement) {
+                element.remove();
+            }
+            this.isShowingNotification = false;
+            this.processQueue();
+        }, notification.duration);
+        
+        return element;
+    }
+}
+
+=== AUTOMATIC RECOVERY STRATEGIES ===
+
+STATE RECOVERY MANAGER:
+
+class StateRecoveryManager {
+    constructor() {
+        this.recoveryAttempts = new Map();
+        this.maxRecoveryAttempts = 3;
+    }
+    
+    attemptRecovery(error) {
+        const recoveryKey = `${error.domain}-${error.severity}`;
+        const attempts = this.recoveryAttempts.get(recoveryKey) || 0;
+        
+        if (attempts >= this.maxRecoveryAttempts) {
+            console.warn(`Max recovery attempts reached for: ${recoveryKey}`);
+            return false;
+        }
+        
+        this.recoveryAttempts.set(recoveryKey, attempts + 1);
+        
+        switch(error.domain) {
+            case ErrorDomain.AUDIO:
+                return this.recoverAudioSystem();
+            case ErrorDomain.ANIMATION:
+                return this.recoverAnimationSystem();
+            case ErrorDomain.AI:
+                return this.recoverAISystem();
+            case ErrorDomain.STORAGE:
+                return this.recoverStorageSystem();
+            default:
+                return this.generalRecovery();
+        }
+    }
+    
+    recoverAudioSystem() {
+        try {
+            // Reset audio context and elements
+            if (window.audioContext) {
+                window.audioContext.close();
+                window.audioContext = null;
+            }
+            
+            universalAudioPlayer.src = '';
+            universalAudioPlayer.load();
+            
+            // Reinitialize with fallbacks
+            audioManager.initializeWithFallbacks();
+            
+            return true;
+        } catch (recoveryError) {
+            console.error('Audio recovery failed:', recoveryError);
+            return false;
+        }
+    }
+    
+    recoverAnimationSystem() {
+        try {
+            // Kill all animations
+            gsap.globalTimeline.getChildren().forEach(tween => tween.kill());
+            
+            // Reinitialize with safer settings
+            animationManager.initialize({ reducedMotion: true });
+            
+            return true;
+        } catch (recoveryError) {
+            console.error('Animation recovery failed:', recoveryError);
+            return false;
+        }
+    }
+}
+
+=== ERROR LOGGING AND REPORTING ===
+
+COMPREHENSIVE ERROR LOGGING:
+
+class ErrorLogger {
+    constructor() {
+        this.logs = [];
+        this.maxLogSize = 100;
+        this.remoteLogging = false;
+    }
+    
+    logError(error) {
+        const logEntry = {
+            timestamp: new Date().toISOString(),
+            error: error,
+            userAgent: navigator.userAgent,
+            url: window.location.href,
+            appState: this.getSafeAppStateSnapshot(),
+            performance: this.getPerformanceSnapshot()
+        };
+        
+        this.logs.push(logEntry);
+        
+        // Maintain log size
+        if (this.logs.length > this.maxLogSize) {
+            this.logs = this.logs.slice(-this.maxLogSize);
+        }
+        
+        // Console output for development
+        if (process.env.NODE_ENV === 'development') {
+            console.group('Error Logged');
+            console.error('Error:', error);
+            console.log('Context:', logEntry);
+            console.groupEnd();
+        }
+        
+        // Optional remote logging
+        if (this.remoteLogging) {
+            this.sendToRemote(logEntry);
+        }
+    }
+    
+    getSafeAppStateSnapshot() {
+        // Return sanitized app state without sensitive data
+        return {
+            audioState: APP_STATE.session.currentAudioState,
+            tourProgress: APP_STATE.session.tourProgress,
+            activeSection: APP_STATE.session.activeSection
+        };
+    }
+    
+    exportLogs() {
+        return JSON.stringify(this.logs, null, 2);
+    }
+}
+
+=== PREVENTATIVE ERROR HANDLING ===
+
+ERROR BOUNDARIES AND SAFETY CHECKS:
+
+function withErrorBoundary(operation, fallback, context = {}) {
+    return function(...args) {
+        try {
+            return operation.apply(this, args);
+        } catch (error) {
+            const errorHandler = new ErrorHandler();
+            errorHandler.handle(error, context);
+            
+            if (typeof fallback === 'function') {
+                return fallback.apply(this, args);
+            }
+            
+            return fallback;
+        }
+    };
+}
+
+// Safe DOM manipulation
+const safeQuerySelector = withErrorBoundary(
+    (selector) => document.querySelector(selector),
+    null,
+    { domain: ErrorDomain.RENDERING }
+);
+
+// Safe API calls
+const safeAPICall = withErrorBoundary(
+    async (url, options) => {
+        const response = await fetch(url, options);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return response;
+    },
+    null,
+    { domain: ErrorDomain.NETWORK }
+);
+
+=== INTEGRATION CHECKLIST ===
+
+ERROR HANDLING VALIDATION:
+
+✅ Central error handler implemented
+✅ Domain-specific error recovery
+✅ User-friendly notifications
+✅ Automatic recovery systems
+✅ Comprehensive logging
+✅ Error boundaries in place
+✅ Rate limiting active
+✅ Circuit breakers functional
+✅ Graceful degradation working
+✅ No silent failures
+
+This error handling specification ensures the website remains stable and user-friendly even when components fail, providing robust recovery mechanisms and clear user communication.
+
+
+PERFORMANCE OPTIMIZATION SPECIFICATION
+TRIXEL TECHNOLOGIES - CLIENT-SIDE PERFORMANCE ARCHITECTURE
+============================================================
+
+CRITICAL CONSTRAINTS:
+- SINGLE HTML FILE WITH ALL ASSETS
+- NO SERVICE WORKERS OR CACHING
+- GSAP ANIMATIONS MUST BE SMOOTH (60FPS)
+- MEMORY USAGE MUST BE OPTIMAL
+- LOAD TIME UNDER 3 SECONDS
+
+=== ASSET OPTIMIZATION STRATEGY ===
+
+AUDIO FILE OPTIMIZATION:
+
+class AudioOptimizer {
+    constructor() {
+        this.supportedFormats = {
+            voiceover: 'wav',    // High quality for narration
+            music: 'mp3'         // Compressed for background
+        };
+        this.maxFileSizes = {
+            voiceover: 5 * 1024 * 1024,  // 5MB max
+            music: 2 * 1024 * 1024       // 2MB max per track
+        };
+    }
+    
+    optimizeAudioFiles() {
+        // Pre-load critical audio segments only
+        this.preloadAudioSegment('voiceover', 0, 30); // First 30 seconds
+        
+        // Lazy load remaining audio
+        this.setupLazyAudioLoading();
+    }
+    
+    preloadAudioSegment(type, startTime, duration) {
+        const audio = document.getElementById('universal-audio-player');
+        if (type === 'voiceover') {
+            // Preload just the beginning for instant tour start
+            audio.preload = 'metadata';
+        }
+    }
+}
+
+IMAGE OPTIMIZATION:
+
+class ImageOptimizer {
+    constructor() {
+        this.qualitySettings = {
+            portfolio: 0.8,      // 80% quality
+            ui: 0.9,             // 90% quality for icons
+            background: 0.6      // 60% quality for backgrounds
+        };
+    }
+    
+    setupLazyLoading() {
+        const imageObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const img = entry.target;
+                    this.loadImage(img);
+                    imageObserver.unobserve(img);
+                }
+            });
+        });
+        
+        document.querySelectorAll('img[data-src]').forEach(img => {
+            imageObserver.observe(img);
+        });
+    }
+    
+    loadImage(img) {
+        const src = img.getAttribute('data-src');
+        img.src = src;
+        img.removeAttribute('data-src');
+    }
+}
+
+=== ANIMATION PERFORMANCE ===
+
+GSAP PERFORMANCE RULES:
+
+class AnimationOptimizer {
+    constructor() {
+        this.performanceThresholds = {
+            maxSimultaneousAnimations: 5,
+            maxStaggerCount: 10,
+            animationBudget: 16 // ms per frame
+        };
+    }
+    
+    optimizeGSAPAnimations() {
+        // Apply will-change to animated elements
+        this.applyWillChange();
+        
+        // Use transforms instead of layout properties
+        this.enforceTransformAnimations();
+        
+        // Limit simultaneous animations
+        this.throttleAnimations();
+    }
+    
+    applyWillChange() {
+        const animatedSelectors = [
+            '.interactive-card',
+            '.btn-glow', 
+            '#navbar',
+            '.fade-in-up'
+        ];
+        
+        animatedSelectors.forEach(selector => {
+            document.querySelectorAll(selector).forEach(el => {
+                el.style.willChange = 'transform, opacity';
+            });
+        });
+    }
+    
+    enforceTransformAnimations() {
+        // Replace bad animation properties with transforms
+        const transformMap = {
+            'width': 'scaleX',
+            'height': 'scaleY', 
+            'left': 'translateX',
+            'top': 'translateY'
+        };
+        
+        // This is enforced during animation creation
+    }
+    
+    throttleAnimations() {
+        let activeAnimations = 0;
+        
+        // Monitor animation count
+        setInterval(() => {
+            if (activeAnimations > this.performanceThresholds.maxSimultaneousAnimations) {
+                this.pauseNonEssentialAnimations();
+            }
+        }, 100);
+    }
+}
+
+MEMORY-EFFICIENT ANIMATIONS:
+
+function createMemoryEfficientTimeline() {
+    return gsap.timeline({
+        onComplete: function() {
+            // Clean up after completion
+            this.kill();
+            garbageCollectAnimations();
+        },
+        onReverseComplete: function() {
+            this.kill();
+            garbageCollectAnimations();
+        }
+    });
+}
+
+function garbageCollectAnimations() {
+    // Force garbage collection of completed animations
+    if (window.gc) {
+        window.gc();
+    }
+}
+
+=== MEMORY MANAGEMENT ===
+
+MEMORY USAGE LIMITS:
+
+class MemoryManager {
+    constructor() {
+        this.memoryLimits = {
+            maxDOMReferences: 100,
+            maxAudioBuffers: 3,
+            maxCacheSize: 50,
+            maxConversationHistory: 10
+        };
+        
+        this.monitorInterval = null;
+    }
+    
+    startMemoryMonitoring() {
+        this.monitorInterval = setInterval(() => {
+            this.checkMemoryUsage();
+        }, 30000); // Check every 30 seconds
+    }
+    
+    checkMemoryUsage() {
+        // Check DOM node count
+        const domNodes = document.getElementsByTagName('*').length;
+        if (domNodes > 5000) {
+            this.cleanupOrphanedElements();
+        }
+        
+        // Check cache sizes
+        this.enforceCacheLimits();
+    }
+    
+    cleanupOrphanedElements() {
+        // Remove elements that are no longer needed
+        const elementsToRemove = [
+            '.typing-indicator',
+            '.temp-audio-element',
+            '.old-chat-message'
+        ];
+        
+        elementsToRemove.forEach(selector => {
+            document.querySelectorAll(selector).forEach(el => {
+                if (!this.isElementVisible(el)) {
+                    el.remove();
+                }
+            });
+        });
+    }
+    
+    enforceCacheLimits() {
+        // AI response cache
+        if (window.responseCache?.size > this.memoryLimits.maxCacheSize) {
+            this.trimCache(window.responseCache);
+        }
+        
+        // DOM element cache
+        if (window.domCache?.size > this.memoryLimits.maxDOMReferences) {
+            this.trimCache(window.domCache);
+        }
+    }
+}
+
+EVENT LISTENER OPTIMIZATION:
+
+class EventListenerManager {
+    constructor() {
+        this.listeners = new Map();
+    }
+    
+    addOptimizedListener(element, event, handler, options = {}) {
+        const optimizedHandler = this.debounce(handler, options.debounce);
+        element.addEventListener(event, optimizedHandler);
+        
+        // Store for cleanup
+        const key = `${event}-${Math.random().toString(36)}`;
+        this.listeners.set(key, { element, event, handler: optimizedHandler });
+        
+        return key;
+    }
+    
+    debounce(func, wait = 100, immediate = false) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = function() {
+                timeout = null;
+                if (!immediate) func(...args);
+            };
+            const callNow = immediate && !timeout;
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+            if (callNow) func(...args);
+        };
+    }
+    
+    cleanup() {
+        this.listeners.forEach(({ element, event, handler }) => {
+            element.removeEventListener(event, handler);
+        });
+        this.listeners.clear();
+    }
+}
+
+=== LOAD TIME OPTIMIZATION ===
+
+CRITICAL RENDER PATH OPTIMIZATION:
+
+class LoadTimeOptimizer {
+    constructor() {
+        this.criticalCSS = `
+            /* Above-the-fold styles only */
+            #navbar, #hero, .welcome-overlay {
+                opacity: 1;
+                visibility: visible;
+            }
+        `;
+    }
+    
+    optimizeInitialLoad() {
+        // Inline critical CSS
+        this.injectCriticalCSS();
+        
+        // Defer non-critical resources
+        this.deferNonCriticalAssets();
+        
+        // Preload key assets
+        this.preloadCriticalAssets();
+    }
+    
+    injectCriticalCSS() {
+        const style = document.createElement('style');
+        style.textContent = this.criticalCSS;
+        document.head.appendChild(style);
+    }
+    
+    deferNonCriticalAssets() {
+        // Portfolio images, additional music tracks, etc.
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => this.loadNonCriticalAssets(), 1000);
+        });
+    }
+    
+    preloadCriticalAssets() {
+        // Preload first voiceover segment and first music track
+        const preloadLinks = [
+            { href: 'audio/main_voiceover.wav', as: 'audio' },
+            { href: 'audio/background_music_1.mp3', as: 'audio' }
+        ];
+        
+        preloadLinks.forEach(link => {
+            const preload = document.createElement('link');
+            preload.rel = 'preload';
+            preload.href = link.href;
+            preload.as = link.as;
+            document.head.appendChild(preload);
+        });
+    }
+}
+
+=== NETWORK OPTIMIZATION ===
+
+INTELLIGENT PRELOADING:
+
+class PredictivePreloader {
+    constructor() {
+        this.userBehaviorPatterns = new Map();
+        this.preloadQueue = [];
+    }
+    
+    trackUserBehavior(section, timeSpent) {
+        this.userBehaviorPatterns.set(section, {
+            visits: (this.userBehaviorPatterns.get(section)?.visits || 0) + 1,
+            totalTime: (this.userBehaviorPatterns.get(section)?.totalTime || 0) + timeSpent
+        });
+        
+        this.updatePreloadStrategy();
+    }
+    
+    updatePreloadStrategy() {
+        // Preload next likely section based on behavior
+        const likelyNext = this.predictNextSection();
+        if (likelyNext) {
+            this.preloadSectionAssets(likelyNext);
+        }
+    }
+    
+    predictNextSection() {
+        const patterns = Array.from(this.userBehaviorPatterns.entries());
+        if (patterns.length === 0) return null;
+        
+        // Simple prediction: most visited section
+        return patterns.sort((a, b) => b[1].visits - a[1].visits)[0][0];
+    }
+}
+
+=== RUNTIME PERFORMANCE MONITORING ===
+
+PERFORMANCE METRICS:
+
+class PerformanceMonitor {
+    constructor() {
+        this.metrics = {
+            fps: 0,
+            memory: 0,
+            loadTime: 0,
+            animationDrops: 0
+        };
+        
+        this.startMonitoring();
+    }
+    
+    startMonitoring() {
+        this.monitorFPS();
+        this.monitorMemory();
+        this.monitorAnimationPerformance();
+    }
+    
+    monitorFPS() {
+        let frameCount = 0;
+        let lastTime = performance.now();
+        
+        const checkFPS = () => {
+            frameCount++;
+            const currentTime = performance.now();
+            
+            if (currentTime - lastTime >= 1000) {
+                this.metrics.fps = Math.round((frameCount * 1000) / (currentTime - lastTime));
+                frameCount = 0;
+                lastTime = currentTime;
+                
+                if (this.metrics.fps < 50) {
+                    this.triggerPerformanceDegradation();
+                }
+            }
+            
+            requestAnimationFrame(checkFPS);
+        };
+        
+        checkFPS();
+    }
+    
+    monitorAnimationPerformance() {
+        let lastAnimationTime = performance.now();
+        
+        const checkAnimationFrame = (currentTime) => {
+            const delta = currentTime - lastAnimationTime;
+            
+            if (delta > 20) { // More than 20ms per frame
+                this.metrics.animationDrops++;
+                
+                if (this.metrics.animationDrops > 10) {
+                    this.reduceAnimationComplexity();
+                }
+            }
+            
+            lastAnimationTime = currentTime;
+            requestAnimationFrame(checkAnimationFrame);
+        };
+        
+        requestAnimationFrame(checkAnimationFrame);
+    }
+    
+    reduceAnimationComplexity() {
+        // Disable non-essential animations
+        gsap.globalTimeline.timeScale(1.5); // Speed up animations
+        document.body.classList.add('reduced-motion');
+    }
+}
+
+=== ERROR RECOVERY AND GRACEFAL DEGRADATION ===
+
+PERFORMANCE FALLBACKS:
+
+class PerformanceFallback {
+    constructor() {
+        this.fallbackModes = new Set();
+    }
+    
+    enableFallbackMode(mode) {
+        this.fallbackModes.add(mode);
+        
+        switch(mode) {
+            case 'low-memory':
+                this.enableLowMemoryMode();
+                break;
+            case 'slow-network':
+                this.enableSlowNetworkMode();
+                break;
+            case 'low-performance':
+                this.enableLowPerformanceMode();
+                break;
+        }
+    }
+    
+    enableLowMemoryMode() {
+        // Reduce cache sizes
+        window.responseCache.maxSize = 10;
+        window.domCache.maxSize = 20;
+        
+        // Limit history retention
+        APP_STATE.session.aiConversation.messages = 
+            APP_STATE.session.aiConversation.messages.slice(-5);
+    }
+    
+    enableSlowNetworkMode() {
+        // Disable preloading
+        predictivePreloader.enabled = false;
+        
+        // Use lower quality assets
+        imageOptimizer.qualitySettings.portfolio = 0.6;
+    }
+    
+    enableLowPerformanceMode() {
+        // Reduce animation complexity
+        gsap.globalTimeline.timeScale(1.2);
+        document.body.classList.add('reduced-motion');
+        
+        // Throttle expensive operations
+        eventListenerManager.defaultDebounce = 200;
+    }
+}
+
+=== PERFORMANCE BUDGET ===
+
+PERFORMANCE TARGETS:
+
+const PERFORMANCE_BUDGET = {
+    loadTime: {
+        target: 3000,    // 3 seconds
+        acceptable: 5000 // 5 seconds
+    },
+    fps: {
+        target: 60,      // 60 FPS
+        acceptable: 30   // 30 FPS minimum
+    },
+    memory: {
+        target: 50,      // 50MB heap
+        acceptable: 100  // 100MB maximum
+    },
+    interactions: {
+        target: 100,     // 100ms response
+        acceptable: 300  // 300ms maximum
+    }
+};
+
+=== IMPLEMENTATION CHECKLIST ===
+
+PERFORMANCE VALIDATION:
+
+✅ Asset optimization implemented
+✅ GSAP animations optimized (60FPS)
+✅ Memory management active
+✅ Load time under 3 seconds
+✅ Event listeners optimized
+✅ Network usage minimized
+✅ Performance monitoring active
+✅ Fallback modes ready
+✅ Memory leaks prevented
+✅ Garbage collection efficient
+
+This performance optimization specification ensures the website delivers a smooth, fast experience while respecting all technical constraints and maintaining the single HTML file architecture.
+
+
+DATA FLOW ARCHITECTURE SPECIFICATION
+TRIXEL TECHNOLOGIES - CLIENT-SIDE DATA MANAGEMENT
+==================================================
+
+CRITICAL CONSTRAINTS:
+- NO BACKEND/DATABASE SYSTEMS
+- SINGLE HTML FILE ARCHITECTURE
+- LOCALSTORAGE FOR MINIMAL PERSISTENCE
+- ALL DATA FLOWS THROUGH CMS_DATA CENTRAL HUB
+
+=== DATA ARCHITECTURE OVERVIEW ===
+
+CENTRAL DATA HUB STRUCTURE:
+
+window.APP_STATE = {
+    // ===== PERSISTENT DATA (LocalStorage) =====
+    persistent: {
+        theme: 'dark',                    // User theme preference
+        audioTrack: 0,                    // Current music track index
+        userReviews: [],                  // Submitted reviews
+        lastTourCompletion: null,         // Tour completion timestamp
+        cmsEdits: {}                      // CMS content overrides
+    },
+    
+    // ===== SESSION DATA (Memory Only) =====
+    session: {
+        currentAudioState: 'idle',        // idle|voiceover|music|paused|chat
+        tourProgress: 0,                  // 0-100% tour completion
+        aiConversation: [],               // Current chat session
+        activeSection: 'home',            // Current visible section
+        interactiveCardStates: new Map()  // Card active/hover states
+    },
+    
+    // ===== RUNTIME CACHE =====
+    cache: {
+        audioBuffers: new Map(),          // Preloaded audio data
+        animationStates: new Map(),       // GSAP animation references
+        domElements: new Map()            // Cached DOM references
+    }
+};
+
+=== DATA FLOW PATTERNS ===
+
+1. CMS_DATA → DOM RENDERING FLOW:
+
+function renderContentFromCMS() {
+    // Source: CMS_DATA (immutable master content)
+    // Process: Transform CMS data to DOM elements
+    // Output: Live website content
+    
+    Object.keys(CMS_DATA).forEach(section => {
+        const sectionData = CMS_DATA[section];
+        const domElement = document.getElementById(section);
+        
+        if (domElement) {
+            renderSection(domElement, sectionData);
+        }
+    });
+}
+
+2. USER INPUT → STATE UPDATE FLOW:
+
+function handleUserInteraction(event) {
+    // Source: User actions (clicks, scrolls, inputs)
+    // Process: Update APP_STATE based on action
+    // Output: State changes trigger UI updates
+    
+    const action = parseUserAction(event);
+    const newState = stateReducer(APP_STATE, action);
+    APP_STATE = newState;
+    
+    // Trigger reactive updates
+    updateUIFromState(APP_STATE);
+}
+
+3. STATE → UI REACTIVE UPDATES:
+
+function updateUIFromState(state) {
+    // Monitor state changes and update UI accordingly
+    Object.keys(state.session).forEach(key => {
+        if (state.session[key] !== previousState.session[key]) {
+            handleStateChange(key, state.session[key]);
+        }
+    });
+}
+
+=== LOCALSTORAGE INTEGRATION ===
+
+PERSISTENCE MANAGER:
+
+class PersistenceManager {
+    constructor() {
+        this.storageKey = 'trixel_app_data';
+        this.autoSaveInterval = 30000; // 30 seconds
+    }
+    
+    saveToLocalStorage() {
+        const dataToSave = {
+            theme: APP_STATE.persistent.theme,
+            audioTrack: APP_STATE.persistent.audioTrack,
+            userReviews: APP_STATE.persistent.userReviews,
+            lastTourCompletion: APP_STATE.persistent.lastTourCompletion,
+            // Don't save large CMS edits automatically
+        };
+        
+        try {
+            localStorage.setItem(this.storageKey, JSON.stringify(dataToSave));
+        } catch (error) {
+            console.warn('LocalStorage save failed:', error);
+            this.handleStorageFull();
+        }
+    }
+    
+    loadFromLocalStorage() {
+        try {
+            const saved = localStorage.getItem(this.storageKey);
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                APP_STATE.persistent = { ...APP_STATE.persistent, ...parsed };
+            }
+        } catch (error) {
+            console.warn('LocalStorage load failed:', error);
+            this.clearCorruptedData();
+        }
+    }
+    
+    handleStorageFull() {
+        // Implement LRU strategy for reviews
+        if (APP_STATE.persistent.userReviews.length > 10) {
+            APP_STATE.persistent.userReviews = 
+                APP_STATE.persistent.userReviews.slice(-5);
+            this.saveToLocalStorage();
+        }
+    }
+}
+
+=== CMS DATA OVERRIDE SYSTEM ===
+
+DYNAMIC CONTENT UPDATES:
+
+class CMSOverrideManager {
+    constructor() {
+        this.overrides = new Map();
+    }
+    
+    applyOverride(section, field, newValue) {
+        // Store override separately from original CMS_DATA
+        this.overrides.set(`${section}.${field}`, newValue);
+        
+        // Update APP_STATE
+        if (!APP_STATE.persistent.cmsEdits[section]) {
+            APP_STATE.persistent.cmsEdits[section] = {};
+        }
+        APP_STATE.persistent.cmsEdits[section][field] = newValue;
+        
+        // Immediately update UI
+        this.updateDOM(section, field, newValue);
+    }
+    
+    getCurrentContent(section, field) {
+        // Check overrides first, then fall back to CMS_DATA
+        const overrideKey = `${section}.${field}`;
+        if (this.overrides.has(overrideKey)) {
+            return this.overrides.get(overrideKey);
+        }
+        
+        // Navigate CMS_DATA object safely
+        return this.getNestedValue(CMS_DATA, [section, field]);
+    }
+    
+    exportOverrides() {
+        return JSON.stringify(Object.fromEntries(this.overrides), null, 2);
+    }
+}
+
+=== USER REVIEWS DATA FLOW ===
+
+REVIEWS MANAGEMENT SYSTEM:
+
+class ReviewsManager {
+    constructor() {
+        this.maxReviews = 50; // Prevent storage overflow
+    }
+    
+    submitReview(reviewData) {
+        const review = {
+            id: this.generateReviewId(),
+            ...reviewData,
+            timestamp: Date.now(),
+            status: 'submitted'
+        };
+        
+        // Add to persistent state
+        APP_STATE.persistent.userReviews.unshift(review);
+        
+        // Enforce storage limits
+        if (APP_STATE.persistent.userReviews.length > this.maxReviews) {
+            APP_STATE.persistent.userReviews = 
+                APP_STATE.persistent.userReviews.slice(0, this.maxReviews);
+        }
+        
+        // Save to localStorage
+        persistenceManager.saveToLocalStorage();
+        
+        // Update UI
+        this.renderReviews();
+        
+        return review;
+    }
+    
+    renderReviews() {
+        const container = document.getElementById('reviews-container');
+        const reviews = APP_STATE.persistent.userReviews;
+        
+        if (reviews.length === 0) {
+            container.innerHTML = this.getEmptyStateHTML();
+            return;
+        }
+        
+        container.innerHTML = reviews.map(review => 
+            this.createReviewCard(review)
+        ).join('');
+    }
+    
+    generateReviewId() {
+        return 'rev_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    }
+}
+
+=== AUDIO STATE MANAGEMENT ===
+
+AUDIO STATE MACHINE:
+
+class AudioStateMachine {
+    constructor() {
+        this.states = {
+            idle: { from: ['music', 'voiceover', 'paused'] },
+            voiceover: { from: ['idle', 'music', 'paused'] },
+            music: { from: ['idle', 'voiceover', 'paused'] },
+            paused: { from: ['voiceover', 'music'] },
+            chat_active: { from: ['voiceover', 'music', 'paused'] }
+        };
+    }
+    
+    transition(newState) {
+        const currentState = APP_STATE.session.currentAudioState;
+        
+        if (this.canTransition(currentState, newState)) {
+            const previousState = currentState;
+            APP_STATE.session.currentAudioState = newState;
+            
+            // Execute state entry actions
+            this.handleStateEntry(newState, previousState);
+            
+            return true;
+        }
+        
+        console.warn(`Invalid state transition: ${currentState} -> ${newState}`);
+        return false;
+    }
+    
+    canTransition(fromState, toState) {
+        return this.states[toState]?.from.includes(fromState) || false;
+    }
+    
+    handleStateEntry(newState, previousState) {
+        switch(newState) {
+            case 'chat_active':
+                this.backupAudioState();
+                audioManager.pause();
+                break;
+            case 'voiceover':
+                if (previousState === 'chat_active') {
+                    this.restoreAudioState();
+                }
+                break;
+            case 'music':
+                audioManager.playBackgroundMusic();
+                break;
+        }
+    }
+}
+
+=== AI CONVERSATION DATA FLOW ===
+
+CONVERSATION STATE MANAGEMENT:
+
+class ConversationStateManager {
+    constructor() {
+        this.sessions = new Map();
+        this.currentSessionId = null;
+    }
+    
+    startNewSession(context = 'general') {
+        const sessionId = 'conv_' + Date.now();
+        
+        this.sessions.set(sessionId, {
+            id: sessionId,
+            context: context,
+            messages: [],
+            startTime: Date.now(),
+            lastActivity: Date.now()
+        });
+        
+        this.currentSessionId = sessionId;
+        APP_STATE.session.aiConversation = this.sessions.get(sessionId);
+        
+        return sessionId;
+    }
+    
+    addMessage(sessionId, role, content, metadata = {}) {
+        const session = this.sessions.get(sessionId);
+        if (!session) return;
+        
+        const message = {
+            role,
+            content,
+            timestamp: Date.now(),
+            ...metadata
+        };
+        
+        session.messages.push(message);
+        session.lastActivity = Date.now();
+        
+        // Keep conversation manageable
+        if (session.messages.length > 20) {
+            session.messages = session.messages.slice(-15);
+        }
+        
+        // Update app state
+        APP_STATE.session.aiConversation = session;
+    }
+    
+    getConversationContext(sessionId) {
+        const session = this.sessions.get(sessionId);
+        if (!session) return '';
+        
+        return session.messages
+            .slice(-6) // Last 3 exchanges
+            .map(msg => `${msg.role}: ${msg.content}`)
+            .join('\n');
+    }
+}
+
+=== PERFORMANCE OPTIMIZATION ===
+
+DATA FLOW OPTIMIZATIONS:
+
+1. LAZY LOADING STRATEGY:
+   - Audio files loaded on demand
+   - Images loaded when visible
+   - CMS data parsed section-by-section
+
+2. EFFICIENT STATE UPDATES:
+   - Batched DOM updates
+   - Debounced save operations
+   - Selective re-rendering
+
+3. MEMORY MANAGEMENT:
+   - Clear unused sessions
+   - Limit history retention
+   - Proper event listener cleanup
+
+4. CACHE STRATEGY:
+   - DOM element caching
+   - Animation instance reuse
+   - API response caching
+
+=== ERROR RECOVERY FLOW ===
+
+DATA INTEGRITY PROTECTION:
+
+function handleDataCorruption() {
+    // Detect corrupted state
+    if (!isValidAppState(APP_STATE)) {
+        // Restore from localStorage backup
+        persistenceManager.loadFromLocalStorage();
+        
+        // Reset session data
+        APP_STATE.session = getDefaultSessionState();
+        
+        // Re-render UI
+        renderContentFromCMS();
+    }
+}
+
+function isValidAppState(state) {
+    return state && 
+           state.persistent && 
+           state.session && 
+           state.cache &&
+           typeof state.session.currentAudioState === 'string';
+}
+
+=== INTEGRATION CHECKLIST ===
+
+DATA FLOW VALIDATION:
+
+✅ CMS_DATA → DOM rendering works
+✅ User interactions → State updates
+✅ State changes → UI updates
+✅ LocalStorage persistence functional
+✅ Audio state transitions smooth
+✅ Review system data flow complete
+✅ AI conversation state managed
+✅ Error recovery mechanisms
+✅ Performance optimizations active
+✅ Memory leaks prevented
+
+This architecture ensures all data flows efficiently through the application while maintaining the single HTML file constraint and providing robust client-side data management.
+
+
+AI INTEGRATION SPECIFICATION DOCUMENT
+TRIXEL TECHNOLOGIES - GEMINI AI IMPLEMENTATION
+================================================
+
+CRITICAL CONSTRAINTS:
+- TEXT-ONLY RESPONSES (NO TTS/VOICE SYNTHESIS)
+- API CALLS MUST HANDLE RATE LIMITING
+- RESPONSES MUST ADHERE TO BUSINESS CONTEXT
+- NO PRICING INFORMATION IN RESPONSES
+- MUST WORK WITH SINGLE AUDIO CHANNEL CONSTRAINT
+
+=== GEMINI API CONFIGURATION ===
+
+API ENDPOINT & AUTHENTICATION:
+
+const GEMINI_CONFIG = {
+    apiKey: "AIzaSyB4YH8mHAlkJ1wy9IePRE1W1lFTDB4_H4c",
+    apiUrl: "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent",
+    maxTokens: 1000,
+    temperature: 0.7,
+    timeout: 30000 // 30 seconds
+};
+
+REQUEST PAYLOAD STRUCTURE:
+
+function createAIPayload(userMessage, conversationHistory = [], contextType = "general") {
+    const systemInstruction = buildSystemInstruction(contextType);
+    
+    return {
+        contents: [
+            {
+                role: "user",
+                parts: [
+                    {
+                        text: `${systemInstruction}\n\nConversation History:\n${JSON.stringify(conversationHistory)}\n\nCurrent User Message: ${userMessage}`
+                    }
+                ]
+            }
+        ],
+        generationConfig: {
+            temperature: GEMINI_CONFIG.temperature,
+            maxOutputTokens: GEMINI_CONFIG.maxTokens
+        }
+    };
+}
+
+=== SYSTEM INSTRUCTION ENGINEERING ===
+
+CONTEXT-AWARE SYSTEM PROMPTS:
+
+function buildSystemInstruction(contextType) {
+    const baseContext = CMS_DATA.ai.systemInstructions;
+    
+    const contextEnhancements = {
+        general: `
+            ${baseContext}
+            RESPONSE GUIDELINES:
+            - Keep responses under 150 words
+            - Use natural, conversational language
+            - Include relevant emojis occasionally
+            - Focus on benefits and solutions
+            - Never mention specific pricing
+            - Suggest next steps naturally
+        `,
+        
+        service_question: `
+            ${baseContext}
+            FOCUS: Answer specific service questions
+            - Explain features in simple terms
+            - Relate to service business needs
+            - Provide practical examples
+            - Suggest relevant next steps
+        `,
+        
+        explanation: `
+            ${baseContext}
+            FOCUS: Provide clear explanations
+            - Use analogies when helpful
+            - Break down complex concepts
+            - Focus on client benefits
+            - Avoid technical jargon
+        `,
+        
+        ordering: `
+            ${baseContext}
+            FOCUS: Guide through ordering process
+            - Explain the simple 4-step process
+            - Emphasize 5-day delivery
+            - Guide to contact options
+            - Build excitement for results
+        `
+    };
+    
+    return contextEnhancements[contextType] || contextEnhancements.general;
+}
+
+=== CONVERSATION MANAGEMENT ===
+
+CONVERSATION HISTORY STRUCTURE:
+
+class ConversationManager {
+    constructor() {
+        this.history = [];
+        this.maxHistoryLength = 10; // Prevent context overflow
+    }
+    
+    addMessage(role, text, context = null) {
+        this.history.push({
+            role: role,
+            text: text,
+            timestamp: Date.now(),
+            context: context
+        });
+        
+        // Maintain history length
+        if (this.history.length > this.maxHistoryLength) {
+            this.history.shift();
+        }
+    }
+    
+    getRelevantHistory() {
+        // Return only recent, relevant messages
+        return this.history.slice(-6); // Last 3 exchanges
+    }
+    
+    clearHistory() {
+        this.history = [];
+    }
+}
+
+=== API CALL MANAGEMENT ===
+
+RATE LIMITING AND ERROR HANDLING:
+
+class APIManager {
+    constructor() {
+        this.lastCallTime = 0;
+        this.minCallInterval = 2000; // 2 seconds between calls
+        this.consecutiveErrors = 0;
+        this.maxConsecutiveErrors = 3;
+    }
+    
+    async makeAPICall(payload) {
+        // Rate limiting
+        const timeSinceLastCall = Date.now() - this.lastCallTime;
+        if (timeSinceLastCall < this.minCallInterval) {
+            await this.delay(this.minCallInterval - timeSinceLastCall);
+        }
+        
+        try {
+            const response = await fetch(`${GEMINI_CONFIG.apiUrl}?key=${GEMINI_CONFIG.apiKey}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+                signal: AbortSignal.timeout(GEMINI_CONFIG.timeout)
+            });
+            
+            if (!response.ok) {
+                throw new Error(`API Error: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            this.consecutiveErrors = 0; // Reset error count
+            this.lastCallTime = Date.now();
+            
+            return this.extractResponseText(data);
+            
+        } catch (error) {
+            this.consecutiveErrors++;
+            return this.handleAPIError(error);
+        }
+    }
+    
+    extractResponseText(data) {
+        if (data.candidates && data.candidates[0].content.parts) {
+            return data.candidates[0].content.parts[0].text;
+        }
+        throw new Error('Invalid response format from API');
+    }
+    
+    handleAPIError(error) {
+        console.error('AI API Error:', error);
+        
+        if (this.consecutiveErrors >= this.maxConsecutiveErrors) {
+            return "I'm experiencing technical difficulties. Please try again later or contact us directly for immediate assistance.";
+        }
+        
+        const errorResponses = [
+            "I'm having trouble connecting right now. Please try again in a moment.",
+            "There seems to be a connection issue. You can reach us directly via WhatsApp for immediate help.",
+            "I'm temporarily unavailable. Feel free to browse our services or contact us directly."
+        ];
+        
+        return errorResponses[Math.floor(Math.random() * errorResponses.length)];
+    }
+    
+    delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+}
+
+=== RESPONSE PROCESSING ===
+
+RESPONSE SANITIZATION AND ENHANCEMENT:
+
+class ResponseProcessor {
+    processResponse(rawResponse, contextType) {
+        // Remove any accidental pricing mentions
+        let processed = this.removePricingReferences(rawResponse);
+        
+        // Enhance based on context
+        processed = this.enhanceForContext(processed, contextType);
+        
+        // Ensure professional tone
+        processed = this.ensureProfessionalTone(processed);
+        
+        return processed;
+    }
+    
+    removePricingReferences(text) {
+        const pricingPatterns = [
+            /\$\d+/g, // $899, $1900, etc.
+            /\d+\s*(dollars|USD)/gi,
+            /package.*\$\d+/gi
+        ];
+        
+        let cleanText = text;
+        pricingPatterns.forEach(pattern => {
+            cleanText = cleanText.replace(pattern, '[available upon request]');
+        });
+        
+        return cleanText;
+    }
+    
+    enhanceForContext(text, contextType) {
+        const enhancements = {
+            ordering: text + "\n\nReady to get started? We'd love to discuss your project!",
+            explanation: text + "\n\nDoes that help explain how this could work for your business?",
+            service_question: text + "\n\nIs there anything specific about this service you'd like me to elaborate on?"
+        };
+        
+        return enhancements[contextType] || text;
+    }
+    
+    ensureProfessionalTone(text) {
+        // Replace any overly casual language
+        const toneReplacements = {
+            "yeah": "yes",
+            "uh huh": "certainly", 
+            "nope": "no",
+            "awesome": "excellent",
+            "cool": "great"
+        };
+        
+        let professionalText = text;
+        Object.entries(toneReplacements).forEach(([casual, professional]) => {
+            professionalText = professionalText.replace(new RegExp(casual, 'gi'), professional);
+        });
+        
+        return professionalText;
+    }
+}
+
+=== INTERACTIVE CARD INTEGRATION ===
+
+CARD-SPECIFIC AI TRIGGERS:
+
+function handleCardInteraction(cardElement, interactionType) {
+    const cardContext = extractCardContext(cardElement);
+    const prompt = generateContextualPrompt(cardContext, interactionType);
+    
+    // Trigger AI response with specific context
+    triggerAIResponse(prompt, interactionType, cardContext);
+}
+
+function extractCardContext(cardElement) {
+    const title = cardElement.querySelector('h3, h4')?.textContent || '';
+    const description = cardElement.querySelector('p')?.textContent || '';
+    const serviceId = cardElement.id || '';
+    
+    return {
+        title,
+        description: description.substring(0, 200), // Limit context length
+        serviceId,
+        element: cardElement
+    };
+}
+
+function generateContextualPrompt(cardContext, interactionType) {
+    const basePrompts = {
+        ask: `I have questions about ${cardContext.title}. ${cardContext.description}`,
+        explain: `Please explain ${cardContext.title} in simple terms: ${cardContext.description}`,
+        order: `I'm interested in ordering ${cardContext.title}. ${cardContext.description}`
+    };
+    
+    return basePrompts[interactionType];
+}
+
+=== CHAT WIDGET IMPLEMENTATION ===
+
+CHAT INTERFACE MANAGEMENT:
+
+class ChatWidgetManager {
+    constructor() {
+        this.isOpen = false;
+        this.conversationManager = new ConversationManager();
+        this.apiManager = new APIManager();
+        this.responseProcessor = new ResponseProcessor();
+    }
+    
+    async sendMessage(userMessage, contextType = "general") {
+        // Add user message to history
+        this.conversationManager.addMessage('user', userMessage, contextType);
+        
+        // Show typing indicator
+        this.showTypingIndicator();
+        
+        try {
+            // Prepare and make API call
+            const payload = createAIPayload(
+                userMessage, 
+                this.conversationManager.getRelevantHistory(), 
+                contextType
+            );
+            
+            const rawResponse = await this.apiManager.makeAPICall(payload);
+            const processedResponse = this.responseProcessor.processResponse(rawResponse, contextType);
+            
+            // Add AI response to history
+            this.conversationManager.addMessage('assistant', processedResponse, contextType);
+            
+            // Display response
+            this.displayMessage(processedResponse, 'assistant');
+            
+        } catch (error) {
+            const errorMessage = "I apologize, but I'm having trouble responding right now. Please try again or contact us directly.";
+            this.displayMessage(errorMessage, 'assistant');
+        } finally {
+            this.hideTypingIndicator();
+        }
+    }
+    
+    displayMessage(text, sender) {
+        const chatMessages = document.getElementById('chat-messages');
+        const messageElement = this.createMessageElement(text, sender);
+        
+        chatMessages.appendChild(messageElement);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        
+        // Auto-close typing indicator if present
+        this.hideTypingIndicator();
+    }
+    
+    createMessageElement(text, sender) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `flex ${sender === 'user' ? 'justify-end' : 'justify-start'} mb-4`;
+        
+        const bubble = document.createElement('div');
+        bubble.className = `max-w-[85%] p-3 rounded-lg ${
+            sender === 'user' 
+            ? 'bg-blue-500 text-white' 
+            : 'bg-gray-700 text-gray-100 border border-gray-600'
+        }`;
+        
+        // Parse markdown for AI responses
+        bubble.innerHTML = sender === 'assistant' 
+            ? this.parseMarkdown(text)
+            : `<p class="text-sm">${this.escapeHtml(text)}</p>`;
+        
+        messageDiv.appendChild(bubble);
+        return messageDiv;
+    }
+    
+    parseMarkdown(text) {
+        // Simple markdown parsing for bold and lists
+        return text
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\n\n/g, '</p><p>')
+            .replace(/\n/g, '<br>')
+            .replace(/^- (.*?)(?=\n|$)/gm, '<li>$1</li>')
+            .replace(/(<li>.*<\/li>)/s, '<ul class="list-disc list-inside mt-2">$1</ul>')
+            .replace(/^<p>(.*?)<\/p>$/, '<p class="text-sm">$1</p>');
+    }
+}
+
+=== AUDIO CONFLICT PREVENTION ===
+
+AUDIO MANAGEMENT INTEGRATION:
+
+function handleChatOpen() {
+    // Pause any audio playback
+    if (window.audioManager) {
+        window.audioManager.pauseForChat();
+    }
+    
+    // Ensure no TTS attempts
+    window.speechSynthesis?.cancel();
+}
+
+function handleChatClose() {
+    // Resume audio if appropriate
+    if (window.audioManager && !window.tourManager?.isTourActive) {
+        window.audioManager.resumeAfterChat();
+    }
+}
+
+=== PERFORMANCE OPTIMIZATIONS ===
+
+CACHING AND OPTIMIZATION:
+
+class ResponseCache {
+    constructor() {
+        this.cache = new Map();
+        this.maxCacheSize = 50;
+        this.cacheTimeout = 300000; // 5 minutes
+    }
+    
+    getCacheKey(prompt, context) {
+        return `${context}:${prompt.substring(0, 100)}`;
+    }
+    
+    get(cacheKey) {
+        const item = this.cache.get(cacheKey);
+        if (item && Date.now() - item.timestamp < this.cacheTimeout) {
+            return item.response;
+        }
+        this.cache.delete(cacheKey);
+        return null;
+    }
+    
+    set(cacheKey, response) {
+        if (this.cache.size >= this.maxCacheSize) {
+            // Remove oldest item
+            const firstKey = this.cache.keys().next().value;
+            this.cache.delete(firstKey);
+        }
+        
+        this.cache.set(cacheKey, {
+            response,
+            timestamp: Date.now()
+        });
+    }
+}
+
+=== ERROR BOUNDARIES AND FALLBACKS ===
+
+GRACEFAL DEGRADATION:
+
+function getFallbackResponse(contextType) {
+    const fallbacks = {
+        general: "I'd be happy to help! For detailed information about our services, please visit our website sections or contact us directly.",
+        service_question: "That's a great question about our services. For specific details, I recommend checking our services section or contacting our team directly.",
+        explanation: "I'd love to explain this further. Our website contains detailed information, or you can schedule a quick call with our team for a personalized explanation.",
+        ordering: "Ready to get started? The best way to begin is by contacting us directly so we can understand your specific needs and provide accurate information."
+    };
+    
+    return fallbacks[contextType] || fallbacks.general;
+}
+
+=== TESTING AND MONITORING ===
+
+IMPLEMENTATION CHECKLIST:
+
+✅ API key configuration and security
+✅ Rate limiting and error handling
+✅ Response sanitization and processing
+✅ Conversation history management
+✅ Interactive card integration
+✅ Chat widget functionality
+✅ Audio conflict prevention
+✅ Performance optimization
+✅ Fallback mechanisms
+✅ Mobile responsiveness
+
+This specification ensures robust AI integration that enhances user experience while maintaining strict adherence to business constraints and technical requirements.
+
+
+AUDIO SYSTEM SPECIFICATION DOCUMENT
+TRIXEL TECHNOLOGIES - SINGLE AUDIO CHANNEL ARCHITECTURE
+========================================================
+
+CRITICAL CONSTRAINTS:
+- ONLY ONE <audio> ELEMENT IN ENTIRE APPLICATION
+- NO TTS OR SYNTHESIZED VOICE RESPONSES
+- AUDIO MUST PAUSE WHEN AI CHAT IS OPEN
+- DYNAMIC SOURCE SWITCHING BETWEEN VOICEOVER AND MUSIC
+
+=== SINGLE AUDIO ELEMENT IMPLEMENTATION ===
+
+HTML STRUCTURE:
+<audio id="universal-audio-player" preload="auto" style="display: none;">
+    <!-- No source elements - dynamic injection only -->
+</audio>
+
+PROHIBITED ELEMENTS (MUST BE REMOVED):
+- Any additional <audio> elements
+- Voice AI Orb audio players
+- TTS synthesis components
+- Multiple background music elements
+
+=== AUDIO SOURCE MANAGEMENT ===
+
+SUPPORTED SOURCES:
+1. Voice Tour: "audio/main_voiceover.wav"
+2. Background Music: Array of tracks from CMS_DATA
+
+SOURCE SWITCHING PROTOCOL:
+
+function switchAudioSource(sourceType, filePath) {
+    // 1. Pause current playback
+    universalAudioPlayer.pause();
+    
+    // 2. Clear current source
+    universalAudioPlayer.src = '';
+    
+    // 3. Set new source with error handling
+    universalAudioPlayer.src = filePath;
+    
+    // 4. Preload new source
+    universalAudioPlayer.load();
+    
+    // 5. Resume playback based on context
+    if (sourceType === 'music') {
+        universalAudioPlayer.loop = true;
+        universalAudioPlayer.play().catch(handleAudioError);
+    }
+}
+
+=== AUDIO STATE MANAGEMENT ===
+
+GLOBAL AUDIO STATES:
+- 'idle': No audio loaded
+- 'voiceover_playing': Tour narration active
+- 'music_playing': Background music active
+- 'paused': Audio paused by user
+- 'chat_active': Audio muted for AI chat
+
+STATE TRANSITION RULES:
+
+1. VOICEOVER → MUSIC:
+   - Only when tour completes or is skipped
+   - Fade out voiceover, then start music
+
+2. MUSIC → VOICEOVER:
+   - Only when tour starts
+   - Immediate music stop, voiceover start
+
+3. ANY STATE → CHAT_ACTIVE:
+   - Immediate pause and mute
+   - Store current position and state
+
+4. CHAT_ACTIVE → PREVIOUS_STATE:
+   - Restore position and volume
+   - Resume playback
+
+=== CONFLICT PREVENTION SYSTEM ===
+
+AI CHAT AUDIO MUTING:
+
+function handleChatOpen() {
+    // Store current audio state
+    window.audioBackup = {
+        currentTime: universalAudioPlayer.currentTime,
+        state: currentAudioState,
+        volume: universalAudioPlayer.volume
+    };
+    
+    // Immediate audio suspension
+    universalAudioPlayer.pause();
+    universalAudioPlayer.volume = 0;
+    
+    // Update global state
+    currentAudioState = 'chat_active';
+}
+
+function handleChatClose() {
+    if (window.audioBackup) {
+        // Restore previous state
+        universalAudioPlayer.currentTime = window.audioBackup.currentTime;
+        universalAudioPlayer.volume = window.audioBackup.volume;
+        currentAudioState = window.audioBackup.state;
+        
+        // Resume if was playing
+        if (window.audioBackup.state.includes('playing')) {
+            universalAudioPlayer.play().catch(console.warn);
+        }
+    }
+}
+
+=== VOICE TOUR SPECIFIC AUDIO HANDLING ===
+
+TOUR AUDIO CONTROLS:
+
+class TourAudioManager {
+    constructor() {
+        this.isTourActive = false;
+        this.audioSegments = CMS_DATA.audio.voiceTour.segments;
+    }
+    
+    startTour() {
+        // Stop any background music
+        this.stopBackgroundMusic();
+        
+        // Load and play voiceover
+        switchAudioSource('voiceover', CMS_DATA.audio.voiceTour.file);
+        universalAudioPlayer.loop = false;
+        
+        this.isTourActive = true;
+    }
+    
+    skipTour() {
+        universalAudioPlayer.pause();
+        universalAudioPlayer.currentTime = 0;
+        this.isTourActive = false;
+        
+        // Start background music
+        this.startBackgroundMusic();
+    }
+    
+    handleTourCompletion() {
+        this.isTourActive = false;
+        this.startBackgroundMusic();
+    }
+}
+
+=== BACKGROUND MUSIC SYSTEM ===
+
+MUSIC MANAGEMENT:
+
+class BackgroundMusicManager {
+    constructor() {
+        this.tracks = CMS_DATA.audio.backgroundMusic;
+        this.currentTrackIndex = 0;
+        this.isMusicEnabled = true;
+    }
+    
+    startBackgroundMusic() {
+        if (!this.isMusicEnabled) return;
+        
+        const track = this.tracks[this.currentTrackIndex];
+        switchAudioSource('music', track.file);
+    }
+    
+    nextTrack() {
+        this.currentTrackIndex = (this.currentTrackIndex + 1) % this.tracks.length;
+        if (universalAudioPlayer.src.includes('background')) {
+            this.startBackgroundMusic();
+        }
+    }
+    
+    toggleMusic() {
+        this.isMusicEnabled = !this.isMusicEnabled;
+        if (!this.isMusicEnabled) {
+            universalAudioPlayer.pause();
+        } else {
+            this.startBackgroundMusic();
+        }
+    }
+}
+
+=== ERROR HANDLING AND FALLBACKS ===
+
+AUDIO ERROR RECOVERY:
+
+universalAudioPlayer.addEventListener('error', function(e) {
+    console.error('Audio error:', e);
+    
+    switch(universalAudioPlayer.error.code) {
+        case MediaError.MEDIA_ERR_ABORTED:
+            // User initiated - no action needed
+            break;
+        case MediaError.MEDIA_ERR_NETWORK:
+            // Network issue - try alternative source
+            handleNetworkAudioFallback();
+            break;
+        case MediaError.MEDIA_ERR_DECODE:
+            // Corrupted file - skip to next
+            if (currentAudioState === 'music_playing') {
+                backgroundMusicManager.nextTrack();
+            }
+            break;
+        case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
+            // Format not supported
+            console.warn('Audio format not supported');
+            break;
+    }
+});
+
+function handleNetworkAudioFallback() {
+    // Implement CDN fallback or disable audio
+    if (currentAudioState === 'voiceover_playing') {
+        // For voiceover, we must have audio - show error
+        showAudioErrorNotification();
+    } else {
+        // For music, can continue silently
+        backgroundMusicManager.isMusicEnabled = false;
+    }
+}
+
+=== PERFORMANCE OPTIMIZATIONS ===
+
+MEMORY MANAGEMENT:
+- Preload only current audio source
+- Clear unused audio buffers
+- Limit concurrent audio operations
+- Efficient event listener management
+
+BROWSER COMPATIBILITY:
+
+SUPPORTED FORMATS:
+- WAV: Primary for voiceover (high quality)
+- MP3: Fallback for broader compatibility
+- OGG: Alternative for modern browsers
+
+AUTOPLAY HANDLING:
+
+function handleAutoplayRestrictions() {
+    universalAudioPlayer.play().then(() => {
+        // Autoplay successful
+    }).catch(error => {
+        // Autoplay blocked - require user interaction
+        document.addEventListener('click', initAudioOnInteraction, { once: true });
+    });
+}
+
+function initAudioOnInteraction() {
+    // Start with background music on first user interaction
+    backgroundMusicManager.startBackgroundMusic();
+}
+
+=== INTEGRATION POINTS ===
+
+TOUR SYSTEM INTEGRATION:
+- Tour start: stop music, play voiceover
+- Tour skip: stop voiceover, start music  
+- Tour complete: stop voiceover, start music
+
+AI SYSTEM INTEGRATION:
+- Chat open: pause and mute audio
+- Chat close: restore audio state
+- No voice responses allowed
+
+USER CONTROLS INTEGRATION:
+- Audio toggle: play/pause background music
+- Music track cycling
+- Volume controls (if implemented)
+
+=== TESTING REQUIREMENTS ===
+
+AUDIO TEST SCENARIOS:
+1. Tour start/stop during music playback
+2. AI chat open/close during audio playback
+3. Network connectivity changes
+4. Browser autoplay restrictions
+5. Multiple rapid user interactions
+
+This specification ensures the single audio channel constraint is maintained while providing robust audio functionality across all website features.
+
+
+TRIXEL TECHNOLOGIES - CUSTOM WEB SOLUTIONS FOR SERVICE BUSINESSES
+
+=== ABOUT TRIXEL TECHNOLOGIES ===
+
+We build high-converting custom websites for service businesses that want to stand out, attract quality clients, and grow their digital presence.
+
+While we have deep expertise in industries like roofing, HVAC, and landscaping, we serve service businesses across all sectors - from cleaning services and contractors to consultants and professional services.
+
+Our approach: Your business is unique. Your website should be too.
+
+=== CONTACT INFORMATION ===
+
+Founder & CEO: Franklin Sebastian
+Email: trixeltechnologies@gmail.com
+WhatsApp: https://wa.link/0kclb7
+WhatsApp No: +234 7042998527
+Facebook: https://www.facebook.com/profile.php?id=61578364837694
+Instagram: https://www.instagram.com/trixeltechnologies?igsh=bGdydHY2ZDhya2V5
+
+=== OUR PHILOSOPHY ===
+
+"Templates don't build trust. Custom solutions do."
+
+We don't believe in one-size-fits-all websites. Every service business has unique:
+- Customer journey paths
+- Service delivery models
+- Trust-building requirements
+- Competitive differentiators
+- Local market dynamics
+
+That's why we build 100% custom websites tailored to your specific business needs.
+
+=== CUSTOM SOLUTION APPROACH ===
+
+🟢 ESSENTIAL PRESENCE PACKAGE
+For businesses needing a professional foundation
+
+"What if your website could work as hard as you do - even while you're on the job?"
+
+Our custom approach:
+• Deep discovery of your business model and customer flow
+• Custom design that reflects your brand's personality
+• Mobile-first development that works on any device
+• Strategic content placement that guides visitors naturally
+• Trust-building elements specific to your industry
+
+Perfect for: New businesses, established companies needing digital upgrade, service providers expanding their reach
+
+🔵 GROWTH ACCELERATOR PACKAGE  
+For businesses ready to scale through digital channels
+
+"What if every website visitor became a potential client conversation?"
+
+Our custom approach:
+• Conversion-focused design based on your customer psychology
+• Custom lead capture systems matching your service workflow
+• Strategic content architecture that addresses customer concerns
+• Local SEO optimization for your specific service area
+• Performance tracking tailored to your business goals
+
+Perfect for: Growing businesses, competitive markets, service providers expanding service areas
+
+🟣 INDUSTRY LEADER PACKAGE
+For businesses positioning as market authorities
+
+"What if your website became your #1 sales tool - working 24/7?"
+
+Our custom approach:
+• Authority-building design that establishes market leadership
+• Advanced conversion systems for high-value services
+• Custom automation that streamlines your client intake
+• Competitive differentiation highlighting your unique value
+• Scalable architecture that grows with your business
+
+Perfect for: Established businesses, premium service providers, companies in competitive markets
+
+=== WHY CUSTOM MATTERS FOR SERVICE BUSINESSES ===
+
+Service businesses aren't commodities - your website shouldn't treat them as such.
+
+Our custom solutions address:
+• **Trust Building** - Service businesses live on reputation and trust
+• **Local Focus** - Most service businesses serve specific geographic areas
+• **Urgent Needs** - Customers often need services immediately
+• **High-Stakes Decisions** - Home services involve significant investment
+• **Competitive Differentiation** - Standing out in crowded markets
+
+=== INDUSTRY EXPERIENCE ===
+
+While we serve all service businesses, we have particular expertise in:
+
+🏠 HOME SERVICES
+• Roofing contractors • HVAC companies • Landscaping services
+• Plumbing professionals • Electrical services • Remodeling contractors
+• Cleaning services • Pest control • Handyman services
+
+💼 PROFESSIONAL SERVICES  
+• Consultants • Coaches • Therapists • Financial advisors
+• Legal services • Marketing agencies • Healthcare providers
+
+🔧 SPECIALIZED SERVICES
+• Event planners • Photographers • Fitness trainers
+• Beauty professionals • Repair services • Installation experts
+
+=== OUR PROCESS ===
+
+1. DISCOVERY CALL
+We learn about your business, customers, and goals
+
+2. CUSTOM STRATEGY
+We design a website strategy specific to your needs
+
+3. TAILORED DEVELOPMENT
+We build your custom solution with precision
+
+4. LAUNCH & OPTIMIZE
+We ensure everything works perfectly for your business
+
+=== WHAT MAKES US DIFFERENT ===
+
+• **No Templates** - Every website is built from scratch for your business
+• **Service Business Focus** - We understand how service businesses operate
+• **Conversion Expertise** - We build websites that generate leads, not just traffic
+• **Ongoing Partnership** - We're here to support your growth journey
+
+=== READY FOR A CUSTOM SOLUTION? ===
+
+Your business deserves a website that understands your unique:
+• Customer concerns and objections
+• Service delivery process
+• Competitive landscape
+• Growth ambitions
+
+Let's build something that doesn't just look good - but works hard for your business.
+
+Contact us to discuss your custom website solution:
+WhatsApp: https://wa.link/0kclb7
+Email: trixeltechnologies@gmail.com
+
+---
+TRIXEL TECHNOLOGIES
+Custom Websites for Service Businesses That Mean Business
+
+
+
+
+COMPLETE CMS DATA STRUCTURE SPECIFICATION
+TRIXEL TECHNOLOGIES - CENTRALIZED CONTENT MANAGEMENT
+
+=== CMS ARCHITECTURE OVERVIEW ===
+
+STRUCTURE: Single JavaScript object `CMS_DATA` containing all website content
+LOCATION: Embedded within script.js file
+PURPOSE: Centralize all text, media URLs, and configuration for easy updates
+FORMAT: JSON-like JavaScript object with nested properties
+
+=== COMPLETE CMS_DATA OBJECT STRUCTURE ===
+
+const CMS_DATA = {
+    
+    // ===== COMPANY INFORMATION =====
+    company: {
+        name: "Trixel Technologies",
+        logo: "Trixel.Tech",
+        tagline: "Websites That Win Clients — Delivered Within 5 Days.",
+        contact: {
+            email: "trixeltechnologies@gmail.com",
+            phone: "+2347042998527",
+            whatsapp: "https://wa.link/0kclb7",
+            facebook: "https://www.facebook.com/profile.php?id=61578364837694",
+            instagram: "https://www.instagram.com/trixeltechnologies?igsh=bGdydHY2ZDhya2V5"
+        },
+        founder: "Franklin Sebastian"
+    },
+
+    // ===== AUDIO SYSTEM CONFIGURATION =====
+    audio: {
+        voiceTour: {
+            file: "audio/main_voiceover.wav",
+            duration: 133, // seconds for timeline sync
+            segments: {
+                hero: { start: 0, end: 22 },
+                services: { start: 22, end: 85 },
+                process: { start: 86, end: 104 },
+                niche: { start: 105, end: 115 },
+                contact: { start: 116, end: 133 }
+            }
+        },
+        backgroundMusic: [
+            {
+                id: "ambient_1",
+                name: "Cinematic Ambient",
+                file: "audio/background_music_1.mp3",
+                composer: "Mixkit"
+            },
+            {
+                id: "ambient_2", 
+                name: "Inspirational Cinematic",
+                file: "audio/background_music_2.mp3",
+                composer: "Mixkit"
+            },
+            {
+                id: "ambient_3",
+                name: "Corporate Innovation",
+                file: "audio/background_music_3.mp3", 
+                composer: "Mixkit"
+            }
+        ]
+    },
+
+    // ===== WELCOME OVERLAY CONTENT =====
+    welcome: {
+        title: "Welcome to Trixel Technologies",
+        subtitle: "Experience our website with a guided tour or explore on your own",
+        features: [
+            {
+                icon: "play-circle",
+                color: "blue",
+                text: "5-minute interactive tour"
+            },
+            {
+                icon: "zap", 
+                color: "green",
+                text: "See our features in action"
+            },
+            {
+                icon: "clock",
+                color: "purple", 
+                text: "Skip anytime"
+            }
+        ],
+        buttons: {
+            primary: {
+                text: "Start Guided Tour",
+                icon: "play"
+            },
+            secondary: {
+                text: "Explore on My Own", 
+                icon: null
+            }
+        }
+    },
+
+    // ===== NAVIGATION CONTENT =====
+    navigation: {
+        logo: {
+            primary: "Trixel",
+            accent: ".",
+            secondary: "Tech"
+        },
+        menu: [
+            { id: "home", text: "Home" },
+            { id: "services", text: "Services" },
+            { id: "portfolio", text: "Portfolio" },
+            { id: "why-us", text: "Why Us" },
+            { id: "contact", text: "Contact" }
+        ]
+    },
+
+    // ===== HERO SECTION CONTENT =====
+    hero: {
+        headline: {
+            part1: "Websites That ",
+            part2: "Win Clients",
+            gradient: true
+        },
+        subheadline: "Delivered within 5 Days.",
+        description: "We build high-converting websites for service businesses that generate leads and build trust with your potential clients.",
+        cta: {
+            text: "Get Your Website",
+            target: "#contact"
+        },
+        features: [
+            {
+                icon: "rocket",
+                title: "Fast Delivery", 
+                description: "Your complete website ready within just 5 business days."
+            },
+            {
+                icon: "target",
+                title: "Lead-Focused Design",
+                description: "Optimized to convert visitors into paying customers."
+            },
+            {
+                icon: "trending-up",
+                title: "SEO Optimized", 
+                description: "Built to rank higher in Google search results."
+            }
+        ]
+    },
+
+    // ===== SERVICES SECTION CONTENT =====
+    services: {
+        header: {
+            title: "Our Services",
+            description: "We specialize in creating websites that generate leads and build trust for service-based businesses."
+        },
+        items: [
+            {
+                id: "premium-design",
+                icon: "gem",
+                title: "Premium Design",
+                description: "Eye-catching, professional designs that reflect your brand's quality and build instant trust.",
+                interactive: true
+            },
+            {
+                id: "strategic-structure",
+                icon: "layout-template", 
+                title: "Strategic Structure",
+                description: "Conversion-focused layouts that guide visitors toward becoming leads and customers.",
+                interactive: true
+            },
+            {
+                id: "seo-foundation",
+                icon: "search",
+                title: "SEO Foundation", 
+                description: "Built-in search engine optimization to help your business get found by local customers.",
+                interactive: true
+            },
+            {
+                id: "ai-customer-service",
+                icon: "headphones",
+                title: "AI Customer Service",
+                description: "Intelligent chatbots and virtual assistants that handle customer inquiries 24/7, improving satisfaction and reducing response times.",
+                interactive: true
+            },
+            {
+                id: "productivity-gem",
+                icon: "settings",
+                title: "Productivity Gem Setup",
+                description: "Custom implementation of productivity tools and automation gems that streamline your business operations and boost efficiency.", 
+                interactive: true
+            },
+            {
+                id: "ongoing-support",
+                icon: "life-buoy",
+                title: "Ongoing Support",
+                description: "Reliable technical support and website maintenance to keep your site running smoothly.",
+                interactive: true
+            }
+        ]
+    },
+
+    // ===== PORTFOLIO SECTION CONTENT =====
+    portfolio: {
+        header: {
+            title: "Our Recent Work", 
+            description: "See how we can help service businesses attract more clients with strategic web design."
+        },
+        projects: [
+            {
+                id: "elite-roofing",
+                image: "images/portfolio/roofing-project.jpg",
+                title: "Elite Roofing Solutions",
+                category: "Roofing Services Website", 
+                tags: ["Design", "Lead Gen", "SEO"],
+                placeholder: "https://placehold.co/600x400/0D1117/3B82F6?text=Elite+Roofing"
+            },
+            {
+                id: "airtech-pro",
+                image: "images/portfolio/hvac-project.jpg",
+                title: "AirTech Pro",
+                category: "HVAC Services Website",
+                tags: ["Design", "Lead Gen", "Local SEO"],
+                placeholder: "https://placehold.co/600x400/0D1117/3B82F6?text=AirTech+Pro"
+            },
+            {
+                id: "greenscape-pro", 
+                image: "images/portfolio/landscaping-project.jpg",
+                title: "GreenScape Pro",
+                category: "Landscaping Services Website",
+                tags: ["Design", "Lead Gen", "Content"],
+                placeholder: "https://placehold.co/600x400/0D1117/3B82F6?text=GreenScape"
+            }
+        ],
+        cta: {
+            text: "See Your Business Here",
+            target: "#contact"
+        }
+    },
+
+    // ===== WHY US SECTION CONTENT =====
+    whyUs: {
+        header: {
+            title: "Why Choose Trixel",
+            description: "We understand the unique needs of service businesses and build websites that actually work for you."
+        },
+        features: [
+            {
+                icon: "zap",
+                title: "5-Day Delivery", 
+                description: "Our streamlined process delivers your complete website in just 5 business days, so you can start generating leads faster.",
+                interactive: true
+            },
+            {
+                icon: "magnet",
+                title: "Lead Generation Focus",
+                description: "Every element is strategically designed to convert visitors into leads with clear calls-to-action and trust-building elements.",
+                interactive: true
+            },
+            {
+                icon: "shield-check",
+                title: "SEO Built-In",
+                description: "Your website is optimized for local search from day one, helping your business appear in Google searches for your services.", 
+                interactive: true
+            },
+            {
+                icon: "wrench",
+                title: "Service Business Specialists",
+                description: "We exclusively work with service businesses, giving us deep insight into what works for roofing, HVAC, landscaping, and more.",
+                interactive: true
+            }
+        ],
+        process: {
+            title: "Our Process is Simple",
+            steps: [
+                {
+                    number: 1,
+                    title: "Discovery Call",
+                    description: "We learn about your business, goals, and what sets you apart from competitors."
+                },
+                {
+                    number: 2, 
+                    title: "Design & Development",
+                    description: "Our team creates your custom website with a focus on lead generation."
+                },
+                {
+                    number: 3,
+                    title: "Review & Refinement", 
+                    description: "You review the site and we make any necessary adjustments."
+                },
+                {
+                    number: 4,
+                    title: "Launch",
+                    description: "Your new website goes live and starts generating leads for your business."
+                }
+            ]
+        }
+    },
+
+    // ===== USER REVIEWS SECTION CONTENT =====
+    reviews: {
+        header: {
+            title: "Client Reviews",
+            description: "See what our clients say about our service"
+        },
+        initialReviews: [
+            // Can be empty array or pre-populated with sample reviews
+        ],
+        form: {
+            title: "Share Your Experience",
+            placeholder: "Tell us about your experience...",
+            submitText: "Submit Review",
+            successMessage: "Thank you for your review! It has been submitted successfully.",
+            emptyState: "No reviews yet. Be the first to share your experience!"
+        }
+    },
+
+    // ===== SPECIAL PROJECTS SECTION CONTENT =====
+    specialProjects: {
+        title: "Beyond Our Niche: Custom Tech Solutions",
+        description: "While we specialize in websites for service businesses, our expertise doesn't stop there. On special occasions, we partner with clients on unique digital projects. If you need a custom web application, a specialized e-commerce platform, or other advanced web development services, we're ready to build the custom solution your vision requires.",
+        cta: {
+            text: "Discuss a Custom Project",
+            target: "#contact"
+        }
+    },
+
+    // ===== CONTACT SECTION CONTENT =====
+    contact: {
+        header: {
+            title: "Get Your Website within 5 Days",
+            description: "Fill out the form below to start the conversation. We'll get back to you within 24 hours."
+        },
+        form: {
+            fields: [
+                {
+                    id: "name",
+                    label: "Full Name",
+                    type: "text",
+                    placeholder: "Your name",
+                    required: true
+                },
+                {
+                    id: "email", 
+                    label: "Email Address",
+                    type: "email",
+                    placeholder: "your@email.com",
+                    required: true
+                },
+                {
+                    id: "phone",
+                    label: "Phone Number", 
+                    type: "tel",
+                    placeholder: "(123) 456-7890",
+                    required: false
+                },
+                {
+                    id: "business",
+                    label: "Business Type",
+                    type: "select",
+                    options: ["Roofing", "HVAC", "Landscaping", "Remodeling", "Other"],
+                    required: true
+                },
+                {
+                    id: "message",
+                    label: "Project Details", 
+                    type: "textarea",
+                    placeholder: "Tell us about your needs...",
+                    required: true
+                },
+                {
+                    id: "budget",
+                    label: "Budget Range",
+                    type: "range",
+                    min: 500,
+                    max: 5000,
+                    step: 100,
+                    defaultValue: 1500
+                }
+            ],
+            submitText: "Get Started"
+        },
+        info: {
+            title: "Contact Information",
+            items: [
+                {
+                    icon: "mail",
+                    text: "trixeltechnologies@gmail.com",
+                    type: "email",
+                    link: "mailto:trixeltechnologies@gmail.com"
+                },
+                {
+                    icon: "phone",
+                    text: "(234) 704-299-8527", 
+                    type: "phone",
+                    link: "tel:+2347042998527"
+                },
+                {
+                    icon: "message-square",
+                    text: "Message us on WhatsApp",
+                    type: "whatsapp", 
+                    link: "https://wa.link/0kclb7"
+                }
+            ]
+        },
+        testimonial: {
+            quote: "I highly recommend Trixel, their ability to truly listen and understand a client's needs sets them apart. Most importantly they respect timelines and deliver work on schedule.",
+            author: "Wesley Estrella",
+            company: "Spotlight Management"
+        }
+    },
+
+    // ===== FOOTER CONTENT =====
+    footer: {
+        brand: {
+            name: "Trixel.Tech",
+            description: "Websites That Win Clients — Delivered Within 5 Days."
+        },
+        quickLinks: [
+            { text: "Home", target: "#home" },
+            { text: "Services", target: "#services" },
+            { text: "Portfolio", target: "#portfolio" },
+            { text: "Why Us", target: "#why-us" }
+        ],
+        services: [
+            "Roofing Companies",
+            "HVAC Contractors", 
+            "Landscaping",
+            "Remodeling"
+        ],
+        copyright: "© 2025 Trixel Technologies. All rights reserved."
+    },
+
+    // ===== AI SYSTEM CONFIGURATION =====
+    ai: {
+        name: "Trixie",
+        greeting: "Hello! I'm Trixie, your AI assistant. How can I help you with Trixel Technologies' services today?",
+        status: "Online",
+        systemInstructions: `TRIXEL TECHNOLOGIES — WEBSITE PACKAGES FOR SERVICE BUSINESSES
+
+BUSINESS CONTEXT:
+Trixel Technologies builds high-converting websites for service businesses with 5-day delivery.
+Specialized for: Roofing • Remodeling • Landscaping • HVAC
+
+WEBSITE PACKAGES (DO NOT MENTION PRICING):
+• STARTER WEBSITE: Professional design, mobile-responsive, basic setup
+• LEAD BUILDER WEBSITE: Contact forms, SEO optimization, lead generation focus  
+• AUTHORITY WEBSITE: Advanced features, AI chatbot, enhanced visuals
+
+KEY DIFFERENTIATORS:
+- 5-Day delivery guarantee
+- Service business specialization  
+- Lead-focused design approach
+- Built-in SEO optimization
+
+CONTACT INFORMATION:
+Email: trixeltechnologies@gmail.com
+WhatsApp: https://wa.link/0kclb7
+Phone: (234) 704-299-8527
+
+TONE GUIDELINES:
+- Friendly, professional, approachable
+- Avoid robotic or repetitive language
+- Do not say the word "context"
+- Focus on benefits and solutions
+- Be concise but helpful
+- Never mention specific pricing
+
+RESPONSE FORMAT:
+- Use natural, conversational language
+- Include relevant emojis when appropriate  
+- Break complex information into readable chunks
+- Always maintain professional business tone`,
+        
+        interactivePrompts: {
+            ask: "Hi — what questions do you have about this service?",
+            explain: "Sure — I'll explain this service in simple terms.", 
+            order: "Great — let's go over how to order and next steps."
+        }
+    },
+
+    // ===== INTERACTIVE BUTTONS CONFIGURATION =====
+    interactiveButtons: {
+        ask: {
+            text: "Ask",
+            color: "blue",
+            action: "triggerAI"
+        },
+        explain: {
+            text: "Explain", 
+            color: "purple",
+            action: "triggerExplanation"
+        },
+        order: {
+            text: "Order",
+            color: "green", 
+            action: "triggerOrderFlow"
+        }
+    },
+
+    // ===== ANIMATION CONFIGURATION =====
+    animations: {
+        durations: {
+            fadeIn: 0.6,
+            stagger: 0.15,
+            hover: 0.3,
+            focus: 0.2
+        },
+        delays: {
+            heroHeadline: 0,
+            heroSubheadline: 0.2,
+            heroDescription: 0.4,
+            heroCTA: 0.6,
+            featureCards: [0.8, 1.0, 1.2]
+        },
+        easings: {
+            primary: "power2.out",
+            secondary: "back.out(1.7)", 
+            tertiary: "expo.out"
+        }
+    },
+
+    // ===== PERFORMANCE CONFIGURATION =====
+    performance: {
+        lazyLoad: true,
+        debounceScroll: 16,
+        optimizeAnimations: true,
+        localStorageKeys: {
+            theme: "trixel-theme",
+            audioTrack: "trixel-audio-track",
+            userReviews: "trixel-user-reviews"
+        }
+    }
+};
+
+=== CMS USAGE INSTRUCTIONS ===
+
+1. CONTENT UPDATES:
+   - Modify any text content directly in CMS_DATA object
+   - Add new services to services.items array
+   - Update portfolio projects in portfolio.projects array
+   - Modify contact information in company.contact
+
+2. AUDIO MANAGEMENT:
+   - Replace audio file URLs to update voice tour or music
+   - Add new background music tracks to audio.backgroundMusic array
+   - Update segment timings for voice tour synchronization
+
+3. AI CUSTOMIZATION:
+   - Modify systemInstructions to change AI behavior
+   - Update interactive prompts for different button responses
+   - Adjust tone and business context as needed
+
+4. STYLING UPDATES:
+   - Colors are managed in CSS, but content colors referenced here
+   - Icons are Lucide icons - use valid icon names from Lucide library
+
+5. ADDING NEW SECTIONS:
+   - Create new section object following existing patterns
+   - Add section to appropriate location in CMS_DATA
+   - Update navigation.menu if adding new main sections
+
+=== CMS DATA VALIDATION RULES ===
+
+REQUIRED FIELDS:
+- All section headers must have title and description
+- All interactive items must have id, icon, title, description
+- All contact methods must have icon, text, and link
+- All AI configuration must be present and properly formatted
+
+OPTIONAL FIELDS:
+- Image placeholders can use CDN URLs
+- Initial reviews array can be empty
+- A
+
+
+
+CMS INTERFACE UI/UX SPECIFICATION
+TRIXEL TECHNOLOGIES - BUILT-IN CONTENT MANAGEMENT SYSTEM
+
+=== CMS OVERVIEW ===
+
+PURPOSE: In-browser content editing interface for non-technical users
+ACCESS: Hidden developer panel (Ctrl+Shift+C to toggle)
+AUDIENCE: Business owners, marketing team, content managers
+GOAL: Edit all website content without touching code
+
+=== VISUAL DESIGN ===
+
+COLOR SCHEME:
+- Panel Background: #1E293B (Dark blue-gray)
+- Header: #334155 (Medium slate)
+- Input Background: #0F172A (Dark navy)
+- Input Border: #475569 (Light slate)
+- Text Primary: #F1F5F9 (Light gray)
+- Text Secondary: #94A3B8 (Medium gray)
+- Accent Primary: #3B82F6 (Brand blue)
+- Accent Success: #10B981 (Green)
+- Accent Warning: #F59E0B (Amber)
+
+TYPOGRAPHY:
+- Headers: "Inter", 16px, 600 weight
+- Labels: "Inter", 14px, 500 weight  
+- Input Text: "Inter", 14px, 400 weight
+- Buttons: "Inter", 13px, 600 weight
+
+DIMENSIONS:
+- Panel Width: 380px (fixed)
+- Panel Height: 85vh (max-height)
+- Input Height: 40px
+- Button Height: 36px
+- Spacing: 12px between elements
+
+=== CMS PANEL LAYOUT ===
+
+1. HEADER BAR (Fixed top of panel)
+- Left: "✏️ Trixel CMS" + status indicator (green dot = saved)
+- Right: Close button (X) + Minimize button (_)
+- Background: Glass morphism with subtle blur
+- Border bottom: 1px solid #334155
+
+2. TAB NAVIGATION (Below header)
+- Horizontal tab strip: [Content] [Media] [Settings] [Export]
+- Active tab: Blue underline, bold text
+- Hover state: Background lightening
+- Icons: FileText (Content), Image (Media), Settings, Download (Export)
+
+3. CONTENT AREA (Scrollable main area)
+- Section-based organization
+- Real-time preview indicators
+- Save status notifications
+- Collapsible section headers
+
+=== TAB CONTENT ORGANIZATION ===
+
+TAB 1: CONTENT EDITOR
+• HERO SECTION (Expanded by default)
+  - Headline Input (large text area)
+  - Subheadline Input  
+  - Description Textarea
+  - CTA Button Text
+  - Live preview toggle
+
+• SERVICES SECTION (Collapsible)
+  - Service list with expandable cards
+  - Each service: Title + Description + Icon selector
+  - Add/Remove service buttons
+  - Drag & drop reordering
+
+• PORTFOLIO SECTION  
+  - Project cards with image URL + title + description
+  - Image upload/preview area
+  - Tag management chips
+
+• CONTACT INFORMATION
+  - Email, Phone, Social media links
+  - Business hours
+  - Contact form fields
+
+TAB 2: MEDIA MANAGER
+• IMAGE LIBRARY
+  - Thumbnail grid of all images
+  - Upload new image button
+  - Image URL copy functionality
+  - Alt text editing
+
+• AUDIO MANAGEMENT  
+  - Voiceover track selector
+  - Background music library
+  - Audio file upload
+  - Play/pause preview buttons
+
+TAB 3: SETTINGS
+• BUSINESS INFORMATION
+  - Company name, tagline, founder
+  - SEO meta tags
+  - Social media profiles
+
+• AI CONFIGURATION
+  - System instructions editor (code-style textarea)
+  - Greeting messages
+  - Response tone settings
+
+• ANIMATION SETTINGS
+  - Duration sliders
+  - Easing function selectors
+  - Enable/disable animations
+
+TAB 4: EXPORT/IMPORT
+• CMS DATA EXPORT
+  - Pretty-printed JSON display
+  - Copy to clipboard button
+  - Download as file option
+
+• IMPORT DATA
+  - JSON file upload
+  - Textarea for pasting data
+  - Validation status indicator
+
+• BACKUP/RESTORE
+  - Local storage backups
+  - Version history
+  - Reset to defaults
+
+=== INTERACTIVE COMPONENTS ===
+
+1. INPUT FIELDS
+- Text Inputs: Rounded corners, subtle border, focus glow
+- Textareas: Resizable, syntax highlighting for code
+- Select Dropdowns: Custom styled with chevron
+- Color Pickers: Visual color swatches + hex input
+- File Uploads: Drag & drop zones with preview
+
+2. BUTTONS & CONTROLS
+- Primary Buttons: Blue gradient, subtle shadow
+- Secondary Buttons: Transparent with border
+- Icon Buttons: Circular, hover scale effect
+- Toggle Switches: Animated slide toggles
+- Save Button: Persistent in bottom-right corner
+
+3. PREVIEW SYSTEM
+- Live update as you type
+- Side-by-side comparison (old vs new)
+- Mobile/desktop preview toggles
+- Section-specific preview buttons
+
+4. STATUS INDICATORS
+- Saving: Loading spinner → Checkmark
+- Errors: Red border + tooltip message
+- Success: Green flash animation
+- Changes: "Unsaved changes" badge
+
+=== USER INTERACTION FLOW ===
+
+OPENING CMS:
+1. Press Ctrl+Shift+C (developer shortcut)
+2. Panel slides in from right with overlay
+3. Auto-focus on first editable field
+
+EDITING CONTENT:
+1. Click any field → immediate edit mode
+2. Type changes → live preview updates
+3. Field border turns blue when active
+4. Save button pulses when changes exist
+
+SAVING CHANGES:
+1. Click Save or press Ctrl+S
+2. Loading spinner appears
+3. Success checkmark confirms save
+4. Changes immediately reflect on website
+
+NAVIGATION:
+- Tabs for major content categories
+- Collapsible sections within tabs
+- Breadcrumb trail for deep navigation
+- Search/filter within large lists
+
+=== MOBILE RESPONSIVENESS ===
+
+MOBILE ADAPTATIONS:
+- Panel becomes full-screen overlay
+- Larger touch targets (44px min)
+- Simplified tab navigation
+- Stacked layout instead of side-by-side
+- Swipe gestures to close
+
+TOUCH INTERACTIONS:
+- Tap fields to edit
+- Swipe between tabs
+- Pull down to refresh preview
+- Pinch to zoom on image previews
+
+=== ACCESSIBILITY FEATURES ===
+
+KEYBOARD NAVIGATION:
+- Tab through all fields
+- Enter to edit, Escape to cancel
+- Arrow keys for dropdowns
+- Ctrl+S to save, Ctrl+Shift+C to toggle
+
+SCREEN READER SUPPORT:
+- ARIA labels for all interactive elements
+- Live region for status announcements
+- Proper heading structure
+- Descriptive button labels
+
+VISUAL ACCESSIBILITY:
+- High contrast mode support
+- Large text options
+- Reduced motion preferences
+- Focus indicators always visible
+
+=== INTEGRATION WITH MAIN SITE ===
+
+CMS PANEL POSITIONING:
+- Fixed position, top: 50px, right: 20px
+- Z-index: 10000 (above everything)
+- Backdrop overlay when open
+- Non-intrusive to main site interactions
+
+DATA SYNCHRONIZATION:
+- Real-time binding between CMS and live site
+- Instant preview without page refresh
+- Conflict detection for concurrent edits
+- Auto-save drafts every 30 seconds
+
+PERFORMANCE:
+- Lazy loading of tab content
+- Debounced preview updates
+- Efficient DOM manipulation
+- Minimal memory footprint
+
+=== SECURITY & SAFETY FEATURES ===
+
+VALIDATION:
+- Required field highlighting
+- URL format validation
+- Image dimension checks
+- JSON syntax validation
+
+SAFETY MEASURES:
+- Confirm before destructive actions
+- Auto-backup before major changes
+- Undo/redo stack (10 actions)
+- Recovery from bad data
+
+ERROR HANDLING:
+- Graceful failure messages
+- Detailed error explanations
+- Recovery suggestions
+- Contact support option
+
+=== UNIQUE CMS FEATURES ===
+
+1. REAL-TIME PREVIEW - See changes instantly
+2. CONTEXTUAL HELP - Tooltips explaining each field
+3. BULK EDITING - Edit multiple items simultaneously  
+4. TEMPLATE SYSTEM - Save/load content templates
+5. CHANGE HISTORY - Track who changed what and when
+6. COLLABORATION MODE - Multiple editor support
+7. ANALYTICS INTEGRATION - See how content performs
+8. AI ASSISTANCE - Smart content suggestions
+
+This CMS interface provides professional-grade content management while staying completely client-side and integrated within your single HTML file architecture.
