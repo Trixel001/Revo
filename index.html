@@ -16,12 +16,13 @@
 
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-<!-- GSAP Core -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-<!-- GSAP ScrollTrigger -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-<!-- GSAP ScrollToPlugin -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
+
+    <!-- GSAP Core & Plugins -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/TextPlugin.min.js"></script>
+
     <style type="text/tailwindcss">
         :root {
             --bg-primary: #0D1117;
@@ -30,7 +31,6 @@
             --text-primary: #F0F6FC;
             --text-secondary: #8B949E;
         }
-
         .light-theme {
             --bg-primary: #F0F6FC;
             --bg-card: #FFFFFF;
@@ -38,12 +38,14 @@
             --text-primary: #0D1117;
             --text-secondary: #57606A;
         }
-
         body {
             background-color: var(--bg-primary);
             color: var(--text-primary);
             font-family: 'Inter', sans-serif;
             transition: background-color 0.3s, color 0.3s;
+        }
+        body.tour-active {
+            overflow: hidden;
         }
         h1, h2, h3, h4, h5, h6 {
             font-family: 'Lexend', sans-serif;
@@ -81,7 +83,12 @@
         .card {
             @apply bg-[var(--bg-card)] border border-[var(--border-color)] rounded-xl p-6 transition-all duration-300 flex flex-col;
         }
-        .card:hover {
+        .card.tour-highlight {
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.7);
+            border-color: #3B82F6;
+            transform: scale(1.03);
+        }
+        .card:hover:not(.tour-highlight) {
             transform: translateY(-5px) scale(1.02);
             box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
             border-color: #3B82F6;
@@ -94,12 +101,6 @@
         .form-input {
             @apply w-full bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 text-[var(--text-primary)];
         }
-        .light-theme .form-input {
-            color: var(--text-primary);
-        }
-        .light-theme select.form-input {
-            color: var(--text-primary);
-        }
         #back-to-top {
             opacity: 0;
             visibility: hidden;
@@ -109,42 +110,53 @@
             opacity: 1;
             visibility: visible;
         }
-    #mobile-menu {
-    @apply fixed top-0 right-0 h-screen w-64 bg-[var(--bg-card)] z-50;
-    transition: transform 0.3s ease-in-out;
-    transform: translateX(100%);
-}
-#mobile-menu.active {
-    transform: translateX(0);
-}
-#mobile-menu-backdrop {
-    @apply fixed inset-0 bg-black/50 z-40;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
-}
-#mobile-menu-backdrop.active {
-    opacity: 1;
-    visibility: visible;
-}
+        #mobile-menu {
+            @apply fixed top-0 right-0 h-screen w-64 bg-[var(--bg-card)] z-50;
+            transition: transform 0.3s ease-in-out;
+            transform: translateX(100%);
+        }
+        #mobile-menu.active {
+            transform: translateX(0);
+        }
+        #mobile-menu-backdrop {
+            @apply fixed inset-0 bg-black/50 z-40;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        }
+        #mobile-menu-backdrop.active {
+            opacity: 1;
+            visibility: visible;
+        }
         .interactive-btn {
             @apply px-3 py-1 rounded-md text-sm transition-all duration-200;
         }
         .interactive-btn:hover {
             transform: scale(1.05);
         }
-        
-        /* Mobile Hero Spacing Fix */
-        @media (max-width: 640px) {
-            #home {
-                padding-top: 5rem !important;
-            }
-            h1.hero-headline {
-                margin-top: 1rem;
-                margin-bottom: 1.5rem;
+        .typing-indicator span {
+            height: 8px;
+            width: 8px;
+            background-color: #8B949E;
+            display: inline-block;
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1.0); }
+        }
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
             }
         }
-       
     </style>
 </head>
 <body class="antialiased">
@@ -152,11 +164,11 @@
     <!-- Welcome Overlay -->
     <div id="welcome-overlay" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90 backdrop-blur-sm transition-opacity duration-500">
         <div class="glass-morphism rounded-2xl p-8 max-w-md w-full text-center transform scale-95 opacity-0" id="welcome-card">
-            <h2 class="text-3xl font-bold mb-4">Welcome to Trixel.Tech</h2>
-            <p class="text-[var(--text-secondary)] mb-8">We can give you a quick tour of our services, or you can explore on your own.</p>
+            <h2 class="text-3xl font-bold mb-4" data-cms="welcome.title"></h2>
+            <p class="text-[var(--text-secondary)] mb-8" data-cms="welcome.subtitle"></p>
             <div class="flex justify-center gap-4">
-                <button id="start-tour-btn" class="btn-primary">Start Guided Tour</button>
-                <button id="explore-btn" class="btn-secondary">Explore on My Own</button>
+                <button id="start-tour-btn" class="btn-primary" data-cms="welcome.buttons.primary.text"></button>
+                <button id="explore-btn" class="btn-secondary" data-cms="welcome.buttons.secondary.text"></button>
             </div>
         </div>
     </div>
@@ -164,8 +176,10 @@
     <!-- Tour Progress Indicator -->
     <div id="tour-progress" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 p-2 rounded-full glass-morphism hidden">
         <div class="flex items-center gap-4">
+            <div id="tour-progress-bar" class="w-32 h-2 bg-gray-700 rounded-full overflow-hidden">
+                <div id="tour-progress-bar-inner" class="h-full bg-blue-500 w-0"></div>
+            </div>
             <span id="tour-progress-text" class="text-sm text-[var(--text-primary)]"></span>
-            <button id="tour-next-btn" class="btn-primary py-2 px-4 text-sm">Next</button>
             <button id="tour-exit-btn" class="btn-secondary py-2 px-4 text-sm">Exit Tour</button>
         </div>
     </div>
@@ -173,67 +187,38 @@
     <!-- Navigation Bar -->
     <header class="fixed top-0 left-0 right-0 z-40 glass-morphism h-16">
         <nav class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-full">
-            <a href="#" class="text-2xl font-bold">Trixel<span class="text-blue-500">.</span>Tech</a>
-            <div class="hidden md:flex items-center space-x-8">
-                <a href="#home" class="hover:text-blue-500 transition-colors">Home</a>
-                <a href="#services" class="hover:text-blue-500 transition-colors">Services</a>
-                <a href="#portfolio" class="hover:text-blue-500 transition-colors">Portfolio</a>
-                <a href="#why-us" class="hover:text-blue-500 transition-colors">Why Us</a>
-                <a href="#contact" class="hover:text-blue-500 transition-colors">Contact</a>
-            </div>
+            <a href="#" class="text-2xl font-bold" data-cms="navigation.logo"></a>
+            <div class="hidden md:flex items-center space-x-8" id="desktop-nav-links"></div>
             <div class="flex items-center space-x-4">
-                <a href="https://wa.me/2347042998527" target="_blank" rel="noopener noreferrer" class="p-2 rounded-full hover:bg-gray-700/50" aria-label="Chat on WhatsApp">
-        <i data-lucide="message-square"></i>
-    </a>
+                <a href="#" target="_blank" rel="noopener noreferrer" class="p-2 rounded-full hover:bg-gray-700/50" aria-label="Chat on WhatsApp" data-cms-href="company.contact.whatsapp">
+                    <i data-lucide="message-square"></i>
+                </a>
                 <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-700/50">
-                    <i data-lucide="sun" class="hidden"></i>
-                    <i data-lucide="moon"></i>
+                    <i data-lucide="sun" class="hidden"></i><i data-lucide="moon"></i>
                 </button>
                 <button id="mobile-menu-toggle" class="md:hidden p-2 rounded-full hover:bg-gray-700/50"><i data-lucide="menu"></i></button>
             </div>
         </nav>
     </header>
     
- 
     <!-- Mobile Menu -->
-<div id="mobile-menu" class="p-8 md:hidden">
-    <div class="flex flex-col space-y-6 text-left">
-        <a href="#home" class="hover:text-blue-500 transition-colors py-2 text-lg">Home</a>
-        <a href="#services" class="hover:text-blue-500 transition-colors py-2 text-lg">Services</a>
-        <a href="#portfolio" class="hover:text-blue-500 transition-colors py-2 text-lg">Portfolio</a>
-        <a href="#why-us" class="hover:text-blue-500 transition-colors py-2 text-lg">Why Us</a>
-        <a href="#contact" class="hover:text-blue-500 transition-colors py-2 text-lg">Contact</a>
+    <div id="mobile-menu" class="p-8 md:hidden">
+        <div class="flex flex-col space-y-6 text-left" id="mobile-nav-links"></div>
     </div>
-</div>
-<div id="mobile-menu-backdrop" class="md:hidden"></div>
+    <div id="mobile-menu-backdrop" class="md:hidden"></div>
 
     <main>
         <!-- Hero Section -->
         <section id="home" class="relative min-h-screen flex items-center justify-center text-center overflow-hidden pt-16">
             <div class="absolute inset-0 hero-grid-pattern"></div>
             <div class="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
-                <h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter hero-headline">Websites That <span class="gradient-text">Win Clients</span></h1>
-                <p class="text-xl md:text-2xl font-bold mb-6 hero-subheadline">Delivered within 5 Days.</p>
-                <p class="max-w-3xl mx-auto text-lg text-[var(--text-secondary)] mb-10">We build high-converting websites for service businesses that generate leads and build trust with your potential clients.</p>
-                <a href="#contact" class="btn-primary text-lg">Get Your Website</a>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-20 text-left">
-                    <div class="card">
-                        <i data-lucide="rocket" class="w-8 h-8 text-blue-500 mb-4"></i>
-                        <h3 class="text-xl font-semibold mb-2">Fast Delivery</h3>
-                        <p class="text-[var(--text-secondary)]">Your complete website ready within just 5 business days.</p>
-                    </div>
-                    <div class="card">
-                        <i data-lucide="target" class="w-8 h-8 text-blue-500 mb-4"></i>
-                        <h3 class="text-xl font-semibold mb-2">Lead-Focused Design</h3>
-                        <p class="text-[var(--text-secondary)]">Optimized to convert visitors into paying customers.</p>
-                    </div>
-                    <div class="card">
-                        <i data-lucide="trending-up" class="w-8 h-8 text-blue-500 mb-4"></i>
-                        <h3 class="text-xl font-semibold mb-2">SEO Optimized</h3>
-                        <p class="text-[var(--text-secondary)]">Built to rank higher in Google search results.</p>
-                    </div>
-                </div>
+                <h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter hero-headline">
+                    <span data-cms="hero.headline.part1"></span><span class="gradient-text" data-cms="hero.headline.part2"></span>
+                </h1>
+                <p class="text-xl md:text-2xl font-bold mb-6 hero-subheadline" data-cms="hero.subheadline"></p>
+                <p class="max-w-3xl mx-auto text-lg text-[var(--text-secondary)] mb-10" data-cms="hero.description"></p>
+                <a href="#contact" class="btn-primary text-lg" data-cms="hero.cta.text"></a>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-20 text-left" id="hero-features"></div>
             </div>
         </section>
 
@@ -241,71 +226,10 @@
         <section id="services" class="py-20">
             <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-12">
-                    <h2 class="text-4xl font-bold">Our Services</h2>
-                    <p class="max-w-2xl mx-auto text-lg text-[var(--text-secondary)] mt-4">We specialize in creating websites that generate leads and build trust for service-based businesses.</p>
+                    <h2 class="text-4xl font-bold" data-cms="services.header.title"></h2>
+                    <p class="max-w-2xl mx-auto text-lg text-[var(--text-secondary)] mt-4" data-cms="services.header.description"></p>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <div class="card">
-                        <i data-lucide="gem" class="w-8 h-8 text-blue-500 mb-4"></i>
-                        <h3 class="text-xl font-semibold mb-2">Premium Design</h3>
-                        <p class="text-[var(--text-secondary)] mb-4 flex-1">Eye-catching, professional designs that reflect your brand's quality and build instant trust.</p>
-                        <div class="flex flex-wrap gap-2 mt-auto">
-                            <button class="interactive-btn bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">Ask</button>
-                            <button class="interactive-btn bg-purple-500/20 text-purple-400 hover:bg-purple-500/30">Explain</button>
-                            <button class="interactive-btn bg-green-500/20 text-green-400 hover:bg-green-500/30">Order</button>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <i data-lucide="layout-template" class="w-8 h-8 text-blue-500 mb-4"></i>
-                        <h3 class="text-xl font-semibold mb-2">Strategic Structure</h3>
-                        <p class="text-[var(--text-secondary)] mb-4 flex-1">Conversion-focused layouts that guide visitors toward becoming leads and customers.</p>
-                        <div class="flex flex-wrap gap-2 mt-auto">
-                            <button class="interactive-btn bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">Ask</button>
-                            <button class="interactive-btn bg-purple-500/20 text-purple-400 hover:bg-purple-500/30">Explain</button>
-                            <button class="interactive-btn bg-green-500/20 text-green-400 hover:bg-green-500/30">Order</button>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <i data-lucide="search" class="w-8 h-8 text-blue-500 mb-4"></i>
-                        <h3 class="text-xl font-semibold mb-2">SEO Foundation</h3>
-                        <p class="text-[var(--text-secondary)] mb-4 flex-1">Built-in search engine optimization to help your business get found by local customers.</p>
-                        <div class="flex flex-wrap gap-2 mt-auto">
-                            <button class="interactive-btn bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">Ask</button>
-                            <button class="interactive-btn bg-purple-500/20 text-purple-400 hover:bg-purple-500/30">Explain</button>
-                            <button class="interactive-btn bg-green-500/20 text-green-400 hover:bg-green-500/30">Order</button>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <i data-lucide="headphones" class="w-8 h-8 text-blue-500 mb-4"></i>
-                        <h3 class="text-xl font-semibold mb-2">AI Customer Service</h3>
-                        <p class="text-[var(--text-secondary)] mb-4 flex-1">Intelligent chatbots and virtual assistants that handle customer inquiries 24/7, improving satisfaction and reducing response times.</p>
-                        <div class="flex flex-wrap gap-2 mt-auto">
-                            <button class="interactive-btn bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">Ask</button>
-                            <button class="interactive-btn bg-purple-500/20 text-purple-400 hover:bg-purple-500/30">Explain</button>
-                            <button class="interactive-btn bg-green-500/20 text-green-400 hover:bg-green-500/30">Order</button>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <i data-lucide="settings" class="w-8 h-8 text-blue-500 mb-4"></i>
-                        <h3 class="text-xl font-semibold mb-2">Productivity Gem Setup</h3>
-                        <p class="text-[var(--text-secondary)] mb-4 flex-1">Custom implementation of productivity tools and automation gems that streamline your business operations and boost efficiency.</p>
-                        <div class="flex flex-wrap gap-2 mt-auto">
-                            <button class="interactive-btn bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">Ask</button>
-                            <button class="interactive-btn bg-purple-500/20 text-purple-400 hover:bg-purple-500/30">Explain</button>
-                            <button class="interactive-btn bg-green-500/20 text-green-400 hover:bg-green-500/30">Order</button>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <i data-lucide="life-buoy" class="w-8 h-8 text-blue-500 mb-4"></i>
-                        <h3 class="text-xl font-semibold mb-2">Ongoing Support</h3>
-                        <p class="text-[var(--text-secondary)] mb-4 flex-1">Reliable technical support and website maintenance to keep your site running smoothly.</p>
-                        <div class="flex flex-wrap gap-2 mt-auto">
-                            <button class="interactive-btn bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">Ask</button>
-                            <button class="interactive-btn bg-purple-500/20 text-purple-400 hover:bg-purple-500/30">Explain</button>
-                            <button class="interactive-btn bg-green-500/20 text-green-400 hover:bg-green-500/30">Order</button>
-                        </div>
-                    </div>
-                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="services-grid"></div>
             </div>
         </section>
 
@@ -313,32 +237,10 @@
         <section id="portfolio" class="py-20 bg-[var(--bg-card)] border-y border-[var(--border-color)]">
             <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-12">
-                    <h2 class="text-4xl font-bold">Our Recent Work</h2>
-                    <p class="max-w-2xl mx-auto text-lg text-[var(--text-secondary)] mt-4">See how we can help service businesses attract more clients with strategic web design.</p>
+                    <h2 class="text-4xl font-bold" data-cms="portfolio.header.title"></h2>
+                    <p class="max-w-2xl mx-auto text-lg text-[var(--text-secondary)] mt-4" data-cms="portfolio.header.description"></p>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <div class="card overflow-hidden p-0">
-                        <img src="https://via.placeholder.com/400x250/1a202c/808080?text=Elite+Roofing" alt="Elite Roofing Solutions" class="w-full h-48 object-cover">
-                        <div class="p-6">
-                            <h3 class="text-xl font-semibold">Elite Roofing Solutions</h3>
-                            <p class="text-[var(--text-secondary)] mb-4">Roofing Services Website</p>
-                        </div>
-                    </div>
-                    <div class="card overflow-hidden p-0">
-                        <img src="https://via.placeholder.com/400x250/1a202c/808080?text=AirTech+Pro" alt="AirTech Pro" class="w-full h-48 object-cover">
-                        <div class="p-6">
-                            <h3 class="text-xl font-semibold">AirTech Pro</h3>
-                            <p class="text-[var(--text-secondary)] mb-4">HVAC Services Website</p>
-                        </div>
-                    </div>
-                    <div class="card overflow-hidden p-0">
-                        <img src="https://via.placeholder.com/400x250/1a202c/808080?text=GreenScape+Pro" alt="GreenScape Pro" class="w-full h-48 object-cover">
-                        <div class="p-6">
-                            <h3 class="text-xl font-semibold">GreenScape Pro</h3>
-                            <p class="text-[var(--text-secondary)] mb-4">Landscaping Services Website</p>
-                        </div>
-                    </div>
-                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="portfolio-grid"></div>
             </div>
         </section>
 
@@ -346,150 +248,35 @@
         <section id="why-us" class="py-20">
             <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-12">
-                    <h2 class="text-4xl font-bold">Why Choose Trixel</h2>
-                    <p class="max-w-2xl mx-auto text-lg text-[var(--text-secondary)] mt-4">We understand the unique needs of service businesses and build websites that actually work for you.</p>
+                    <h2 class="text-4xl font-bold" data-cms="whyUs.header.title"></h2>
+                    <p class="max-w-2xl mx-auto text-lg text-[var(--text-secondary)] mt-4" data-cms="whyUs.header.description"></p>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
-                    <div class="card">
-                        <div class="flex items-center mb-4">
-                            <div class="w-12 h-12 rounded-lg bg-blue-500/20 flex-shrink-0 flex items-center justify-center mr-4"><i data-lucide="zap" class="w-6 h-6 text-blue-500"></i></div>
-                            <h3 class="text-xl font-semibold">5-Day Delivery</h3>
-                        </div>
-                        <p class="text-[var(--text-secondary)] mb-4 flex-1">Our streamlined process delivers your complete website in just 5 business days, so you can start generating leads faster.</p>
-                        <div class="flex flex-wrap gap-2 mt-auto">
-                            <button class="interactive-btn bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">Ask</button>
-                            <button class="interactive-btn bg-purple-500/20 text-purple-400 hover:bg-purple-500/30">Explain</button>
-                            <button class="interactive-btn bg-green-500/20 text-green-400 hover:bg-green-500/30">Order</button>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="flex items-center mb-4">
-                            <div class="w-12 h-12 rounded-lg bg-blue-500/20 flex-shrink-0 flex items-center justify-center mr-4"><i data-lucide="magnet" class="w-6 h-6 text-blue-500"></i></div>
-                            <h3 class="text-xl font-semibold">Lead Generation Focus</h3>
-                        </div>
-                        <p class="text-[var(--text-secondary)] mb-4 flex-1">Every element is strategically designed to convert visitors into leads with clear calls-to-action and trust-building elements.</p>
-                        <div class="flex flex-wrap gap-2 mt-auto">
-                            <button class="interactive-btn bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">Ask</button>
-                            <button class="interactive-btn bg-purple-500/20 text-purple-400 hover:bg-purple-500/30">Explain</button>
-                            <button class="interactive-btn bg-green-500/20 text-green-400 hover:bg-green-500/30">Order</button>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="flex items-center mb-4">
-                            <div class="w-12 h-12 rounded-lg bg-blue-500/20 flex-shrink-0 flex items-center justify-center mr-4"><i data-lucide="shield-check" class="w-6 h-6 text-blue-500"></i></div>
-                            <h3 class="text-xl font-semibold">SEO Built-In</h3>
-                        </div>
-                        <p class="text-[var(--text-secondary)] mb-4 flex-1">Your website is optimized for local search from day one, helping your business appear in Google searches for your services.</p>
-                        <div class="flex flex-wrap gap-2 mt-auto">
-                            <button class="interactive-btn bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">Ask</button>
-                            <button class="interactive-btn bg-purple-500/20 text-purple-400 hover:bg-purple-500/30">Explain</button>
-                            <button class="interactive-btn bg-green-500/20 text-green-400 hover:bg-green-500/30">Order</button>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="flex items-center mb-4">
-                            <div class="w-12 h-12 rounded-lg bg-blue-500/20 flex-shrink-0 flex items-center justify-center mr-4"><i data-lucide="wrench" class="w-6 h-6 text-blue-500"></i></div>
-                            <h3 class="text-xl font-semibold">Service Business Specialists</h3>
-                        </div>
-                        <p class="text-[var(--text-secondary)] mb-4 flex-1">We exclusively work with service businesses, giving us deep insight into what works for roofing, HVAC, landscaping, and more.</p>
-                        <div class="flex flex-wrap gap-2 mt-auto">
-                            <button class="interactive-btn bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">Ask</button>
-                            <button class="interactive-btn bg-purple-500/20 text-purple-400 hover:bg-purple-500/30">Explain</button>
-                            <button class="interactive-btn bg-green-500/20 text-green-400 hover:bg-green-500/30">Order</button>
-                        </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16" id="why-us-grid"></div>
+                <div id="process-timeline" class="card max-w-4xl mx-auto">
+                    <h3 class="text-2xl font-bold text-center mb-8" data-cms="whyUs.process.title"></h3>
+                    <div class="relative">
+                        <div class="absolute left-1/2 -translate-x-1/2 h-full w-0.5 bg-[var(--border-color)] hidden md:block" aria-hidden="true"></div>
+                        <div class="space-y-12" id="process-steps"></div>
                     </div>
                 </div>
             </div>
-            <!-- START: Our Process is Simple Section -->
-<div id="process-timeline" class="card max-w-4xl mx-auto">
-    <h3 class="text-2xl font-bold text-center mb-8">Our Process is Simple</h3>
-    <div class="relative">
-        <!-- Timeline line for desktop -->
-        <div class="absolute left-1/2 -translate-x-1/2 h-full w-0.5 bg-[var(--border-color)] hidden md:block" aria-hidden="true"></div>
-
-        <div class="space-y-12">
-            <!-- Step 1 -->
-            <div class="md:flex items-center md:space-x-8 relative">
-                <div class="md:w-1/2 md:text-right">
-                    <div class="flex items-center justify-center md:justify-end mb-2 md:mb-0">
-                        <div class="md:order-2 text-center">
-                            <h4 class="text-lg font-semibold">DISCOVERY CALL</h4>
-                            <p class="text-[var(--text-secondary)]">We learn about your business, goals, and what sets you apart from competitors.</p>
-                        </div>
-                        <div class="md:order-1 bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold mx-4">1</div>
-                    </div>
-                </div>
-                <div class="hidden md:block w-1/2"></div>
-            </div>
-
-            <!-- Step 2 -->
-            <div class="md:flex items-center md:space-x-8 relative">
-                <div class="hidden md:block w-1/2"></div>
-                <div class="md:w-1/2 md:text-left">
-                     <div class="flex items-center justify-center md:justify-start mb-2 md:mb-0">
-                        <div class="bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold mx-4">2</div>
-                        <div class="text-center">
-                            <h4 class="text-lg font-semibold">DESIGN & DEVELOPMENT</h4>
-                            <p class="text-[var(--text-secondary)]">Our team creates your custom website with a focus on lead generation.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Step 3 -->
-            <div class="md:flex items-center md:space-x-8 relative">
-                <div class="md:w-1/2 md:text-right">
-                    <div class="flex items-center justify-center md:justify-end mb-2 md:mb-0">
-                        <div class="md:order-2 text-center">
-                            <h4 class="text-lg font-semibold">REVIEW & REFINEMENT</h4>
-                            <p class="text-[var(--text-secondary)]">You review the site and we make any necessary adjustments.</p>
-                        </div>
-                        <div class="md:order-1 bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold mx-4">3</div>
-                    </div>
-                </div>
-                <div class="hidden md:block w-1/2"></div>
-            </div>
-
-            <!-- Step 4 -->
-            <div class="md:flex items-center md:space-x-8 relative">
-                <div class="hidden md:block w-1/2"></div>
-                <div class="md:w-1/2 md:text-left">
-                    <div class="flex items-center justify-center md:justify-start mb-2 md:mb-0">
-                        <div class="bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold mx-4">4</div>
-                        <div class="text-center">
-                            <h4 class="text-lg font-semibold">LAUNCH</h4>
-                            <p class="text-[var(--text-secondary)]">Your new website goes live and starts generating leads for your business.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- END: Our Process is Simple Section -->
         </section>
-        
-       
 
         <!-- User Reviews Section -->
         <section id="reviews" class="py-20">
             <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-12">
-                    <h2 class="text-4xl font-bold">Client Reviews</h2>
-                    <p class="max-w-2xl mx-auto text-lg text-[var(--text-secondary)] mt-4">See what our clients say about our service</p>
+                    <h2 class="text-4xl font-bold" data-cms="reviews.header.title"></h2>
+                    <p class="max-w-2xl mx-auto text-lg text-[var(--text-secondary)] mt-4" data-cms="reviews.header.description"></p>
                 </div>
-                <div id="reviews-container" class="min-h-[200px] flex items-center justify-center mb-12">
-                    <div class="text-center text-[var(--text-secondary)] p-8">
-                        No reviews yet. Be the first to share your experience!
-                    </div>
-                </div>
+                <div id="reviews-container" class="min-h-[150px] flex items-center justify-center mb-12"></div>
                 <div class="card max-w-2xl mx-auto">
-                    <h3 class="text-2xl font-bold mb-4">Share Your Experience</h3>
+                    <h3 class="text-2xl font-bold mb-4" data-cms="reviews.form.title"></h3>
                     <form id="review-form" required>
                         <div class="mb-4">
-                            <textarea rows="4" placeholder="Tell us about your experience..." class="form-input" required></textarea>
+                            <textarea id="review-text" rows="4" class="form-input" required data-cms-placeholder="reviews.form.placeholder"></textarea>
                         </div>
-                        <button type="submit" class="btn-primary w-full">Submit Review</button>
+                        <button type="submit" class="btn-primary w-full" data-cms="reviews.form.submitText"></button>
                     </form>
                 </div>
             </div>
@@ -499,40 +286,23 @@
         <section id="contact" class="py-20">
             <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-12">
-                    <h2 class="text-4xl font-bold">Get Your Website within 5 Days</h2>
-                    <p class="max-w-2xl mx-auto text-lg text-[var(--text-secondary)] mt-4">Fill out the form below to start the conversation. We'll get back to you within 24 hours.</p>
+                    <h2 class="text-4xl font-bold" data-cms="contact.header.title"></h2>
+                    <p class="max-w-2xl mx-auto text-lg text-[var(--text-secondary)] mt-4" data-cms="contact.header.description"></p>
                 </div>
                 <div class="flex flex-col lg:flex-row gap-12">
                     <div class="lg:w-2/3">
-                        <form id="contact-form" class="space-y-4" required>
-                            <input type="text" placeholder="Full Name" class="form-input" required>
-                            <input type="email" placeholder="Email Address" class="form-input" required>
-                            <input type="tel" placeholder="Phone Number" class="form-input">
-                            <select class="form-input" required>
-                                <option value="" disabled selected>Select a business type</option>
-                                <option value="Roofing">Roofing</option>
-                                <option value="HVAC">HVAC</option>
-                                <option value="Landscaping">Landscaping</option>
-                                <option value="Remodeling">Remodeling</option>
-                                <option value="Other">Other</option>
-                            </select>
-                            <textarea rows="4" placeholder="Project Details" class="form-input" required></textarea>
-                            <button type="submit" class="btn-primary w-full">Get Started</button>
-                        </form>
+                        <form id="contact-form" class="space-y-4" required></form>
                     </div>
                     <div class="lg:w-1/3 space-y-8">
                         <div class="card">
-                            <h3 class="text-xl font-semibold mb-4">Contact Information</h3>
-                            <div class="space-y-3">
-                                <p class="flex items-center"><i data-lucide="mail" class="w-5 h-5 mr-3"></i> trixeltechnologies@gmail.com</p>
-                                <p class="flex items-center"><i data-lucide="phone" class="w-5 h-5 mr-3"></i> (234) 704-299-8527</p>
-                            </div>
+                            <h3 class="text-xl font-semibold mb-4" data-cms="contact.info.title"></h3>
+                            <div class="space-y-3" id="contact-info-items"></div>
                         </div>
                         <div class="card">
                             <i data-lucide="message-circle" class="w-8 h-8 text-blue-500 mb-4"></i>
-                            <p class="italic text-[var(--text-secondary)]">"I highly recommend Trixel, their ability to truly listen and understand a client's needs sets them apart..."</p>
-                            <p class="font-semibold mt-4">- Wesley Estrella</p>
-                            <p class="text-sm text-[var(--text-secondary)]">Spotlight Management</p>
+                            <p class="italic text-[var(--text-secondary)]" data-cms="contact.testimonial.quote"></p>
+                            <p class="font-semibold mt-4" data-cms="contact.testimonial.author"></p>
+                            <p class="text-sm text-[var(--text-secondary)]" data-cms="contact.testimonial.company"></p>
                         </div>
                     </div>
                 </div>
@@ -543,429 +313,224 @@
     <!-- Footer -->
     <footer class="bg-[var(--bg-card)] border-t border-[var(--border-color)] py-12">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center text-[var(--text-secondary)]">
-            <a href="#" class="text-2xl font-bold text-[var(--text-primary)]">Trixel<span class="text-blue-500">.</span>Tech</a>
-            <div class="flex justify-center space-x-6 my-6">
-                <a href="#home" class="hover:text-blue-500">Home</a>
-                <a href="#services" class="hover:text-blue-500">Services</a>
-                <a href="#portfolio" class="hover:text-blue-500">Portfolio</a>
-                <a href="#why-us" class="hover:text-blue-500">Why Us</a>
-            </div>
-            <p class="text-sm mt-6">© 2025 Trixel Technologies. All rights reserved.</p>
+            <a href="#" class="text-2xl font-bold text-[var(--text-primary)]" data-cms="footer.brand.name"></a>
+            <div class="flex justify-center space-x-6 my-6" id="footer-links"></div>
+            <p class="text-sm mt-6" data-cms="footer.copyright"></p>
         </div>
     </footer>
 
     <!-- Floating Action Buttons -->
-    <div class="fixed bottom-5 right-5 z-40 space-y-3">
-        <button id="audio-toggle" class="w-14 h-14 rounded-full flex items-center justify-center text-white bg-green-500/50 hover:bg-green-500/80 transition-colors">
+    <div class="fixed bottom-5 right-5 z-40 flex flex-col items-center space-y-3">
+        <button id="ai-chat-fab" class="w-14 h-14 rounded-full flex items-center justify-center text-white bg-blue-500/80 hover:bg-blue-500/100 transition-colors shadow-lg">
+             <i data-lucide="bot" class="w-7 h-7"></i>
+        </button>
+        <button id="audio-toggle" class="w-14 h-14 rounded-full flex items-center justify-center text-white bg-green-500/80 hover:bg-green-500/100 transition-colors shadow-lg">
             <i data-lucide="volume-2" class="w-7 h-7"></i>
         </button>
-       <button id="back-to-top" class="w-14 h-14 rounded-full flex items-center justify-center text-white" style="background: linear-gradient(135deg, #3B82F6, #2563EB);"><i data-lucide="arrow-up" class="w-7 h-7"></i></button>
+        <button id="back-to-top" class="w-14 h-14 rounded-full flex items-center justify-center text-white shadow-lg" style="background: linear-gradient(135deg, #8B5CF6, #6D28D9);"><i data-lucide="arrow-up" class="w-7 h-7"></i></button>
     </div>
 
-    <!-- Universal Audio Player -->
     <audio id="universal-audio-player" preload="none" style="display: none;"></audio>
 
-    <!-- AI Chat Widget -->
-    <div id="ai-chat-widget" class="fixed bottom-32 right-5 z-50 w-80 rounded-xl glass-morphism shadow-2xl hidden transform translate-y-10 opacity-0">
+    <div id="ai-chat-widget" class="fixed bottom-24 right-5 z-50 w-80 rounded-xl glass-morphism shadow-2xl hidden transform translate-y-10 opacity-0">
         <div class="p-3 border-b border-[var(--border-color)] flex justify-between items-center">
-            <h4 class="font-semibold">Trixel AI Assistant</h4>
-            <button id="close-chat-btn" class="p-1 rounded-full hover:bg-gray-700/50">
-                <i data-lucide="x" class="w-4 h-4"></i>
-            </button>
+            <h4 class="font-semibold" data-cms="ai.name"></h4>
+            <button id="close-chat-btn" class="p-1 rounded-full hover:bg-gray-700/50"><i data-lucide="x" class="w-4 h-4"></i></button>
         </div>
-        <div id="chat-messages" class="p-4 h-48 overflow-y-auto">
-            <!-- Messages will be injected here -->
-        </div>
+        <div id="chat-messages" class="p-4 h-48 overflow-y-auto"></div>
         <div class="p-2 border-t border-[var(--border-color)]">
-            <input type="text" placeholder="AI response will appear here..." class="form-input text-sm" disabled>
+            <input type="text" class="form-input text-sm" disabled data-cms-placeholder="ai.greeting">
         </div>
     </div>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // 0. Register GSAP Plugins
-        gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+<script>
+// =================================================================================
+// TRIXEL TECHNOLOGIES - CENTRALIZED CONTENT MANAGEMENT SYSTEM (CMS)
+// =================================================================================
+const CMS_DATA = {
+    company: { name: "Trixel Technologies", logo: "Trixel.Tech", tagline: "Websites That Win Clients — Delivered Within 5 Days.", contact: { email: "trixeltechnologies@gmail.com", phone: "+2347042998527", whatsapp: "https://wa.link/0kclb7", facebook: "https://www.facebook.com/profile.php?id=61578364837694", instagram: "https://www.instagram.com/trixeltechnologies?igsh=bGdydHY2ZDhya2V5" }, founder: "Franklin Sebastian" },
+    audio: { voiceTour: { file: "audio/main_voiceover.wav", duration: 133, segments: { hero: { start: 0, end: 22 }, services: { start: 22, end: 85 }, process: { start: 86, end: 104 }, niche: { start: 105, end: 115 }, contact: { start: 116, end: 133 } } }, backgroundMusic: [{ id: "ambient_1", name: "Cinematic Ambient", file: "audio/background_music_1.mp3", composer: "Mixkit" }, { id: "ambient_2", name: "Inspirational Cinematic", file: "audio/background_music_2.mp3", composer: "Mixkit" }, { id: "ambient_3", name: "Corporate Innovation", file: "audio/background_music_3.mp3", composer: "Mixkit" }] },
+    welcome: { title: "Welcome to Trixel Technologies", subtitle: "Experience our website with a guided tour or explore on your own.", features: [{ icon: "play-circle", color: "blue", text: "5-minute interactive tour" }, { icon: "zap", color: "green", text: "See our features in action" }, { icon: "clock", color: "purple", text: "Skip anytime" }], buttons: { primary: { text: "Start Guided Tour", icon: "play" }, secondary: { text: "Explore on My Own", icon: null } } },
+    navigation: { logo: "Trixel<span class='text-blue-500'>.</span>Tech", menu: [{ id: "home", text: "Home" }, { id: "services", text: "Services" }, { id: "portfolio", text: "Portfolio" }, { id: "why-us", text: "Why Us" }, { id: "contact", text: "Contact" }] },
+    hero: { headline: { part1: "Websites That ", part2: "Win Clients", gradient: true }, subheadline: "Delivered within 5 Days.", description: "We build high-converting websites for service businesses that generate leads and build trust with your potential clients.", cta: { text: "Get Your Website", target: "#contact" }, features: [{ icon: "rocket", title: "Fast Delivery", description: "Your complete website ready within just 5 business days." }, { icon: "target", title: "Lead-Focused Design", description: "Optimized to convert visitors into paying customers." }, { icon: "trending-up", title: "SEO Optimized", description: "Built to rank higher in Google search results." }] },
+    services: { header: { title: "Our Services", description: "We specialize in creating websites that generate leads and build trust for service-based businesses." }, items: [{ id: "premium-design", icon: "gem", title: "Premium Design", description: "Eye-catching, professional designs that reflect your brand's quality and build instant trust.", interactive: true }, { id: "strategic-structure", icon: "layout-template", title: "Strategic Structure", description: "Conversion-focused layouts that guide visitors toward becoming leads and customers.", interactive: true }, { id: "seo-foundation", icon: "search", title: "SEO Foundation", description: "Built-in search engine optimization to help your business get found by local customers.", interactive: true }, { id: "ai-customer-service", icon: "headphones", title: "AI Customer Service", description: "Intelligent chatbots and virtual assistants that handle customer inquiries 24/7, improving satisfaction and reducing response times.", interactive: true }, { id: "productivity-gem", icon: "settings", title: "Productivity Gem Setup", description: "Custom implementation of productivity tools and automation gems that streamline your business operations and boost efficiency.", interactive: true }, { id: "ongoing-support", icon: "life-buoy", title: "Ongoing Support", description: "Reliable technical support and website maintenance to keep your site running smoothly.", interactive: true }] },
+    portfolio: { header: { title: "Our Recent Work", description: "See how we can help service businesses attract more clients with strategic web design." }, projects: [{ id: "elite-roofing", image: "https://via.placeholder.com/400x250/1a202c/808080?text=Elite+Roofing", title: "Elite Roofing Solutions", category: "Roofing Services Website", tags: ["Design", "Lead Gen", "SEO"] }, { id: "airtech-pro", image: "https://via.placeholder.com/400x250/1a202c/808080?text=AirTech+Pro", title: "AirTech Pro", category: "HVAC Services Website", tags: ["Design", "Lead Gen", "Local SEO"] }, { id: "greenscape-pro", image: "https://via.placeholder.com/400x250/1a202c/808080?text=GreenScape+Pro", title: "GreenScape Pro", category: "Landscaping Services Website", tags: ["Design", "Lead Gen", "Content"] }], cta: { text: "See Your Business Here", target: "#contact" } },
+    whyUs: { header: { title: "Why Choose Trixel", description: "We understand the unique needs of service businesses and build websites that actually work for you." }, features: [{ icon: "zap", title: "5-Day Delivery", description: "Our streamlined process delivers your complete website in just 5 business days, so you can start generating leads faster.", interactive: true }, { icon: "magnet", title: "Lead Generation Focus", description: "Every element is strategically designed to convert visitors into leads with clear calls-to-action and trust-building elements.", interactive: true }, { icon: "shield-check", title: "SEO Built-In", description: "Your website is optimized for local search from day one, helping your business appear in Google searches for your services.", interactive: true }, { icon: "wrench", title: "Service Business Specialists", description: "We exclusively work with service businesses, giving us deep insight into what works for roofing, HVAC, landscaping, and more.", interactive: true }], process: { title: "Our Process is Simple", steps: [{ number: 1, title: "Discovery Call", description: "We learn about your business, goals, and what sets you apart from competitors." }, { number: 2, title: "Design & Development", description: "Our team creates your custom website with a focus on lead generation." }, { number: 3, title: "Review & Refinement", description: "You review the site and we make any necessary adjustments." }, { number: 4, title: "Launch", description: "Your new website goes live and starts generating leads for your business." }] } },
+    reviews: { header: { title: "Client Reviews", description: "See what our clients say about our service" }, initialReviews: [], form: { title: "Share Your Experience", placeholder: "Tell us about your experience...", submitText: "Submit Review", successMessage: "Thank you for your review! It has been submitted successfully.", emptyState: "No reviews yet. Be the first to share your experience!" } },
+    contact: { header: { title: "Get Your Website within 5 Days", description: "Fill out the form below to start the conversation. We'll get back to you within 24 hours." }, form: { fields: [{ id: "name", label: "Full Name", type: "text", placeholder: "Your name", required: true }, { id: "email", label: "Email Address", type: "email", placeholder: "your@email.com", required: true }, { id: "phone", label: "Phone Number", type: "tel", placeholder: "(123) 456-7890", required: false }, { id: "business", label: "Business Type", type: "select", options: ["Roofing", "HVAC", "Landscaping", "Remodeling", "Other"], required: true }, { id: "message", label: "Project Details", type: "textarea", placeholder: "Tell us about your needs...", required: true }, { id: "budget", label: "Budget Range", type: "range", min: 500, max: 5000, step: 100, defaultValue: 1500 }], submitText: "Get Started" }, info: { title: "Contact Information", items: [{ icon: "mail", text: "trixeltechnologies@gmail.com", type: "email", link: "mailto:trixeltechnologies@gmail.com" }, { icon: "phone", text: "(234) 704-299-8527", type: "phone", link: "tel:+2347042998527" }, { icon: "message-square", text: "Message us on WhatsApp", type: "whatsapp", link: "https://wa.link/0kclb7" }] }, testimonial: { quote: "I highly recommend Trixel, their ability to truly listen and understand a client's needs sets them apart. Most importantly they respect timelines and deliver work on schedule.", author: "- Wesley Estrella", company: "Spotlight Management" } },
+    footer: { brand: { name: "Trixel.Tech" }, quickLinks: [{ text: "Home", target: "#home" }, { text: "Services", target: "#services" }, { text: "Portfolio", target: "#portfolio" }, { text: "Why Us", target: "#why-us" }], copyright: `© ${new Date().getFullYear()} Trixel Technologies. All rights reserved.` },
+    ai: { name: "Trixel AI Assistant", greeting: "Hello! I'm Trixie, your AI assistant. How can I help you?", systemInstructions: "You are Trixie, a friendly and professional AI assistant for Trixel Technologies. Your goal is to answer questions about their web design services for service businesses, focusing on benefits and solutions. Never mention specific pricing. Keep responses concise (under 150 words) and guide users towards the contact options. Use relevant emojis occasionally.", interactivePrompts: { ask: "Hi — what questions do you have about this service?", explain: "Sure — I'll explain this service in simple terms.", order: "Great — let's go over how to order and next steps." } }
+};
+const GEMINI_CONFIG = {
+    // IMPORTANT: Replace "YOUR_API_KEY" with your actual Google Gemini API key.
+    apiKey: "YOUR_API_KEY",
+    apiUrl: "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent",
+};
 
-        // Welcome Overlay & Tour System
-        const welcomeOverlay = document.getElementById('welcome-overlay');
-        const welcomeCard = document.getElementById('welcome-card');
-        const startTourBtn = document.getElementById('start-tour-btn');
-        const exploreBtn = document.getElementById('explore-btn');
-        const tourProgress = document.getElementById('tour-progress');
-        const tourProgressText = document.getElementById('tour-progress-text');
-        const tourNextBtn = document.getElementById('tour-next-btn');
-        const tourExitBtn = document.getElementById('tour-exit-btn');
+// =================================================================================
+// MAIN APPLICATION SCRIPT
+// =================================================================================
+document.addEventListener('DOMContentLoaded', function() {
+    // =============================================================================
+    // APP STATE & CORE MANAGERS
+    // =============================================================================
+    const APP_STATE = {
+        currentAudioState: 'idle',
+        audioBackup: null,
+        isMusicEnabled: true,
+        currentMusicTrack: 0,
+        isTourActive: false,
+    };
 
-        const tourSteps = [
-            { selector: '#services', description: 'This is our Services section, where we outline what we offer.' },
-            { selector: '#portfolio', description: 'Here you can see our recent work.' },
-            { selector: '#why-us', description: 'Discover why Trixel is the right choice for you.' },
-            { selector: '#contact', description: 'And finally, our contact section to get in touch.' }
-        ];
-        let currentTourStep = -1;
+    class AudioController {
+        constructor(playerElement) { this.player = playerElement; this.player.volume = 0.5; }
+        transitionTo(newState) { const oldState = APP_STATE.currentAudioState; if (oldState === newState) return; APP_STATE.currentAudioState = newState; if (oldState === 'music_playing') this.fadeOut(); switch (newState) { case 'voiceover_playing': this.switchSource(CMS_DATA.audio.voiceTour.file, false); this.fadeIn(); break; case 'music_playing': const track = CMS_DATA.audio.backgroundMusic[APP_STATE.currentMusicTrack]; this.switchSource(track.file, true); this.fadeIn(); break; case 'paused': this.player.pause(); break; case 'chat_active': APP_STATE.audioBackup = { state: oldState, time: this.player.currentTime }; this.fadeOut(0.1).then(() => this.player.pause()); break; case 'idle': this.fadeOut(0.3).then(() => { this.player.src = ''; }); break; } }
+        resumeFromChat() { if (APP_STATE.audioBackup) { this.player.currentTime = APP_STATE.audioBackup.time; this.transitionTo(APP_STATE.audioBackup.state); APP_STATE.audioBackup = null; } }
+        switchSource(src, loop = false) { this.player.src = src; this.player.loop = loop; this.player.load(); }
+        play() { const p = this.player.play(); if (p) { p.catch(e => console.error("Audio play failed:", e)); } }
+        pause() { this.player.pause(); }
+        fadeIn(duration = 1) { this.play(); gsap.to(this.player, { volume: 0.5, duration }); }
+        fadeOut(duration = 1) { return new Promise(res => gsap.to(this.player, { volume: 0, duration, onComplete: () => { this.player.pause(); res(); } })); }
+        toggleMusic() { const isPlaying = APP_STATE.currentAudioState === 'music_playing'; this.transitionTo(isPlaying ? 'paused' : 'music_playing'); return !isPlaying; }
+    }
 
-        function dismissOverlay() {
-            gsap.to(welcomeOverlay, {
-                opacity: 0,
-                duration: 0.5,
-                onComplete: () => welcomeOverlay.style.display = 'none'
-            });
+    class TourController {
+        constructor(audioCtl) { this.audioCtl = audioCtl; this.masterTl = gsap.timeline({ paused: true }); this.syncInterval = null; }
+        buildTimeline() { const s = CMS_DATA.audio.voiceTour.segments; this.masterTl.addLabel("hero", s.hero.start).to(window, { duration: 2, scrollTo: { y: "#home", offsetY: 70 }, ease: "power2.inOut" }, "hero").from("#home .hero-headline", { autoAlpha: 0, y: 30 }, "hero+=0.5").from("#home .hero-subheadline", { autoAlpha: 0, y: 20 }, "hero+=1").addLabel("services", s.services.start).to(window, { duration: 2, scrollTo: { y: "#services", offsetY: 70 }, ease: "power2.inOut" }, "services").from("#services h2", { autoAlpha: 0, y: 30 }, "services+=1").to("#services .card", { stagger: 0.5, "className": "+=card tour-highlight" }, "services+=2").to("#services .card", { stagger: 0.5, "className": "-=card tour-highlight" }, "services+=3").addLabel("process", s.process.start).to(window, { duration: 2, scrollTo: { y: "#process-timeline", offsetY: 150 }, ease: "power2.inOut" }, "process").from("#process-timeline h3", { autoAlpha: 0, y: 30 }, "process+=1").from("#process-steps > div", { stagger: 1.5, autoAlpha: 0, y: 20 }, "process+=2").addLabel("contact", s.contact.start).to(window, { duration: 2, scrollTo: { y: "#contact", offsetY: 70 }, ease: "power2.inOut" }, "contact").from("#contact h2", { autoAlpha: 0, y: 30 }, "contact+=1").to("#contact-form", { "className": "+=card tour-highlight" }, "contact+=2").to("#contact-form", { "className": "-=card tour-highlight" }, "contact+=3").eventCallback("onComplete", () => this.end()); }
+        start() { APP_STATE.isTourActive = true; document.body.classList.add('tour-active'); this.audioCtl.transitionTo('voiceover_playing'); this.masterTl.play(); gsap.to("#tour-progress", { autoAlpha: 1, y: 0, duration: 0.5 }); this.syncInterval = setInterval(() => this.sync(), 100); }
+        sync() { const audioTime = this.audioCtl.player.currentTime; this.masterTl.time(audioTime); const progress = (audioTime / this.audioCtl.player.duration) * 100; gsap.to("#tour-progress-bar-inner", { width: `${progress}%`, duration: 0.1 }); }
+        end() { APP_STATE.isTourActive = false; document.body.classList.remove('tour-active'); this.masterTl.pause().time(0); clearInterval(this.syncInterval); this.audioCtl.transitionTo('music_playing'); gsap.to("#tour-progress", { autoAlpha: 0, y: 20, duration: 0.5 }); }
+    }
+
+    class AIController {
+        constructor() { this.history = []; }
+        buildSystemInstruction(context) { return `${CMS_DATA.ai.systemInstructions}\n\nCONTEXT: The user is asking about the "${context.title}" service.`; }
+        async getResponse(userMessage, context) {
+            this.history.push({ role: "user", parts: [{ text: userMessage }] });
+            const payload = { contents: [{ role: "user", parts: [{ text: this.buildSystemInstruction(context) + `\n\nQuestion: ${userMessage}` }] }], generationConfig: { temperature: 0.7, maxOutputTokens: 150 } };
+            try {
+                const response = await fetch(`${GEMINI_CONFIG.apiUrl}?key=${GEMINI_CONFIG.apiKey}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                if (!response.ok) throw new Error(`API Error: ${response.status}`);
+                const data = await response.json();
+                const aiText = data.candidates[0].content.parts[0].text;
+                this.history.push({ role: "model", parts: [{ text: aiText }] });
+                return aiText.replace(/\$\d+/g, '[price available on request]');
+            } catch (error) { console.error('AI Error:', error); return "I'm having some trouble connecting right now. Please try again in a moment."; }
         }
+    }
 
-        function startTour() {
-            dismissOverlay();
-            localStorage.setItem('trixelTourPreference', 'completed');
-            tourProgress.classList.remove('hidden');
-            gsap.fromTo(tourProgress, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, delay: 0.5 });
-            currentTourStep = 0;
-            advanceTour();
-        }
+    // =============================================================================
+    // INITIALIZATION & DYNAMIC RENDERING
+    // =============================================================================
+    const audioController = new AudioController(document.getElementById('universal-audio-player'));
+    const tourController = new TourController(audioController);
+    const aiController = new AIController();
+    tourController.buildTimeline();
 
-        function advanceTour() {
-            if (currentTourStep >= tourSteps.length) {
-                endTour();
-                return;
-            }
+    const getNestedValue = (obj, path) => path.split('.').reduce((acc, part) => acc && acc[part], obj);
+    document.querySelectorAll('[data-cms]').forEach(el => { const key = el.getAttribute('data-cms'); const content = getNestedValue(CMS_DATA, key); if (content !== undefined) el.innerHTML = content; });
+    document.querySelectorAll('[data-cms-href]').forEach(el => el.href = getNestedValue(CMS_DATA, el.getAttribute('data-cms-href')));
+    const navLinksDesktop = CMS_DATA.navigation.menu.map(item => `<a href="#${item.id}" class="hover:text-blue-500 transition-colors">${item.text}</a>`).join('');
+    document.getElementById('desktop-nav-links').innerHTML = navLinksDesktop;
+    const navLinksMobile = CMS_DATA.navigation.menu.map(item => `<a href="#${item.id}" class="hover:text-blue-500 transition-colors py-2 text-lg">${item.text}</a>`).join('');
+    document.getElementById('mobile-nav-links').innerHTML = navLinksMobile;
+    const heroFeaturesHtml = CMS_DATA.hero.features.map(f => `<div class="card"><i data-lucide="${f.icon}" class="w-8 h-8 text-blue-500 mb-4"></i><h3 class="text-xl font-semibold mb-2">${f.title}</h3><p class="text-[var(--text-secondary)]">${f.description}</p></div>`).join('');
+    document.getElementById('hero-features').innerHTML = heroFeaturesHtml;
+    const servicesHtml = CMS_DATA.services.items.map(s => `<div class="card" id="${s.id}"><i data-lucide="${s.icon}" class="w-8 h-8 text-blue-500 mb-4"></i><h3 class="text-xl font-semibold mb-2">${s.title}</h3><p class="text-[var(--text-secondary)] mb-4 flex-1">${s.description}</p>${s.interactive ? `<div class="flex flex-wrap gap-2 mt-auto"><button class="interactive-btn bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">Ask</button><button class="interactive-btn bg-purple-500/20 text-purple-400 hover:bg-purple-500/30">Explain</button><button class="interactive-btn bg-green-500/20 text-green-400 hover:bg-green-500/30">Order</button></div>` : ''}</div>`).join('');
+    document.getElementById('services-grid').innerHTML = servicesHtml;
+    const portfolioHtml = CMS_DATA.portfolio.projects.map(p => `<div class="card overflow-hidden p-0"><img src="${p.image}" alt="${p.title}" class="w-full h-48 object-cover"><div class="p-6"><h3 class="text-xl font-semibold">${p.title}</h3><p class="text-[var(--text-secondary)] mb-4">${p.category}</p></div></div>`).join('');
+    document.getElementById('portfolio-grid').innerHTML = portfolioHtml;
+    const whyUsHtml = CMS_DATA.whyUs.features.map(f => `<div class="card"><div class="flex items-center mb-4"><div class="w-12 h-12 rounded-lg bg-blue-500/20 flex-shrink-0 flex items-center justify-center mr-4"><i data-lucide="${f.icon}" class="w-6 h-6 text-blue-500"></i></div><h3 class="text-xl font-semibold">${f.title}</h3></div><p class="text-[var(--text-secondary)] mb-4 flex-1">${f.description}</p>${f.interactive ? `<div class="flex flex-wrap gap-2 mt-auto"><button class="interactive-btn bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">Ask</button><button class="interactive-btn bg-purple-500/20 text-purple-400 hover:bg-purple-500/30">Explain</button><button class="interactive-btn bg-green-500/20 text-green-400 hover:bg-green-500/30">Order</button></div>` : ''}</div>`).join('');
+    document.getElementById('why-us-grid').innerHTML = whyUsHtml;
+    const processStepsHtml = CMS_DATA.whyUs.process.steps.map((step, i) => `<div class="md:flex items-center md:space-x-8 relative">${i % 2 !== 0 ? '<div class="hidden md:block w-1/2"></div>' : ''}<div class="md:w-1/2 ${i % 2 !== 0 ? 'md:text-left' : 'md:text-right'}"><div class="flex items-center justify-center ${i % 2 !== 0 ? 'md:justify-start' : 'md:justify-end'} mb-2 md:mb-0"><div class="bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold mx-4 ${i % 2 !== 0 ? '' : 'md:order-2'}">${step.number}</div><div class="text-center ${i % 2 !== 0 ? 'md:text-left' : 'md:text-right'} ${i % 2 !== 0 ? '' : 'md:order-1'}"><h4 class="text-lg font-semibold">${step.title.toUpperCase()}</h4><p class="text-[var(--text-secondary)]">${step.description}</p></div></div></div>${i % 2 === 0 ? '<div class="hidden md:block w-1/2"></div>' : ''}</div>`).join('');
+    document.getElementById('process-steps').innerHTML = processStepsHtml;
+    const reviewsContainer = document.getElementById('reviews-container'); const renderReviews = () => { const reviews = JSON.parse(localStorage.getItem('trixel-user-reviews') || '[]'); reviewsContainer.innerHTML = reviews.length === 0 ? `<div class="text-center text-[var(--text-secondary)] p-8">${CMS_DATA.reviews.form.emptyState}</div>` : reviews.map(r => `<div class="card max-w-lg mx-auto mb-4"><p class="text-[var(--text-secondary)]">"${r.text}"</p></div>`).join(''); }; renderReviews();
+    const contactFormContainer = document.getElementById('contact-form');
+    const contactFormHtml = CMS_DATA.contact.form.fields.map(f => {
+        if (f.type === 'select') return `<select name="${f.id}" class="form-input" required><option value="" disabled selected>Select a business type</option>${f.options.map(o => `<option value="${o}">${o}</option>`).join('')}</select>`;
+        if (f.type === 'textarea') return `<textarea name="${f.id}" rows="4" placeholder="${f.placeholder}" class="form-input" required></textarea>`;
+        if (f.type === 'range') return `<div class="space-y-2"><label for="${f.id}" class="text-sm text-[var(--text-secondary)] flex justify-between"><span>${f.label}</span><span id="${f.id}-value">$${f.defaultValue}</span></label><input type="range" name="${f.id}" id="${f.id}" min="${f.min}" max="${f.max}" step="${f.step}" value="${f.defaultValue}" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"></div>`;
+        return `<input type="${f.type}" name="${f.id}" placeholder="${f.placeholder}" class="form-input" ${f.required ? 'required' : ''}>`;
+    }).join('') + `<button type="submit" class="btn-primary w-full mt-4">${CMS_DATA.contact.form.submitText}</button>`;
+    contactFormContainer.innerHTML = contactFormHtml;
+    const budgetSlider = document.getElementById('budget');
+    if (budgetSlider) budgetSlider.addEventListener('input', e => document.getElementById('budget-value').textContent = `$${e.target.value}`);
 
-            const step = tourSteps[currentTourStep];
-            tourProgressText.textContent = step.description;
-            gsap.to(window, { duration: 1, scrollTo: { y: step.selector, offsetY: 100 }, ease: "power2.inOut" });
+    const contactInfoHtml = CMS_DATA.contact.info.items.map(i => `<a href="${i.link}" class="flex items-center hover:text-blue-500"><i data-lucide="${i.icon}" class="w-5 h-5 mr-3"></i> ${i.text}</a>`).join('');
+    document.getElementById('contact-info-items').innerHTML = contactInfoHtml;
+    const footerLinksHtml = CMS_DATA.footer.quickLinks.map(l => `<a href="${l.target}" class="hover:text-blue-500">${l.text}</a>`).join('');
+    document.getElementById('footer-links').innerHTML = footerLinksHtml;
+    lucide.createIcons();
 
-            if (currentTourStep === tourSteps.length - 1) {
-                tourNextBtn.textContent = 'Finish';
-            } else {
-                tourNextBtn.textContent = 'Next';
-            }
+    // =============================================================================
+    // EVENT LISTENERS & UI LOGIC
+    // =============================================================================
+    const welcomeOverlay = document.getElementById('welcome-overlay');
+    const startTourBtn = document.getElementById('start-tour-btn');
+    const exploreBtn = document.getElementById('explore-btn');
+    const tourExitBtn = document.getElementById('tour-exit-btn');
+    function dismissOverlay(callback) { gsap.to(welcomeOverlay, { opacity: 0, duration: 0.5, onComplete: () => { welcomeOverlay.style.display = 'none'; if (callback) callback(); }}); }
+    startTourBtn.addEventListener('click', () => dismissOverlay(() => tourController.start()));
+    tourExitBtn.addEventListener('click', () => tourController.end());
+    exploreBtn.addEventListener('click', () => dismissOverlay(() => audioController.transitionTo('music_playing')));
+    if (localStorage.getItem('trixelTourPreference')) { welcomeOverlay.style.display = 'none'; } else { gsap.to(welcomeOverlay, { opacity: 1, duration: 0.5, delay: 0.5 }); gsap.to('#welcome-card', { scale: 1, opacity: 1, duration: 0.5, ease: "power2.out", delay: 0.7 }); }
 
-            currentTourStep++;
-        }
+    const aiChatWidget = document.getElementById('ai-chat-widget');
+    const chatMessages = document.getElementById('chat-messages');
+    const closeChatBtn = document.getElementById('close-chat-btn');
+    const aiChatFab = document.getElementById('ai-chat-fab');
 
-        function endTour() {
-            gsap.to(tourProgress, { y: 20, opacity: 0, duration: 0.5, onComplete: () => tourProgress.classList.add('hidden') });
-        }
-
-        startTourBtn.addEventListener('click', startTour);
-        tourNextBtn.addEventListener('click', advanceTour);
-        tourExitBtn.addEventListener('click', endTour);
-
-        exploreBtn.addEventListener('click', () => {
-            dismissOverlay();
-            localStorage.setItem('trixelTourPreference', 'skipped');
-        });
-
-        const tourPreference = localStorage.getItem('trixelTourPreference');
-        if (tourPreference === 'completed' || tourPreference === 'skipped') {
-            welcomeOverlay.style.display = 'none';
+    async function triggerAI(context, userMessage) {
+        audioController.transitionTo('chat_active');
+        showAIChat(userMessage, true);
+        const response = await aiController.getResponse(userMessage, context);
+        showAIChat(response, false);
+    }
+    function showAIChat(message, isUser) {
+        if (isUser) {
+            chatMessages.innerHTML = `<div class="text-sm text-right text-blue-300 mb-2">${message}</div><div class="typing-indicator"><span></span><span></span><span></span></div>`;
         } else {
-            gsap.to(welcomeOverlay, { opacity: 1, duration: 0.5, delay: 0.5 });
-            gsap.to(welcomeCard, { scale: 1, opacity: 1, duration: 0.5, ease: "power2.out", delay: 0.7 });
+            document.querySelector('.typing-indicator')?.remove();
+            chatMessages.innerHTML += `<div class="text-sm text-[var(--text-secondary)]">${message}</div>`;
         }
-
-        // 1. Initialize Lucide Icons
+        aiChatWidget.classList.remove('hidden');
+        gsap.to(aiChatWidget, { translateY: 0, opacity: 1, duration: 0.5, ease: 'power2.out' });
+        chatMessages.scrollTop = chatMessages.scrollHeight;
         lucide.createIcons();
+    }
+    function hideAIChat() { gsap.to(aiChatWidget, { translateY: 10, opacity: 0, duration: 0.3, ease: 'power2.in', onComplete: () => { aiChatWidget.classList.add('hidden'); audioController.resumeFromChat(); }}); }
 
-        // AI Chat Simulation
-        const aiChatWidget = document.getElementById('ai-chat-widget');
-        const chatMessages = document.getElementById('chat-messages');
-        const closeChatBtn = document.getElementById('close-chat-btn');
-        const interactiveButtons = document.querySelectorAll('.interactive-btn');
+    document.body.addEventListener('click', e => { if (e.target.closest('.interactive-btn')) { const btn = e.target.closest('.interactive-btn'); const action = btn.textContent.toLowerCase(); const card = btn.closest('.card'); const serviceTitle = card.querySelector('h3').textContent; const userMessage = CMS_DATA.ai.interactivePrompts[action] || `Tell me more about ${serviceTitle}.`; triggerAI({ title: serviceTitle }, userMessage); } });
+    aiChatFab.addEventListener('click', () => triggerAI({ title: "General Inquiry" }, "I have a general question."));
+    closeChatBtn.addEventListener('click', hideAIChat);
 
-        function showAIChat(message) {
-            chatMessages.innerHTML = `<div class="text-sm text-[var(--text-secondary)]">${message}</div>`;
-            aiChatWidget.classList.remove('hidden');
-            gsap.to(aiChatWidget, {
-                translateY: 0,
-                opacity: 1,
-                duration: 0.5,
-                ease: 'power2.out'
-            });
-            // Re-initialize icons if any were added in the message
-            lucide.createIcons();
-        }
+    const themeToggle = document.getElementById('theme-toggle');
+    function applyTheme(theme) { document.body.classList.toggle('light-theme', theme === 'light'); themeToggle.querySelector('[data-lucide="sun"]').classList.toggle('hidden', theme !== 'light'); themeToggle.querySelector('[data-lucide="moon"]').classList.toggle('hidden', theme === 'light'); }
+    themeToggle.addEventListener('click', () => { const newTheme = document.body.classList.contains('light-theme') ? 'dark' : 'light'; localStorage.setItem('theme', newTheme); applyTheme(newTheme); });
+    applyTheme(localStorage.getItem('theme') || 'dark');
 
-        function hideAIChat() {
-            gsap.to(aiChatWidget, {
-                translateY: 10,
-                opacity: 0,
-                duration: 0.3,
-                ease: 'power2.in',
-                onComplete: () => aiChatWidget.classList.add('hidden')
-            });
-        }
+    const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const mobileMenuBackdrop = document.getElementById('mobile-menu-backdrop');
+    const closeMobileMenu = () => { mobileMenu.classList.remove('active'); mobileMenuBackdrop.classList.remove('active'); };
+    mobileMenuToggle.addEventListener('click', () => { mobileMenu.classList.add('active'); mobileMenuBackdrop.classList.add('active'); });
+    document.getElementById('mobile-nav-links').addEventListener('click', closeMobileMenu);
+    mobileMenuBackdrop.addEventListener('click', closeMobileMenu);
 
-        function simulateAIResponse(service, action) {
-            const responses = {
-                ask: `Of course! What specific questions do you have about our <strong>${service}</strong> service? We can discuss pricing, timelines, or anything else you need to know.`,
-                explain: `Certainly. Our <strong>${service}</strong> is designed to provide maximum value by focusing on key outcomes. We combine expert implementation with strategic planning to ensure you get the best results.`,
-                order: `Excellent choice! To get started with <strong>${service}</strong>, the first step is a quick discovery call to align on your goals. You can schedule one through our contact form below.`
-            };
-            const responseText = responses[action] || `I can help with ${service}. What would you like to do?`;
-            showAIChat(responseText);
-        }
+    const backToTopButton = document.getElementById('back-to-top');
+    window.addEventListener('scroll', () => backToTopButton.classList.toggle('visible', window.scrollY > 300 && !APP_STATE.isTourActive));
+    backToTopButton.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
-        interactiveButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const action = this.textContent.toLowerCase();
-                const card = this.closest('.card');
-                const serviceTitle = card.querySelector('h3').textContent;
-                simulateAIResponse(serviceTitle, action);
-            });
-        });
-
-        closeChatBtn.addEventListener('click', hideAIChat);
-
-        // Enhanced Form Validation
-        function enhanceFormValidation() {
-            const forms = document.querySelectorAll('form[required]');
-            forms.forEach(form => {
-                form.setAttribute('novalidate', true);
-                form.addEventListener('submit', function(event) {
-                    if (!this.checkValidity()) {
-                        event.preventDefault();
-                        event.stopPropagation();
-
-                        this.querySelectorAll('input[required], textarea[required], select[required]').forEach(input => {
-                            if (!input.validity.valid) {
-                                input.classList.add('border-red-500');
-                                input.classList.remove('focus:ring-blue-500');
-                            } else {
-                                input.classList.remove('border-red-500');
-                            }
-                        });
-
-                        const firstInvalidField = this.querySelector('.border-red-500');
-                        if(firstInvalidField) {
-                            firstInvalidField.focus();
-                            alert('Please fill out all required fields correctly.');
-                        }
-                    } else {
-                         this.querySelectorAll('.border-red-500').forEach(input => {
-                            input.classList.remove('border-red-500');
-                         });
-                    }
-                });
-            });
-        }
-        enhanceFormValidation();
-
-        // Audio System Foundation
-        const audioToggle = document.getElementById('audio-toggle');
-        const audioPlayer = document.getElementById('universal-audio-player');
-        const audioIcon = audioToggle.querySelector('i');
-
-        let isAudioPlaying = false;
-
-        audioToggle.addEventListener('click', () => {
-            isAudioPlaying = !isAudioPlaying;
-            console.log(`Audio state toggled. Playing: ${isAudioPlaying}`);
-
-            // Update icon (visually toggle between play and mute)
-            audioIcon.setAttribute('data-lucide', isAudioPlaying ? 'volume-x' : 'volume-2');
-            lucide.createIcons(); // Re-render icons
-
-            // In a future phase, you would add:
-            // if (isAudioPlaying) {
-            //     audioPlayer.play();
-            // } else {
-            //     audioPlayer.pause();
-            // }
-        });
-
-        // 2. Theme Toggle Functionality
-        const themeToggle = document.getElementById('theme-toggle');
-        const sunIcon = themeToggle.querySelector('[data-lucide="sun"]');
-        const moonIcon = themeToggle.querySelector('[data-lucide="moon"]');
-
-        function applyTheme(theme) {
-            if (theme === 'light') {
-                document.body.classList.add('light-theme');
-                sunIcon.classList.remove('hidden');
-                moonIcon.classList.add('hidden');
-            } else {
-                document.body.classList.remove('light-theme');
-                sunIcon.classList.add('hidden');
-                moonIcon.classList.remove('hidden');
-            }
-        }
-
-        themeToggle.addEventListener('click', () => {
-            const isLight = document.body.classList.toggle('light-theme');
-            const newTheme = isLight ? 'light' : 'dark';
-            localStorage.setItem('theme', newTheme);
-            applyTheme(newTheme);
-        });
-
-        const savedTheme = localStorage.getItem('theme') || 'dark';
-        applyTheme(savedTheme);
-
-        // 3. Mobile Menu Functionality
-        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
-        const mobileMenu = document.getElementById('mobile-menu');
-        const mobileMenuBackdrop = document.getElementById('mobile-menu-backdrop');
-
-        const closeMobileMenu = () => {
-            mobileMenu.classList.remove('active');
-            mobileMenuBackdrop.classList.remove('active');
-        };
-
-        mobileMenuToggle.addEventListener('click', () => {
-            mobileMenu.classList.add('active');
-            mobileMenuBackdrop.classList.add('active');
-        });
-
-        document.querySelectorAll('#mobile-menu a').forEach(link => {
-            link.addEventListener('click', closeMobileMenu);
-        });
-
-        mobileMenuBackdrop.addEventListener('click', closeMobileMenu);
-
-        // 4. Back to Top Button
-        const backToTopButton = document.getElementById('back-to-top');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 300) {
-                backToTopButton.classList.add('visible');
-            } else {
-                backToTopButton.classList.remove('visible');
-            }
-        });
-        
-        backToTopButton.addEventListener('click', () => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
-
-        // 5. Form Submission Handlers
-        const contactForm = document.getElementById('contact-form');
-        const reviewForm = document.getElementById('review-form');
-
-        if (contactForm) {
-            contactForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                alert('Thank you for your message! We will get back to you within 24 hours.');
-                contactForm.reset();
-            });
-        }
-
-        if (reviewForm) {
-            reviewForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                alert('Thank you for your review!');
-                reviewForm.reset();
-            });
-        }
-        
-        // 6. Smooth scrolling for nav links (using GSAP)
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const targetId = this.getAttribute('href');
-                gsap.to(window, {
-                    duration: 1,
-                    scrollTo: { y: targetId, offsetY: 70 }, // Added offset for the fixed header
-                    ease: 'power2.inOut'
-                });
-            });
-        });
-
-        // 7. GSAP Animations
-   function initHeroAnimations() {
-    // Safer approach - animate from current visible state
-    const heroTl = gsap.timeline();
+    document.getElementById('contact-form').addEventListener('submit', e => { e.preventDefault(); alert('Thank you for your message!'); e.target.reset(); });
+    document.getElementById('review-form').addEventListener('submit', e => { e.preventDefault(); const reviewText = document.getElementById('review-text').value; if (reviewText.trim()) { const reviews = JSON.parse(localStorage.getItem('trixel-user-reviews') || '[]'); reviews.unshift({ text: reviewText }); localStorage.setItem('trixel-user-reviews', JSON.stringify(reviews)); alert(CMS_DATA.reviews.form.successMessage); e.target.reset(); renderReviews(); } });
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => { anchor.addEventListener('click', function (e) { e.preventDefault(); if (!APP_STATE.isTourActive) gsap.to(window, { duration: 1, scrollTo: { y: this.getAttribute('href'), offsetY: 70 }, ease: 'power2.inOut' }); }); });
     
-    // Animate headline
-    heroTl.fromTo('h1.hero-headline', 
-        { y: 50, opacity: 0 },
-        { duration: 1, y: 0, opacity: 1, ease: "power2.out" }
-    )
-    // Animate subheadline
-    .fromTo('p.text-xl', 
-        { y: 30, opacity: 0 },
-        { duration: 0.8, y: 0, opacity: 1, ease: "power2.out" },
-        "-=0.5"
-    )
-    // Animate description
-    .fromTo('p.text-lg', 
-        { y: 30, opacity: 0 },
-        { duration: 0.8, y: 0, opacity: 1, ease: "power2.out" },
-        "-=0.3"
-    )
-    // Animate CTA button
-    .fromTo('a.btn-primary', 
-        { y: 20, opacity: 0 },
-        { duration: 0.6, y: 0, opacity: 1, ease: "power2.out" },
-        "-=0.2"
-    )
-    // Animate feature cards with stagger
-    .fromTo('#home .card', 
-        { y: 40, opacity: 0 },
-        { 
-            duration: 0.8, 
-            y: 0, 
-            opacity: 1, 
-            stagger: 0.2,
-            ease: "power2.out" 
-        },
-        "-=0.3"
-    );
-}      // Scroll-triggered Animations
-        function initScrollAnimations() {
-            // Animate cards in all sections except the hero
-            gsap.utils.toArray('section:not(#home) .card').forEach(card => {
-                gsap.from(card, {
-                    scrollTrigger: {
-                        trigger: card,
-                        start: "top 85%", // Start animation when card is 85% from the top of the viewport
-                        toggleActions: "play none none none"
-                    },
-                    y: 60,
-                    opacity: 0,
-                    duration: 0.8,
-                    ease: "power2.out"
-                });
-            });
+    gsap.utils.toArray('section:not(#home) .card, section:not(#home) h2, #process-timeline').forEach(el => { gsap.from(el, { scrollTrigger: { trigger: el, start: "top 85%", toggleActions: "play none none none", onToggle: self => self.isActive && !APP_STATE.isTourActive ? self.animation.play() : self.animation.pause() }, y: 50, autoAlpha: 0, duration: 0.8, ease: "power2.out", paused: true }); });
 
-            // Animate section titles
-            gsap.utils.toArray('section h2').forEach(heading => {
-                 gsap.from(heading, {
-                    scrollTrigger: {
-                        trigger: heading,
-                        start: "top 85%",
-                        toggleActions: "play none none none"
-                    },
-                    y: 40,
-                    opacity: 0,
-                    duration: 1,
-                    ease: "power2.out"
-                });
-            });
-
-            // Animate "Our Process" timeline
-            const processTimeline = document.getElementById('process-timeline');
-            if (processTimeline) {
-                const steps = gsap.utils.toArray("#process-timeline .relative > div");
-                gsap.from(steps, {
-                    scrollTrigger: {
-                        trigger: processTimeline,
-                        start: "top 70%",
-                        toggleActions: "play none none none"
-                    },
-                    opacity: 0,
-                    y: 50,
-                    stagger: 0.3,
-                    duration: 0.8,
-                    ease: 'power2.out'
-                });
-            }
-
-            // Micro-interactions for interactive buttons
-            document.querySelectorAll('.interactive-btn').forEach(btn => {
-                btn.addEventListener('mouseenter', () => gsap.to(btn, { y: -2, duration: 0.2, ease: 'power2.out' }));
-                btn.addEventListener('mouseleave', () => gsap.to(btn, { y: 0, duration: 0.2, ease: 'power2.out' }));
-            });
-        }
-
-        initHeroAnimations();
-        initScrollAnimations();
-    });
+    const audioToggle = document.getElementById('audio-toggle');
+    const audioIcon = audioToggle.querySelector('i');
+    audioToggle.addEventListener('click', () => { const isPlaying = audioController.toggleMusic(); audioIcon.setAttribute('data-lucide', isPlaying ? 'volume-2' : 'volume-x'); lucide.createIcons(); });
+});
 </script>
 </body>
 </html>
