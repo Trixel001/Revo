@@ -1,0 +1,267 @@
+﻿CMS INTERFACE UI/UX SPECIFICATION
+TRIXEL TECHNOLOGIES - BUILT-IN CONTENT MANAGEMENT SYSTEM
+
+=== CMS OVERVIEW ===
+
+PURPOSE: In-browser content editing interface for non-technical users
+ACCESS: Hidden developer panel (Ctrl+Shift+C to toggle)
+AUDIENCE: Business owners, marketing team, content managers
+GOAL: Edit all website content without touching code
+
+=== VISUAL DESIGN ===
+
+COLOR SCHEME:
+- Panel Background: #1E293B (Dark blue-gray)
+- Header: #334155 (Medium slate)
+- Input Background: #0F172A (Dark navy)
+- Input Border: #475569 (Light slate)
+- Text Primary: #F1F5F9 (Light gray)
+- Text Secondary: #94A3B8 (Medium gray)
+- Accent Primary: #3B82F6 (Brand blue)
+- Accent Success: #10B981 (Green)
+- Accent Warning: #F59E0B (Amber)
+
+TYPOGRAPHY:
+- Headers: "Inter", 16px, 600 weight
+- Labels: "Inter", 14px, 500 weight  
+- Input Text: "Inter", 14px, 400 weight
+- Buttons: "Inter", 13px, 600 weight
+
+DIMENSIONS:
+- Panel Width: 380px (fixed)
+- Panel Height: 85vh (max-height)
+- Input Height: 40px
+- Button Height: 36px
+- Spacing: 12px between elements
+
+=== CMS PANEL LAYOUT ===
+
+1. HEADER BAR (Fixed top of panel)
+- Left: "✏️ Trixel CMS" + status indicator (green dot = saved)
+- Right: Close button (X) + Minimize button (_)
+- Background: Glass morphism with subtle blur
+- Border bottom: 1px solid #334155
+
+2. TAB NAVIGATION (Below header)
+- Horizontal tab strip: [Content] [Media] [Settings] [Export]
+- Active tab: Blue underline, bold text
+- Hover state: Background lightening
+- Icons: FileText (Content), Image (Media), Settings, Download (Export)
+
+3. CONTENT AREA (Scrollable main area)
+- Section-based organization
+- Real-time preview indicators
+- Save status notifications
+- Collapsible section headers
+
+=== TAB CONTENT ORGANIZATION ===
+
+TAB 1: CONTENT EDITOR
+• HERO SECTION (Expanded by default)
+  - Headline Input (large text area)
+  - Subheadline Input  
+  - Description Textarea
+  - CTA Button Text
+  - Live preview toggle
+
+• SERVICES SECTION (Collapsible)
+  - Service list with expandable cards
+  - Each service: Title + Description + Icon selector
+  - Add/Remove service buttons
+  - Drag & drop reordering
+
+• PORTFOLIO SECTION  
+  - Project cards with image URL + title + description
+  - Image upload/preview area
+  - Tag management chips
+
+• CONTACT INFORMATION
+  - Email, Phone, Social media links
+  - Business hours
+  - Contact form fields
+
+TAB 2: MEDIA MANAGER
+• IMAGE LIBRARY
+  - Thumbnail grid of all images
+  - Upload new image button
+  - Image URL copy functionality
+  - Alt text editing
+
+• AUDIO MANAGEMENT  
+  - Voiceover track selector
+  - Background music library
+  - Audio file upload
+  - Play/pause preview buttons
+
+TAB 3: SETTINGS
+• BUSINESS INFORMATION
+  - Company name, tagline, founder
+  - SEO meta tags
+  - Social media profiles
+
+• AI CONFIGURATION
+  - System instructions editor (code-style textarea)
+  - Greeting messages
+  - Response tone settings
+
+• ANIMATION SETTINGS
+  - Duration sliders
+  - Easing function selectors
+  - Enable/disable animations
+
+TAB 4: EXPORT/IMPORT
+• CMS DATA EXPORT
+  - Pretty-printed JSON display
+  - Copy to clipboard button
+  - Download as file option
+
+• IMPORT DATA
+  - JSON file upload
+  - Textarea for pasting data
+  - Validation status indicator
+
+• BACKUP/RESTORE
+  - Local storage backups
+  - Version history
+  - Reset to defaults
+
+=== INTERACTIVE COMPONENTS ===
+
+1. INPUT FIELDS
+- Text Inputs: Rounded corners, subtle border, focus glow
+- Textareas: Resizable, syntax highlighting for code
+- Select Dropdowns: Custom styled with chevron
+- Color Pickers: Visual color swatches + hex input
+- File Uploads: Drag & drop zones with preview
+
+2. BUTTONS & CONTROLS
+- Primary Buttons: Blue gradient, subtle shadow
+- Secondary Buttons: Transparent with border
+- Icon Buttons: Circular, hover scale effect
+- Toggle Switches: Animated slide toggles
+- Save Button: Persistent in bottom-right corner
+
+3. PREVIEW SYSTEM
+- Live update as you type
+- Side-by-side comparison (old vs new)
+- Mobile/desktop preview toggles
+- Section-specific preview buttons
+
+4. STATUS INDICATORS
+- Saving: Loading spinner → Checkmark
+- Errors: Red border + tooltip message
+- Success: Green flash animation
+- Changes: "Unsaved changes" badge
+
+=== USER INTERACTION FLOW ===
+
+OPENING CMS:
+1. Press Ctrl+Shift+C (developer shortcut)
+2. Panel slides in from right with overlay
+3. Auto-focus on first editable field
+
+EDITING CONTENT:
+1. Click any field → immediate edit mode
+2. Type changes → live preview updates
+3. Field border turns blue when active
+4. Save button pulses when changes exist
+
+SAVING CHANGES:
+1. Click Save or press Ctrl+S
+2. Loading spinner appears
+3. Success checkmark confirms save
+4. Changes immediately reflect on website
+
+NAVIGATION:
+- Tabs for major content categories
+- Collapsible sections within tabs
+- Breadcrumb trail for deep navigation
+- Search/filter within large lists
+
+=== MOBILE RESPONSIVENESS ===
+
+MOBILE ADAPTATIONS:
+- Panel becomes full-screen overlay
+- Larger touch targets (44px min)
+- Simplified tab navigation
+- Stacked layout instead of side-by-side
+- Swipe gestures to close
+
+TOUCH INTERACTIONS:
+- Tap fields to edit
+- Swipe between tabs
+- Pull down to refresh preview
+- Pinch to zoom on image previews
+
+=== ACCESSIBILITY FEATURES ===
+
+KEYBOARD NAVIGATION:
+- Tab through all fields
+- Enter to edit, Escape to cancel
+- Arrow keys for dropdowns
+- Ctrl+S to save, Ctrl+Shift+C to toggle
+
+SCREEN READER SUPPORT:
+- ARIA labels for all interactive elements
+- Live region for status announcements
+- Proper heading structure
+- Descriptive button labels
+
+VISUAL ACCESSIBILITY:
+- High contrast mode support
+- Large text options
+- Reduced motion preferences
+- Focus indicators always visible
+
+=== INTEGRATION WITH MAIN SITE ===
+
+CMS PANEL POSITIONING:
+- Fixed position, top: 50px, right: 20px
+- Z-index: 10000 (above everything)
+- Backdrop overlay when open
+- Non-intrusive to main site interactions
+
+DATA SYNCHRONIZATION:
+- Real-time binding between CMS and live site
+- Instant preview without page refresh
+- Conflict detection for concurrent edits
+- Auto-save drafts every 30 seconds
+
+PERFORMANCE:
+- Lazy loading of tab content
+- Debounced preview updates
+- Efficient DOM manipulation
+- Minimal memory footprint
+
+=== SECURITY & SAFETY FEATURES ===
+
+VALIDATION:
+- Required field highlighting
+- URL format validation
+- Image dimension checks
+- JSON syntax validation
+
+SAFETY MEASURES:
+- Confirm before destructive actions
+- Auto-backup before major changes
+- Undo/redo stack (10 actions)
+- Recovery from bad data
+
+ERROR HANDLING:
+- Graceful failure messages
+- Detailed error explanations
+- Recovery suggestions
+- Contact support option
+
+=== UNIQUE CMS FEATURES ===
+
+1. REAL-TIME PREVIEW - See changes instantly
+2. CONTEXTUAL HELP - Tooltips explaining each field
+3. BULK EDITING - Edit multiple items simultaneously  
+4. TEMPLATE SYSTEM - Save/load content templates
+5. CHANGE HISTORY - Track who changed what and when
+6. COLLABORATION MODE - Multiple editor support
+7. ANALYTICS INTEGRATION - See how content performs
+8. AI ASSISTANCE - Smart content suggestions
+
+This CMS interface provides professional-grade content management while staying completely client-side and integrated within your single HTML file architecture.

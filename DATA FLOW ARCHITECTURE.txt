@@ -1,0 +1,410 @@
+﻿DATA FLOW ARCHITECTURE SPECIFICATION
+TRIXEL TECHNOLOGIES - CLIENT-SIDE DATA MANAGEMENT
+==================================================
+
+CRITICAL CONSTRAINTS:
+- NO BACKEND/DATABASE SYSTEMS
+- SINGLE HTML FILE ARCHITECTURE
+- LOCALSTORAGE FOR MINIMAL PERSISTENCE
+- ALL DATA FLOWS THROUGH CMS_DATA CENTRAL HUB
+
+=== DATA ARCHITECTURE OVERVIEW ===
+
+CENTRAL DATA HUB STRUCTURE:
+
+window.APP_STATE = {
+    // ===== PERSISTENT DATA (LocalStorage) =====
+    persistent: {
+        theme: 'dark',                    // User theme preference
+        audioTrack: 0,                    // Current music track index
+        userReviews: [],                  // Submitted reviews
+        lastTourCompletion: null,         // Tour completion timestamp
+        cmsEdits: {}                      // CMS content overrides
+    },
+    
+    // ===== SESSION DATA (Memory Only) =====
+    session: {
+        currentAudioState: 'idle',        // idle|voiceover|music|paused|chat
+        tourProgress: 0,                  // 0-100% tour completion
+        aiConversation: [],               // Current chat session
+        activeSection: 'home',            // Current visible section
+        interactiveCardStates: new Map()  // Card active/hover states
+    },
+    
+    // ===== RUNTIME CACHE =====
+    cache: {
+        audioBuffers: new Map(),          // Preloaded audio data
+        animationStates: new Map(),       // GSAP animation references
+        domElements: new Map()            // Cached DOM references
+    }
+};
+
+=== DATA FLOW PATTERNS ===
+
+1. CMS_DATA → DOM RENDERING FLOW:
+
+function renderContentFromCMS() {
+    // Source: CMS_DATA (immutable master content)
+    // Process: Transform CMS data to DOM elements
+    // Output: Live website content
+    
+    Object.keys(CMS_DATA).forEach(section => {
+        const sectionData = CMS_DATA[section];
+        const domElement = document.getElementById(section);
+        
+        if (domElement) {
+            renderSection(domElement, sectionData);
+        }
+    });
+}
+
+2. USER INPUT → STATE UPDATE FLOW:
+
+function handleUserInteraction(event) {
+    // Source: User actions (clicks, scrolls, inputs)
+    // Process: Update APP_STATE based on action
+    // Output: State changes trigger UI updates
+    
+    const action = parseUserAction(event);
+    const newState = stateReducer(APP_STATE, action);
+    APP_STATE = newState;
+    
+    // Trigger reactive updates
+    updateUIFromState(APP_STATE);
+}
+
+3. STATE → UI REACTIVE UPDATES:
+
+function updateUIFromState(state) {
+    // Monitor state changes and update UI accordingly
+    Object.keys(state.session).forEach(key => {
+        if (state.session[key] !== previousState.session[key]) {
+            handleStateChange(key, state.session[key]);
+        }
+    });
+}
+
+=== LOCALSTORAGE INTEGRATION ===
+
+PERSISTENCE MANAGER:
+
+class PersistenceManager {
+    constructor() {
+        this.storageKey = 'trixel_app_data';
+        this.autoSaveInterval = 30000; // 30 seconds
+    }
+    
+    saveToLocalStorage() {
+        const dataToSave = {
+            theme: APP_STATE.persistent.theme,
+            audioTrack: APP_STATE.persistent.audioTrack,
+            userReviews: APP_STATE.persistent.userReviews,
+            lastTourCompletion: APP_STATE.persistent.lastTourCompletion,
+            // Don't save large CMS edits automatically
+        };
+        
+        try {
+            localStorage.setItem(this.storageKey, JSON.stringify(dataToSave));
+        } catch (error) {
+            console.warn('LocalStorage save failed:', error);
+            this.handleStorageFull();
+        }
+    }
+    
+    loadFromLocalStorage() {
+        try {
+            const saved = localStorage.getItem(this.storageKey);
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                APP_STATE.persistent = { ...APP_STATE.persistent, ...parsed };
+            }
+        } catch (error) {
+            console.warn('LocalStorage load failed:', error);
+            this.clearCorruptedData();
+        }
+    }
+    
+    handleStorageFull() {
+        // Implement LRU strategy for reviews
+        if (APP_STATE.persistent.userReviews.length > 10) {
+            APP_STATE.persistent.userReviews = 
+                APP_STATE.persistent.userReviews.slice(-5);
+            this.saveToLocalStorage();
+        }
+    }
+}
+
+=== CMS DATA OVERRIDE SYSTEM ===
+
+DYNAMIC CONTENT UPDATES:
+
+class CMSOverrideManager {
+    constructor() {
+        this.overrides = new Map();
+    }
+    
+    applyOverride(section, field, newValue) {
+        // Store override separately from original CMS_DATA
+        this.overrides.set(`${section}.${field}`, newValue);
+        
+        // Update APP_STATE
+        if (!APP_STATE.persistent.cmsEdits[section]) {
+            APP_STATE.persistent.cmsEdits[section] = {};
+        }
+        APP_STATE.persistent.cmsEdits[section][field] = newValue;
+        
+        // Immediately update UI
+        this.updateDOM(section, field, newValue);
+    }
+    
+    getCurrentContent(section, field) {
+        // Check overrides first, then fall back to CMS_DATA
+        const overrideKey = `${section}.${field}`;
+        if (this.overrides.has(overrideKey)) {
+            return this.overrides.get(overrideKey);
+        }
+        
+        // Navigate CMS_DATA object safely
+        return this.getNestedValue(CMS_DATA, [section, field]);
+    }
+    
+    exportOverrides() {
+        return JSON.stringify(Object.fromEntries(this.overrides), null, 2);
+    }
+}
+
+=== USER REVIEWS DATA FLOW ===
+
+REVIEWS MANAGEMENT SYSTEM:
+
+class ReviewsManager {
+    constructor() {
+        this.maxReviews = 50; // Prevent storage overflow
+    }
+    
+    submitReview(reviewData) {
+        const review = {
+            id: this.generateReviewId(),
+            ...reviewData,
+            timestamp: Date.now(),
+            status: 'submitted'
+        };
+        
+        // Add to persistent state
+        APP_STATE.persistent.userReviews.unshift(review);
+        
+        // Enforce storage limits
+        if (APP_STATE.persistent.userReviews.length > this.maxReviews) {
+            APP_STATE.persistent.userReviews = 
+                APP_STATE.persistent.userReviews.slice(0, this.maxReviews);
+        }
+        
+        // Save to localStorage
+        persistenceManager.saveToLocalStorage();
+        
+        // Update UI
+        this.renderReviews();
+        
+        return review;
+    }
+    
+    renderReviews() {
+        const container = document.getElementById('reviews-container');
+        const reviews = APP_STATE.persistent.userReviews;
+        
+        if (reviews.length === 0) {
+            container.innerHTML = this.getEmptyStateHTML();
+            return;
+        }
+        
+        container.innerHTML = reviews.map(review => 
+            this.createReviewCard(review)
+        ).join('');
+    }
+    
+    generateReviewId() {
+        return 'rev_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    }
+}
+
+=== AUDIO STATE MANAGEMENT ===
+
+AUDIO STATE MACHINE:
+
+class AudioStateMachine {
+    constructor() {
+        this.states = {
+            idle: { from: ['music', 'voiceover', 'paused'] },
+            voiceover: { from: ['idle', 'music', 'paused'] },
+            music: { from: ['idle', 'voiceover', 'paused'] },
+            paused: { from: ['voiceover', 'music'] },
+            chat_active: { from: ['voiceover', 'music', 'paused'] }
+        };
+    }
+    
+    transition(newState) {
+        const currentState = APP_STATE.session.currentAudioState;
+        
+        if (this.canTransition(currentState, newState)) {
+            const previousState = currentState;
+            APP_STATE.session.currentAudioState = newState;
+            
+            // Execute state entry actions
+            this.handleStateEntry(newState, previousState);
+            
+            return true;
+        }
+        
+        console.warn(`Invalid state transition: ${currentState} -> ${newState}`);
+        return false;
+    }
+    
+    canTransition(fromState, toState) {
+        return this.states[toState]?.from.includes(fromState) || false;
+    }
+    
+    handleStateEntry(newState, previousState) {
+        switch(newState) {
+            case 'chat_active':
+                this.backupAudioState();
+                audioManager.pause();
+                break;
+            case 'voiceover':
+                if (previousState === 'chat_active') {
+                    this.restoreAudioState();
+                }
+                break;
+            case 'music':
+                audioManager.playBackgroundMusic();
+                break;
+        }
+    }
+}
+
+=== AI CONVERSATION DATA FLOW ===
+
+CONVERSATION STATE MANAGEMENT:
+
+class ConversationStateManager {
+    constructor() {
+        this.sessions = new Map();
+        this.currentSessionId = null;
+    }
+    
+    startNewSession(context = 'general') {
+        const sessionId = 'conv_' + Date.now();
+        
+        this.sessions.set(sessionId, {
+            id: sessionId,
+            context: context,
+            messages: [],
+            startTime: Date.now(),
+            lastActivity: Date.now()
+        });
+        
+        this.currentSessionId = sessionId;
+        APP_STATE.session.aiConversation = this.sessions.get(sessionId);
+        
+        return sessionId;
+    }
+    
+    addMessage(sessionId, role, content, metadata = {}) {
+        const session = this.sessions.get(sessionId);
+        if (!session) return;
+        
+        const message = {
+            role,
+            content,
+            timestamp: Date.now(),
+            ...metadata
+        };
+        
+        session.messages.push(message);
+        session.lastActivity = Date.now();
+        
+        // Keep conversation manageable
+        if (session.messages.length > 20) {
+            session.messages = session.messages.slice(-15);
+        }
+        
+        // Update app state
+        APP_STATE.session.aiConversation = session;
+    }
+    
+    getConversationContext(sessionId) {
+        const session = this.sessions.get(sessionId);
+        if (!session) return '';
+        
+        return session.messages
+            .slice(-6) // Last 3 exchanges
+            .map(msg => `${msg.role}: ${msg.content}`)
+            .join('\n');
+    }
+}
+
+=== PERFORMANCE OPTIMIZATION ===
+
+DATA FLOW OPTIMIZATIONS:
+
+1. LAZY LOADING STRATEGY:
+   - Audio files loaded on demand
+   - Images loaded when visible
+   - CMS data parsed section-by-section
+
+2. EFFICIENT STATE UPDATES:
+   - Batched DOM updates
+   - Debounced save operations
+   - Selective re-rendering
+
+3. MEMORY MANAGEMENT:
+   - Clear unused sessions
+   - Limit history retention
+   - Proper event listener cleanup
+
+4. CACHE STRATEGY:
+   - DOM element caching
+   - Animation instance reuse
+   - API response caching
+
+=== ERROR RECOVERY FLOW ===
+
+DATA INTEGRITY PROTECTION:
+
+function handleDataCorruption() {
+    // Detect corrupted state
+    if (!isValidAppState(APP_STATE)) {
+        // Restore from localStorage backup
+        persistenceManager.loadFromLocalStorage();
+        
+        // Reset session data
+        APP_STATE.session = getDefaultSessionState();
+        
+        // Re-render UI
+        renderContentFromCMS();
+    }
+}
+
+function isValidAppState(state) {
+    return state && 
+           state.persistent && 
+           state.session && 
+           state.cache &&
+           typeof state.session.currentAudioState === 'string';
+}
+
+=== INTEGRATION CHECKLIST ===
+
+DATA FLOW VALIDATION:
+
+✅ CMS_DATA → DOM rendering works
+✅ User interactions → State updates
+✅ State changes → UI updates
+✅ LocalStorage persistence functional
+✅ Audio state transitions smooth
+✅ Review system data flow complete
+✅ AI conversation state managed
+✅ Error recovery mechanisms
+✅ Performance optimizations active
+✅ Memory leaks prevented
+
+This architecture ensures all data flows efficiently through the application while maintaining the single HTML file constraint and providing robust client-side data management.

@@ -1,0 +1,569 @@
+﻿COMPLETE CMS DATA STRUCTURE SPECIFICATION
+TRIXEL TECHNOLOGIES - CENTRALIZED CONTENT MANAGEMENT
+
+=== CMS ARCHITECTURE OVERVIEW ===
+
+STRUCTURE: Single JavaScript object `CMS_DATA` containing all website content
+LOCATION: Embedded within script.js file
+PURPOSE: Centralize all text, media URLs, and configuration for easy updates
+FORMAT: JSON-like JavaScript object with nested properties
+
+=== COMPLETE CMS_DATA OBJECT STRUCTURE ===
+
+const CMS_DATA = {
+    
+    // ===== COMPANY INFORMATION =====
+    company: {
+        name: "Trixel Technologies",
+        logo: "Trixel.Tech",
+        tagline: "Websites That Win Clients — Delivered Within 5 Days.",
+        contact: {
+            email: "trixeltechnologies@gmail.com",
+            phone: "+2347042998527",
+            whatsapp: "https://wa.link/0kclb7",
+            facebook: "https://www.facebook.com/profile.php?id=61578364837694",
+            instagram: "https://www.instagram.com/trixeltechnologies?igsh=bGdydHY2ZDhya2V5"
+        },
+        founder: "Franklin Sebastian"
+    },
+
+    // ===== AUDIO SYSTEM CONFIGURATION =====
+    audio: {
+        voiceTour: {
+            file: "audio/main_voiceover.wav",
+            duration: 133, // seconds for timeline sync
+            segments: {
+                hero: { start: 0, end: 22 },
+                services: { start: 22, end: 85 },
+                process: { start: 86, end: 104 },
+                niche: { start: 105, end: 115 },
+                contact: { start: 116, end: 133 }
+            }
+        },
+        backgroundMusic: [
+            {
+                id: "ambient_1",
+                name: "Cinematic Ambient",
+                file: "audio/background_music_1.mp3",
+                composer: "Mixkit"
+            },
+            {
+                id: "ambient_2", 
+                name: "Inspirational Cinematic",
+                file: "audio/background_music_2.mp3",
+                composer: "Mixkit"
+            },
+            {
+                id: "ambient_3",
+                name: "Corporate Innovation",
+                file: "audio/background_music_3.mp3", 
+                composer: "Mixkit"
+            }
+        ]
+    },
+
+    // ===== WELCOME OVERLAY CONTENT =====
+    welcome: {
+        title: "Welcome to Trixel Technologies",
+        subtitle: "Experience our website with a guided tour or explore on your own",
+        features: [
+            {
+                icon: "play-circle",
+                color: "blue",
+                text: "5-minute interactive tour"
+            },
+            {
+                icon: "zap", 
+                color: "green",
+                text: "See our features in action"
+            },
+            {
+                icon: "clock",
+                color: "purple", 
+                text: "Skip anytime"
+            }
+        ],
+        buttons: {
+            primary: {
+                text: "Start Guided Tour",
+                icon: "play"
+            },
+            secondary: {
+                text: "Explore on My Own", 
+                icon: null
+            }
+        }
+    },
+
+    // ===== NAVIGATION CONTENT =====
+    navigation: {
+        logo: {
+            primary: "Trixel",
+            accent: ".",
+            secondary: "Tech"
+        },
+        menu: [
+            { id: "home", text: "Home" },
+            { id: "services", text: "Services" },
+            { id: "portfolio", text: "Portfolio" },
+            { id: "why-us", text: "Why Us" },
+            { id: "contact", text: "Contact" }
+        ]
+    },
+
+    // ===== HERO SECTION CONTENT =====
+    hero: {
+        headline: {
+            part1: "Websites That ",
+            part2: "Win Clients",
+            gradient: true
+        },
+        subheadline: "Delivered within 5 Days.",
+        description: "We build high-converting websites for service businesses that generate leads and build trust with your potential clients.",
+        cta: {
+            text: "Get Your Website",
+            target: "#contact"
+        },
+        features: [
+            {
+                icon: "rocket",
+                title: "Fast Delivery", 
+                description: "Your complete website ready within just 5 business days."
+            },
+            {
+                icon: "target",
+                title: "Lead-Focused Design",
+                description: "Optimized to convert visitors into paying customers."
+            },
+            {
+                icon: "trending-up",
+                title: "SEO Optimized", 
+                description: "Built to rank higher in Google search results."
+            }
+        ]
+    },
+
+    // ===== SERVICES SECTION CONTENT =====
+    services: {
+        header: {
+            title: "Our Services",
+            description: "We specialize in creating websites that generate leads and build trust for service-based businesses."
+        },
+        items: [
+            {
+                id: "premium-design",
+                icon: "gem",
+                title: "Premium Design",
+                description: "Eye-catching, professional designs that reflect your brand's quality and build instant trust.",
+                interactive: true
+            },
+            {
+                id: "strategic-structure",
+                icon: "layout-template", 
+                title: "Strategic Structure",
+                description: "Conversion-focused layouts that guide visitors toward becoming leads and customers.",
+                interactive: true
+            },
+            {
+                id: "seo-foundation",
+                icon: "search",
+                title: "SEO Foundation", 
+                description: "Built-in search engine optimization to help your business get found by local customers.",
+                interactive: true
+            },
+            {
+                id: "ai-customer-service",
+                icon: "headphones",
+                title: "AI Customer Service",
+                description: "Intelligent chatbots and virtual assistants that handle customer inquiries 24/7, improving satisfaction and reducing response times.",
+                interactive: true
+            },
+            {
+                id: "productivity-gem",
+                icon: "settings",
+                title: "Productivity Gem Setup",
+                description: "Custom implementation of productivity tools and automation gems that streamline your business operations and boost efficiency.", 
+                interactive: true
+            },
+            {
+                id: "ongoing-support",
+                icon: "life-buoy",
+                title: "Ongoing Support",
+                description: "Reliable technical support and website maintenance to keep your site running smoothly.",
+                interactive: true
+            }
+        ]
+    },
+
+    // ===== PORTFOLIO SECTION CONTENT =====
+    portfolio: {
+        header: {
+            title: "Our Recent Work", 
+            description: "See how we can help service businesses attract more clients with strategic web design."
+        },
+        projects: [
+            {
+                id: "elite-roofing",
+                image: "images/portfolio/roofing-project.jpg",
+                title: "Elite Roofing Solutions",
+                category: "Roofing Services Website", 
+                tags: ["Design", "Lead Gen", "SEO"],
+                placeholder: "https://placehold.co/600x400/0D1117/3B82F6?text=Elite+Roofing"
+            },
+            {
+                id: "airtech-pro",
+                image: "images/portfolio/hvac-project.jpg",
+                title: "AirTech Pro",
+                category: "HVAC Services Website",
+                tags: ["Design", "Lead Gen", "Local SEO"],
+                placeholder: "https://placehold.co/600x400/0D1117/3B82F6?text=AirTech+Pro"
+            },
+            {
+                id: "greenscape-pro", 
+                image: "images/portfolio/landscaping-project.jpg",
+                title: "GreenScape Pro",
+                category: "Landscaping Services Website",
+                tags: ["Design", "Lead Gen", "Content"],
+                placeholder: "https://placehold.co/600x400/0D1117/3B82F6?text=GreenScape"
+            }
+        ],
+        cta: {
+            text: "See Your Business Here",
+            target: "#contact"
+        }
+    },
+
+    // ===== WHY US SECTION CONTENT =====
+    whyUs: {
+        header: {
+            title: "Why Choose Trixel",
+            description: "We understand the unique needs of service businesses and build websites that actually work for you."
+        },
+        features: [
+            {
+                icon: "zap",
+                title: "5-Day Delivery", 
+                description: "Our streamlined process delivers your complete website in just 5 business days, so you can start generating leads faster.",
+                interactive: true
+            },
+            {
+                icon: "magnet",
+                title: "Lead Generation Focus",
+                description: "Every element is strategically designed to convert visitors into leads with clear calls-to-action and trust-building elements.",
+                interactive: true
+            },
+            {
+                icon: "shield-check",
+                title: "SEO Built-In",
+                description: "Your website is optimized for local search from day one, helping your business appear in Google searches for your services.", 
+                interactive: true
+            },
+            {
+                icon: "wrench",
+                title: "Service Business Specialists",
+                description: "We exclusively work with service businesses, giving us deep insight into what works for roofing, HVAC, landscaping, and more.",
+                interactive: true
+            }
+        ],
+        process: {
+            title: "Our Process is Simple",
+            steps: [
+                {
+                    number: 1,
+                    title: "Discovery Call",
+                    description: "We learn about your business, goals, and what sets you apart from competitors."
+                },
+                {
+                    number: 2, 
+                    title: "Design & Development",
+                    description: "Our team creates your custom website with a focus on lead generation."
+                },
+                {
+                    number: 3,
+                    title: "Review & Refinement", 
+                    description: "You review the site and we make any necessary adjustments."
+                },
+                {
+                    number: 4,
+                    title: "Launch",
+                    description: "Your new website goes live and starts generating leads for your business."
+                }
+            ]
+        }
+    },
+
+    // ===== USER REVIEWS SECTION CONTENT =====
+    reviews: {
+        header: {
+            title: "Client Reviews",
+            description: "See what our clients say about our service"
+        },
+        initialReviews: [
+            // Can be empty array or pre-populated with sample reviews
+        ],
+        form: {
+            title: "Share Your Experience",
+            placeholder: "Tell us about your experience...",
+            submitText: "Submit Review",
+            successMessage: "Thank you for your review! It has been submitted successfully.",
+            emptyState: "No reviews yet. Be the first to share your experience!"
+        }
+    },
+
+    // ===== SPECIAL PROJECTS SECTION CONTENT =====
+    specialProjects: {
+        title: "Beyond Our Niche: Custom Tech Solutions",
+        description: "While we specialize in websites for service businesses, our expertise doesn't stop there. On special occasions, we partner with clients on unique digital projects. If you need a custom web application, a specialized e-commerce platform, or other advanced web development services, we're ready to build the custom solution your vision requires.",
+        cta: {
+            text: "Discuss a Custom Project",
+            target: "#contact"
+        }
+    },
+
+    // ===== CONTACT SECTION CONTENT =====
+    contact: {
+        header: {
+            title: "Get Your Website within 5 Days",
+            description: "Fill out the form below to start the conversation. We'll get back to you within 24 hours."
+        },
+        form: {
+            fields: [
+                {
+                    id: "name",
+                    label: "Full Name",
+                    type: "text",
+                    placeholder: "Your name",
+                    required: true
+                },
+                {
+                    id: "email", 
+                    label: "Email Address",
+                    type: "email",
+                    placeholder: "your@email.com",
+                    required: true
+                },
+                {
+                    id: "phone",
+                    label: "Phone Number", 
+                    type: "tel",
+                    placeholder: "(123) 456-7890",
+                    required: false
+                },
+                {
+                    id: "business",
+                    label: "Business Type",
+                    type: "select",
+                    options: ["Roofing", "HVAC", "Landscaping", "Remodeling", "Other"],
+                    required: true
+                },
+                {
+                    id: "message",
+                    label: "Project Details", 
+                    type: "textarea",
+                    placeholder: "Tell us about your needs...",
+                    required: true
+                },
+                {
+                    id: "budget",
+                    label: "Budget Range",
+                    type: "range",
+                    min: 500,
+                    max: 5000,
+                    step: 100,
+                    defaultValue: 1500
+                }
+            ],
+            submitText: "Get Started"
+        },
+        info: {
+            title: "Contact Information",
+            items: [
+                {
+                    icon: "mail",
+                    text: "trixeltechnologies@gmail.com",
+                    type: "email",
+                    link: "mailto:trixeltechnologies@gmail.com"
+                },
+                {
+                    icon: "phone",
+                    text: "(234) 704-299-8527", 
+                    type: "phone",
+                    link: "tel:+2347042998527"
+                },
+                {
+                    icon: "message-square",
+                    text: "Message us on WhatsApp",
+                    type: "whatsapp", 
+                    link: "https://wa.link/0kclb7"
+                }
+            ]
+        },
+        testimonial: {
+            quote: "I highly recommend Trixel, their ability to truly listen and understand a client's needs sets them apart. Most importantly they respect timelines and deliver work on schedule.",
+            author: "Wesley Estrella",
+            company: "Spotlight Management"
+        }
+    },
+
+    // ===== FOOTER CONTENT =====
+    footer: {
+        brand: {
+            name: "Trixel.Tech",
+            description: "Websites That Win Clients — Delivered Within 5 Days."
+        },
+        quickLinks: [
+            { text: "Home", target: "#home" },
+            { text: "Services", target: "#services" },
+            { text: "Portfolio", target: "#portfolio" },
+            { text: "Why Us", target: "#why-us" }
+        ],
+        services: [
+            "Roofing Companies",
+            "HVAC Contractors", 
+            "Landscaping",
+            "Remodeling"
+        ],
+        copyright: "© 2025 Trixel Technologies. All rights reserved."
+    },
+
+    // ===== AI SYSTEM CONFIGURATION =====
+    ai: {
+        name: "Trixie",
+        greeting: "Hello! I'm Trixie, your AI assistant. How can I help you with Trixel Technologies' services today?",
+        status: "Online",
+        systemInstructions: `TRIXEL TECHNOLOGIES — WEBSITE PACKAGES FOR SERVICE BUSINESSES
+
+BUSINESS CONTEXT:
+Trixel Technologies builds high-converting websites for service businesses with 5-day delivery.
+Specialized for: Roofing • Remodeling • Landscaping • HVAC
+
+WEBSITE PACKAGES (DO NOT MENTION PRICING):
+• STARTER WEBSITE: Professional design, mobile-responsive, basic setup
+• LEAD BUILDER WEBSITE: Contact forms, SEO optimization, lead generation focus  
+• AUTHORITY WEBSITE: Advanced features, AI chatbot, enhanced visuals
+
+KEY DIFFERENTIATORS:
+- 5-Day delivery guarantee
+- Service business specialization  
+- Lead-focused design approach
+- Built-in SEO optimization
+
+CONTACT INFORMATION:
+Email: trixeltechnologies@gmail.com
+WhatsApp: https://wa.link/0kclb7
+Phone: (234) 704-299-8527
+
+TONE GUIDELINES:
+- Friendly, professional, approachable
+- Avoid robotic or repetitive language
+- Do not say the word "context"
+- Focus on benefits and solutions
+- Be concise but helpful
+- Never mention specific pricing
+
+RESPONSE FORMAT:
+- Use natural, conversational language
+- Include relevant emojis when appropriate  
+- Break complex information into readable chunks
+- Always maintain professional business tone`,
+        
+        interactivePrompts: {
+            ask: "Hi — what questions do you have about this service?",
+            explain: "Sure — I'll explain this service in simple terms.", 
+            order: "Great — let's go over how to order and next steps."
+        }
+    },
+
+    // ===== INTERACTIVE BUTTONS CONFIGURATION =====
+    interactiveButtons: {
+        ask: {
+            text: "Ask",
+            color: "blue",
+            action: "triggerAI"
+        },
+        explain: {
+            text: "Explain", 
+            color: "purple",
+            action: "triggerExplanation"
+        },
+        order: {
+            text: "Order",
+            color: "green", 
+            action: "triggerOrderFlow"
+        }
+    },
+
+    // ===== ANIMATION CONFIGURATION =====
+    animations: {
+        durations: {
+            fadeIn: 0.6,
+            stagger: 0.15,
+            hover: 0.3,
+            focus: 0.2
+        },
+        delays: {
+            heroHeadline: 0,
+            heroSubheadline: 0.2,
+            heroDescription: 0.4,
+            heroCTA: 0.6,
+            featureCards: [0.8, 1.0, 1.2]
+        },
+        easings: {
+            primary: "power2.out",
+            secondary: "back.out(1.7)", 
+            tertiary: "expo.out"
+        }
+    },
+
+    // ===== PERFORMANCE CONFIGURATION =====
+    performance: {
+        lazyLoad: true,
+        debounceScroll: 16,
+        optimizeAnimations: true,
+        localStorageKeys: {
+            theme: "trixel-theme",
+            audioTrack: "trixel-audio-track",
+            userReviews: "trixel-user-reviews"
+        }
+    }
+};
+
+=== CMS USAGE INSTRUCTIONS ===
+
+1. CONTENT UPDATES:
+   - Modify any text content directly in CMS_DATA object
+   - Add new services to services.items array
+   - Update portfolio projects in portfolio.projects array
+   - Modify contact information in company.contact
+
+2. AUDIO MANAGEMENT:
+   - Replace audio file URLs to update voice tour or music
+   - Add new background music tracks to audio.backgroundMusic array
+   - Update segment timings for voice tour synchronization
+
+3. AI CUSTOMIZATION:
+   - Modify systemInstructions to change AI behavior
+   - Update interactive prompts for different button responses
+   - Adjust tone and business context as needed
+
+4. STYLING UPDATES:
+   - Colors are managed in CSS, but content colors referenced here
+   - Icons are Lucide icons - use valid icon names from Lucide library
+
+5. ADDING NEW SECTIONS:
+   - Create new section object following existing patterns
+   - Add section to appropriate location in CMS_DATA
+   - Update navigation.menu if adding new main sections
+
+=== CMS DATA VALIDATION RULES ===
+
+REQUIRED FIELDS:
+- All section headers must have title and description
+- All interactive items must have id, icon, title, description
+- All contact methods must have icon, text, and link
+- All AI configuration must be present and properly formatted
+
+OPTIONAL FIELDS:
+- Image placeholders can use CDN URLs
+- Initial reviews array can be empty
+- A

@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trixel Technologies - Websites That Win Clients</title>
+    <meta name="description" content="We build high-converting websites for service businesses that generate leads and build trust with your potential clients. Delivered within 5 Days.">
+    
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lexend:wght@600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+<!-- GSAP Core -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<!-- GSAP ScrollTrigger -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <style type="text/tailwindcss">
+        :root {
+            --bg-primary: #0D1117;
+            --bg-card: #161B22;
+            --border-color: #30363D;
+            --text-primary: #F0F6FC;
+            --text-secondary: #8B949E;
+        }
+
+        .light-theme {
+            --bg-primary: #F0F6FC;
+            --bg-card: #FFFFFF;
+            --border-color: #D0D7DE;
+            --text-primary: #0D1117;
+            --text-secondary: #57606A;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Lexend', sans-serif;
+            color: var(--text-primary);
+        }
+        .glass-morphism {
+            background: rgba(22, 27, 34, 0.6);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .light-theme .glass-morphism {
+            background: rgba(255, 255, 255, 0.6);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #3B82F6, #2563EB);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .btn-primary {
+            @apply px-6 py-3 rounded-lg font-semibold text-white transition-all duration-300;
+            background: linear-gradient(135deg, #3B82F6, #2563EB);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+        }
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(59, 130, 246, 0.8);
+        }
+        .btn-secondary {
+            @apply px-6 py-3 rounded-lg font-semibold border border-blue-500 text-blue-500 transition-all duration-300;
+        }
+        .btn-secondary:hover {
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+        .card {
+            @apply bg-[var(--bg-card)] border border-[var(--border-color)] rounded-xl p-6 transition-all duration-300 flex flex-col;
+        }
+        .card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+            border-color: #3B82F6;
+        }
+        .hero-grid-pattern {
+            background-image: linear-gradient(rgba(13, 17, 23, 0) 1px, var(--bg-primary) 1px), linear-gradient(90deg, rgba(13, 17, 23, 0) 1px, var(--bg-primary) 1px);
+            background-size: 40px 40px;
+            mask-image: radial-gradient(ellipse 80% 50% at 50% 50%, black 40%, transparent 100%);
+        }
+        .form-input {
+            @apply w-full bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 text-[var(--text-primary)];
+        }
+        .light-theme .form-input {
+            color: var(--text-primary);
+        }
+        .light-theme select.form-input {
+            color: var(--text-primary);
+        }
+        #back-to-top {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        #back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+    #mobile-menu {
+    @apply fixed top-0 right-0 h-screen w-64 bg-[var(--bg-card)] z-50;
+    transition: transform 0.3s ease-in-out;
+    transform: translateX(100%);
+}
+#mobile-menu.active {
+    transform: translateX(0);
+}
+#mobile-menu-backdrop {
+    @apply fixed inset-0 bg-black/50 z-40;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+}
+#mobile-menu-backdrop.active {
+    opacity: 1;
+    visibility: visible;
+}
+        .interactive-btn {
+            @apply px-3 py-1 rounded-md text-sm transition-all duration-200;
+        }
+        .interactive-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Mobile Hero Spacing Fix */
+        @media (max-width: 640px) {
+            #home {
+                padding-top: 5rem !important;
+            }
+            h1.hero-headline {
+                margin-top: 1rem;
+                margin-bottom: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Navigation Bar -->
+    <header class="fixed top-0 left-0 right-0 z-40 glass-morphism h-16">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-full">
+            <a href="#" class="text-2xl font-bold">Trixel<span class="text-blue-500">.</span>Tech</a>
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#home" class="hover:text-blue-500 transition-colors">Home</a>
+                <a href="#services" class="hover:text-blue-500 transition-colors">Services</a>
+                <a href="#portfolio" class="hover:text-blue-500 transition-colors">Portfolio</a>
+                <a href="#why-us" class="hover:text-blue-500 transition-colors">Why Us</a>
+                <a href="#contact" class="hover:text-blue-500 transition-colors">Contact</a>
+            </div>
+            <div class="flex items-center space-x-4">
+                <a href="https://wa.me/2347042998527" target="_blank" rel="noopener noreferrer" class="p-2 rounded-full hover:bg-gray-700/50" aria-label="Chat on WhatsApp">
+        <i data-lucide="message-square"></i>
+    </a>
+                <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-700/50">
+                    <i data-lucide="sun" class="hidden"></i>
+                    <i data-lucide="moon"></i>
+                </button>
+                <button id="mobile-menu-toggle" class="md:hidden p-2 rounded-full hover:bg-gray-700/50"><i data-lucide="menu"></i></button>
+            </div>
+        </nav>
+    </header>
+    
+ 
+    <!-- Mobile Menu -->
+<div id="mobile-menu" class="p-8 md:hidden">
+    <div class="flex flex-col space-y-6 text-left">
+        <a href="#home" class="hover:text-blue-500 transition-colors py-2 text-lg">Home</a>
+        <a href="#services" class="hover:text-blue-500 transition-colors py-2 text-lg">Services</a>
+        <a href="#portfolio" class="hover:text-blue-500 transition-colors py-2 text-lg">Portfolio</a>
+        <a href="#why-us" class="hover:text-blue-500 transition-colors py-2 text-lg">Why Us</a>
+        <a href="#contact" class="hover:text-blue-500 transition-colors py-2 text-lg">Contact</a>
+    </div>
+</div>
+<div id="mobile-menu-backdrop" class="md:hidden"></div>
+
+    <main>
+        <!-- Hero Section -->
+        <section id="home" class="relative min-h-screen flex items-center justify-center text-center overflow-hidden pt-16">
+            <div class="absolute inset-0 hero-grid-pattern"></div>
+            <div class="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
+                <h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter hero-headline">Websites That <span class="gradient-text">Win Clients</span></h1>
+                <p class="text-xl md:text-2xl font-bold mb-6">Delivered within 5 Days.</p>
+                <p class="max-w-3xl mx-auto text-lg text-[var(--text-secondary)] mb-10">We build high-converting websites for service businesses that generate leads and build trust with your potential clients.</p>
+                <a href="#contact" class="btn-primary text-lg">Get Your Website</a>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-20 text-left">
+                    <div class="card">
+                        <i data-lucide="rocket" class="w-8 h-8 text-blue-500 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">Fast Delivery</h3>
+                        <p class="text-[var(--text-secondary)]">Your complete website ready within just 5 business days.</p>
+                    </div>
+                    <div class="card">
+                        <i data-lucide="target" class="w-8 h-8 text-blue-500 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">Lead-Focused Design</h3>
+                        <p class="text-[var(--text-secondary)]">Optimized to convert visitors into paying customers.</p>
+                    </div>
+                    <div class="card">
+                        <i data-lucide="trending-up" class="w-8 h-8 text-blue-500 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">SEO Optimized</h3>
+                        <p class="text-[var(--text-secondary)]">Built to rank higher in Google search results.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Services Section -->
+        <section id="services" class="py-20">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold">Our Services</h2>
+                    <p class="max-w-2xl mx-auto text-lg text-[var(--text-secondary)] mt-4">We specialize in creating websites that generate leads and build trust for service-based businesses.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="card">
+                        <i data-lucide="gem" class="w-8 h-8 text-blue-500 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">Premium Design</h3>
+                        <p class="text-[var(--text-secondary)] mb-4 flex-1">Eye-catching, professional designs that reflect your brand's quality and build instant trust.</p>
+                        <div class="flex flex-wrap gap-2 mt-auto">
+                            <button class="interactive-btn bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">Ask</button>
+                            <button class="interactive-btn bg-purple-500/20 text-purple-400 hover:bg-purple-500/30">Explain</button>
+                            <button class="interactive-btn bg-green-500/20 text-green-400 hover:bg-green-500/30">Order</button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <i data-lucide="layout-template" class="w-8 h-8 text-blue-500 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">Strategic Structure</h3>
+                        <p class="text-[var(--text-secondary)] mb-4 flex-1">Conversion-focused layouts that guide visitors toward becoming leads and customers.</p>
+                        <div class="flex flex-wrap gap-2 mt-auto">
+                            <button class="interactive-btn bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">Ask</button>
+                            <button class="interactive-btn bg-purple-500/20 text-purple-400 hover:bg-purple-500/30">Explain</button>
+                            <button class="interactive-btn bg-green-500/20 text-green-400 hover:bg-green-500/30">Order</button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <i data-lucide="search" class="w-8 h-8 text-blue-500 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">SEO Foundation</h3>
+                        <p class="text-[var(--text-secondary)] mb-4 flex-1">Built-in search engine optimization to help your business get found by local customers.</p>
+                        <div class="flex flex-wrap gap-2 mt-auto">
+                            <button class="interactive-btn bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">Ask</button>
+                            <button class="interactive-btn bg-purple-500/20 text-purple-400 hover:bg-purple-500/30">Explain</button>
+                            <button class="interactive-btn bg-green-500/20 text-green-400 hover:bg-green-500/30">Order</button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <i data-lucide="headphones" class="w-8 h-8 text-blue-500 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">AI Customer Service</h3>
+                        <p class="text-[var(--text-secondary)] mb-4 flex-1">Intelligent chatbots and virtual assistants that handle customer inquiries 24/7, improving satisfaction and reducing response times.</p>
+                        <div class="flex flex-wrap gap-2 mt-auto">
+                            <button class="interactive-btn bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">Ask</button>
+                            <button class="interactive-btn bg-purple-500/20 text-purple-400 hover:bg-purple-500/30">Explain</button>
+                            <button class="interactive-btn bg-green-500/20 text-green-400 hover:bg-green-500/30">Order</button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <i data-lucide="settings" class="w-8 h-8 text-blue-500 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">Productivity Gem Setup</h3>
+                        <p class="text-[var(--text-secondary)] mb-4 flex-1">Custom implementation of productivity tools and automation gems that streamline your business operations and boost efficiency.</p>
+                        <div class="flex flex-wrap gap-2 mt-auto">
+                            <button class="interactive-btn bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">Ask</button>
+                            <button class="interactive-btn bg-purple-500/20 text-purple-400 hover:bg-purple-500/30">Explain</button>
+                            <button class="interactive-btn bg-green-500/20 text-green-400 hover:bg-green-500/30">Order</button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <i data-lucide="life-buoy" class="w-8 h-8 text-blue-500 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">Ongoing Support</h3>
+                        <p class="text-[var(--text-secondary)] mb-4 flex-1">Reliable technical support and website maintenance to keep your site running smoothly.</p>
+                        <div class="flex flex-wrap gap-2 mt-auto">
+                            <button class="interactive-btn bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">Ask</button>
+                            <button class="interactive-btn bg-purple-500/20 text-purple-400 hover:bg-purple-500/30">Explain</button>
+                            <button class="interactive-btn bg-green-500/20 text-green-400 hover:bg-green-500/30">Order</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Portfolio Section -->
+        <section id="portfolio" class="py-20 bg-[var(--bg-card)] border-y border-[var(--border-color)]">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold">Our Recent Work</h2>
+                    <p class="max-w-2xl mx-auto text-lg text-[var(--text-secondary)] mt-4">See how we can help service businesses attract more clients with strategic web design.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="card overflow-hidden p-0">
+                        <img src="https://via.placeholder.com/400x250/1a202c/808080?text=Elite+Roofing" alt="Elite Roofing Solutions" class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold">Elite Roofing Solutions</h3>
+                            <p class="text-[var(--text-secondary)] mb-4">Roofing Services Website</p>
+                        </div>
+                    </div>
+                    <div class="card overflow-hidden p-0">
+                        <img src="https://via.placeholder.com/400x250/1a202c/808080?text=AirTech+Pro" alt="AirTech Pro" class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold">AirTech Pro</h3>
+                            <p class="text-[var(--text-secondary)] mb-4">HVAC Services Website</p>
+                        </div>
+                    </div>
+                    <div class="card overflow-hidden p-0">
+                        <img src="https://via.placeholder.com/400x250/1a202c/808080?text=GreenScape+Pro" alt="GreenScape Pro" class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold">GreenScape Pro</h3>
+                            <p class="text-[var(--text-secondary)] mb-4">Landscaping Services Website</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Why Us Section -->
+        <section id="why-us" class="py-20">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold">Why Choose Trixel</h2>
+                    <p class="max-w-2xl mx-auto text-lg text-[var(--text-secondary)] mt-4">We understand the unique needs of service businesses and build websites that actually work for you.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+                    <div class="card">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 rounded-lg bg-blue-500/20 flex-shrink-0 flex items-center justify-center mr-4"><i data-lucide="zap" class="w-6 h-6 text-blue-500"></i></div>
+                            <h3 class="text-xl font-semibold">5-Day Delivery</h3>
+                        </div>
+                        <p class="text-[var(--text-secondary)] mb-4 flex-1">Our streamlined process delivers your complete website in just 5 business days, so you can start generating leads faster.</p>
+                        <div class="flex flex-wrap gap-2 mt-auto">
+                            <button class="interactive-btn bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">Ask</button>
+                            <button class="interactive-btn bg-purple-500/20 text-purple-400 hover:bg-purple-500/30">Explain</button>
+                            <button class="interactive-btn bg-green-500/20 text-green-400 hover:bg-green-500/30">Order</button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 rounded-lg bg-blue-500/20 flex-shrink-0 flex items-center justify-center mr-4"><i data-lucide="magnet" class="w-6 h-6 text-blue-500"></i></div>
+                            <h3 class="text-xl font-semibold">Lead Generation Focus</h3>
+                        </div>
+                        <p class="text-[var(--text-secondary)] mb-4 flex-1">Every element is strategically designed to convert visitors into leads with clear calls-to-action and trust-building elements.</p>
+                        <div class="flex flex-wrap gap-2 mt-auto">
+                            <button class="interactive-btn bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">Ask</button>
+                            <button class="interactive-btn bg-purple-500/20 text-purple-400 hover:bg-purple-500/30">Explain</button>
+                            <button class="interactive-btn bg-green-500/20 text-green-400 hover:bg-green-500/30">Order</button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 rounded-lg bg-blue-500/20 flex-shrink-0 flex items-center justify-center mr-4"><i data-lucide="shield-check" class="w-6 h-6 text-blue-500"></i></div>
+                            <h3 class="text-xl font-semibold">SEO Built-In</h3>
+                        </div>
+                        <p class="text-[var(--text-secondary)] mb-4 flex-1">Your website is optimized for local search from day one, helping your business appear in Google searches for your services.</p>
+                        <div class="flex flex-wrap gap-2 mt-auto">
+                            <button class="interactive-btn bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">Ask</button>
+                            <button class="interactive-btn bg-purple-500/20 text-purple-400 hover:bg-purple-500/30">Explain</button>
+                            <button class="interactive-btn bg-green-500/20 text-green-400 hover:bg-green-500/30">Order</button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 rounded-lg bg-blue-500/20 flex-shrink-0 flex items-center justify-center mr-4"><i data-lucide="wrench" class="w-6 h-6 text-blue-500"></i></div>
+                            <h3 class="text-xl font-semibold">Service Business Specialists</h3>
+                        </div>
+                        <p class="text-[var(--text-secondary)] mb-4 flex-1">We exclusively work with service businesses, giving us deep insight into what works for roofing, HVAC, landscaping, and more.</p>
+                        <div class="flex flex-wrap gap-2 mt-auto">
+                            <button class="interactive-btn bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">Ask</button>
+                            <button class="interactive-btn bg-purple-500/20 text-purple-400 hover:bg-purple-500/30">Explain</button>
+                            <button class="interactive-btn bg-green-500/20 text-green-400 hover:bg-green-500/30">Order</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- START: Our Process is Simple Section -->
+<div class="card max-w-4xl mx-auto">
+    <h3 class="text-2xl font-bold text-center mb-8">Our Process is Simple</h3>
+    <div class="relative">
+        <!-- Timeline line for desktop -->
+        <div class="absolute left-1/2 -translate-x-1/2 h-full w-0.5 bg-[var(--border-color)] hidden md:block" aria-hidden="true"></div>
+
+        <div class="space-y-12">
+            <!-- Step 1 -->
+            <div class="md:flex items-center md:space-x-8 relative">
+                <div class="md:w-1/2 md:text-right">
+                    <div class="flex items-center justify-center md:justify-end mb-2 md:mb-0">
+                        <div class="md:order-2 text-center">
+                            <h4 class="text-lg font-semibold">DISCOVERY CALL</h4>
+                            <p class="text-[var(--text-secondary)]">We learn about your business, goals, and what sets you apart from competitors.</p>
+                        </div>
+                        <div class="md:order-1 bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold mx-4">1</div>
+                    </div>
+                </div>
+                <div class="hidden md:block w-1/2"></div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="md:flex items-center md:space-x-8 relative">
+                <div class="hidden md:block w-1/2"></div>
+                <div class="md:w-1/2 md:text-left">
+                     <div class="flex items-center justify-center md:justify-start mb-2 md:mb-0">
+                        <div class="bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold mx-4">2</div>
+                        <div class="text-center">
+                            <h4 class="text-lg font-semibold">DESIGN & DEVELOPMENT</h4>
+                            <p class="text-[var(--text-secondary)]">Our team creates your custom website with a focus on lead generation.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="md:flex items-center md:space-x-8 relative">
+                <div class="md:w-1/2 md:text-right">
+                    <div class="flex items-center justify-center md:justify-end mb-2 md:mb-0">
+                        <div class="md:order-2 text-center">
+                            <h4 class="text-lg font-semibold">REVIEW & REFINEMENT</h4>
+                            <p class="text-[var(--text-secondary)]">You review the site and we make any necessary adjustments.</p>
+                        </div>
+                        <div class="md:order-1 bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold mx-4">3</div>
+                    </div>
+                </div>
+                <div class="hidden md:block w-1/2"></div>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="md:flex items-center md:space-x-8 relative">
+                <div class="hidden md:block w-1/2"></div>
+                <div class="md:w-1/2 md:text-left">
+                    <div class="flex items-center justify-center md:justify-start mb-2 md:mb-0">
+                        <div class="bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold mx-4">4</div>
+                        <div class="text-center">
+                            <h4 class="text-lg font-semibold">LAUNCH</h4>
+                            <p class="text-[var(--text-secondary)]">Your new website goes live and starts generating leads for your business.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END: Our Process is Simple Section -->
+        </section>
+        
+       
+
+        <!-- User Reviews Section -->
+        <section id="reviews" class="py-20">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold">Client Reviews</h2>
+                    <p class="max-w-2xl mx-auto text-lg text-[var(--text-secondary)] mt-4">See what our clients say about our service</p>
+                </div>
+                <div id="reviews-container" class="min-h-[200px] flex items-center justify-center mb-12">
+                    <div class="text-center text-[var(--text-secondary)] p-8">
+                        No reviews yet. Be the first to share your experience!
+                    </div>
+                </div>
+                <div class="card max-w-2xl mx-auto">
+                    <h3 class="text-2xl font-bold mb-4">Share Your Experience</h3>
+                    <form id="review-form">
+                        <div class="mb-4">
+                            <textarea rows="4" placeholder="Tell us about your experience..." class="form-input" required></textarea>
+                        </div>
+                        <button type="submit" class="btn-primary w-full">Submit Review</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="py-20">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold">Get Your Website within 5 Days</h2>
+                    <p class="max-w-2xl mx-auto text-lg text-[var(--text-secondary)] mt-4">Fill out the form below to start the conversation. We'll get back to you within 24 hours.</p>
+                </div>
+                <div class="flex flex-col lg:flex-row gap-12">
+                    <div class="lg:w-2/3">
+                        <form id="contact-form" class="space-y-4">
+                            <input type="text" placeholder="Full Name" class="form-input" required>
+                            <input type="email" placeholder="Email Address" class="form-input" required>
+                            <input type="tel" placeholder="Phone Number" class="form-input">
+                            <select class="form-input" required>
+                                <option value="" disabled selected>Select a business type</option>
+                                <option value="Roofing">Roofing</option>
+                                <option value="HVAC">HVAC</option>
+                                <option value="Landscaping">Landscaping</option>
+                                <option value="Remodeling">Remodeling</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <textarea rows="4" placeholder="Project Details" class="form-input" required></textarea>
+                            <button type="submit" class="btn-primary w-full">Get Started</button>
+                        </form>
+                    </div>
+                    <div class="lg:w-1/3 space-y-8">
+                        <div class="card">
+                            <h3 class="text-xl font-semibold mb-4">Contact Information</h3>
+                            <div class="space-y-3">
+                                <p class="flex items-center"><i data-lucide="mail" class="w-5 h-5 mr-3"></i> trixeltechnologies@gmail.com</p>
+                                <p class="flex items-center"><i data-lucide="phone" class="w-5 h-5 mr-3"></i> (234) 704-299-8527</p>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <i data-lucide="message-circle" class="w-8 h-8 text-blue-500 mb-4"></i>
+                            <p class="italic text-[var(--text-secondary)]">"I highly recommend Trixel, their ability to truly listen and understand a client's needs sets them apart..."</p>
+                            <p class="font-semibold mt-4">- Wesley Estrella</p>
+                            <p class="text-sm text-[var(--text-secondary)]">Spotlight Management</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[var(--bg-card)] border-t border-[var(--border-color)] py-12">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center text-[var(--text-secondary)]">
+            <a href="#" class="text-2xl font-bold text-[var(--text-primary)]">Trixel<span class="text-blue-500">.</span>Tech</a>
+            <div class="flex justify-center space-x-6 my-6">
+                <a href="#home" class="hover:text-blue-500">Home</a>
+                <a href="#services" class="hover:text-blue-500">Services</a>
+                <a href="#portfolio" class="hover:text-blue-500">Portfolio</a>
+                <a href="#why-us" class="hover:text-blue-500">Why Us</a>
+            </div>
+            <p class="text-sm mt-6">© 2025 Trixel Technologies. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Floating Action Buttons -->
+    <div class="fixed bottom-5 right-5 z-40 space-y-3">
+       <button id="back-to-top" class="w-14 h-14 rounded-full flex items-center justify-center text-white" style="background: linear-gradient(135deg, #3B82F6, #2563EB);"><i data-lucide="arrow-up" class="w-7 h-7"></i></button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. Initialize Lucide Icons
+            lucide.createIcons();
+
+            // 2. Theme Toggle Functionality
+            const themeToggle = document.getElementById('theme-toggle');
+            const sunIcon = themeToggle.querySelector('[data-lucide="sun"]');
+            const moonIcon = themeToggle.querySelector('[data-lucide="moon"]');
+
+            function applyTheme(theme) {
+                if (theme === 'light') {
+                    document.body.classList.add('light-theme');
+                    sunIcon.classList.remove('hidden');
+                    moonIcon.classList.add('hidden');
+                } else {
+                    document.body.classList.remove('light-theme');
+                    sunIcon.classList.add('hidden');
+                    moonIcon.classList.remove('hidden');
+                }
+            }
+
+            themeToggle.addEventListener('click', () => {
+                const isLight = document.body.classList.toggle('light-theme');
+                const newTheme = isLight ? 'light' : 'dark';
+                localStorage.setItem('theme', newTheme);
+                applyTheme(newTheme);
+            });
+
+            // Load saved theme on page load
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            applyTheme(savedTheme);
+
+            // 3. Mobile Menu Functionality
+const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+const mobileMenu = document.getElementById('mobile-menu');
+const mobileMenuBackdrop = document.getElementById('mobile-menu-backdrop');
+
+const closeMobileMenu = () => {
+    mobileMenu.classList.remove('active');
+    mobileMenuBackdrop.classList.remove('active');
+};
+
+mobileMenuToggle.addEventListener('click', () => {
+    mobileMenu.classList.add('active');
+    mobileMenuBackdrop.classList.add('active');
+});
+
+document.querySelectorAll('#mobile-menu a').forEach(link => {
+    link.addEventListener('click', closeMobileMenu);
+});
+
+mobileMenuBackdrop.addEventListener('click', closeMobileMenu);
+
+            // 5. Form Submission Handlers
+            const contactForm = document.getElementById('contact-form');
+            const reviewForm = document.getElementById('review-form');
+
+            if (contactForm) {
+                contactForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    alert('Thank you for your message! We will get back to you within 24 hours.');
+                    contactForm.reset();
+                });
+            }
+
+            if (reviewForm) {
+                reviewForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    alert('Thank you for your review!');
+                    reviewForm.reset();
+                });
+            }
+            
+            // 6. Smooth scrolling for nav links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetElement = document.querySelector(this.getAttribute('href'));
+                    if(targetElement) {
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

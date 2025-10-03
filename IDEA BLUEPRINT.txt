@@ -1,0 +1,71 @@
+﻿============================================================
+TRIXEL TECHNOLOGIES: MASTER IDEA AND FEATURE BLUEPRINT
+============================================================
+
+The goal is to build a high-converting, cinematic landing page for Trixel Technologies that uses a highly intelligent AI and synchronized animation to deliver a guided sales pitch, built exclusively using client-side technologies.
+
+--- I. CORE ARCHITECTURE AND CONSTRAINTS ---
+
+**1. Development Stack:**
+* The website must be a **single, self-contained HTML file** using only **HTML, CSS (Tailwind via CDN), and JavaScript (GSAP via CDN)**.
+* **Aesthetics:** Uses a **Dark Mode, High-Tech, Cinematic** theme.
+
+**2. Storage and Data (Critical Constraints):**
+* **No Backend Systems:** The use of Firebase or any external database is strictly **forbidden**.
+* **No Caching/Offline:** Service Workers and file caching are **removed**. The application is focused solely on the online, single-session experience.
+* **Minimal Client-Side Storage:** Only essential, simple user settings (e.g., last selected music track) are saved using **browser `localStorage`**.
+
+**3. Content Management System (CMS):**
+* All static text content, features, service details, and audio sources must be defined within a centralized **JavaScript object (`const CMS_DATA`)** inside the HTML file.
+
+**4. SEO and Structure:**
+* The website must be SEO optimized with **Semantic HTML5** (e.g., `<main>`, `<section>`), optimized `<title>` and `<meta name="description">`.
+* **Constraint:** Pricing information must be **explicitly omitted** from all content sections.
+
+--- II. AUDIO AND CINEMATIC EXPERIENCE ---
+
+**5. Single Audio Channel Mandate (CRITICAL):**
+* **Only one `<audio>` element** is allowed on the entire website. This player must dynamically switch between the Voice Tour track and the Background Music track.
+* **Audio Sources:**
+    * **Main Voice Tour:** A single, comprehensive, pre-recorded audio file delivers the primary sales pitch.
+    * **Background Music:** **Multiple selectable tracks** will be defined in the CMS for the user to cycle through.
+
+**6. Sound Conflict Prevention:**
+* **Rule:** The AI must use **Text-Only responses**. No Text-to-Speech (TTS) or synthesized voice responses are allowed.
+* The single audio player must be **paused and muted** when the AI Chat modal is opened to ensure absolute silence and user focus on the text response.
+
+**7. Optional Voice Tour:**
+* A **Welcome Overlay** prompts the user to either **Start Tour** (activates voiceover and synchronization) or **Browse Silently** (activates music only).
+
+**8. Animation and Synchronization:**
+* All motion is handled exclusively by **GSAP (GreenSock Animation Platform)**.
+* A **GSAP Timeline** is precisely mapped to the **Voice Tour audio time** to control scrolling and element reveals.
+* User scrolling and interaction are **blocked** during the active Voice Tour.
+
+--- III. INTELLIGENT AI AND INTERACTION ---
+
+**9. Highly Intelligent Text AI (Assistant AI Orb):**
+* **Technology:** Uses the **Gemini API** for sophisticated text generation.
+* **Intelligence:** The AI must use a detailed **System Instruction** (loaded from `CMS_DATA`) to ensure it provides professional, contextually smart, and non-repetitive **text-only** answers.
+
+**10. Restricted AI Access (High-Conversion Focus):**
+* The interactive buttons (**"Ask Question," "Explanation," and "Order for This"**) that trigger the Assistant AI Orb are **only visible and interactive** within the **Service Sections** and the **"White True Streaks" future sections**.
+
+**11. General AI Chat:**
+* A separate, text-based chat modal provides access to the AI Assistant for general inquiries.
+
+--- IV. WEBSITE STRUCTURE AND CONTROLS ---
+
+**12. Required Content Sections:**
+* Navbar, Hero, Feature Cards, Services, **User Reviews Section**, and Footer.
+
+**13. Simplified Control Buttons (CRITICAL):**
+* A fixed, persistent cluster of only **three** buttons must be visible:
+    1.  **AI Chatbot:** Toggles the visibility of the General AI Chat modal.
+    2.  **Audio:** Toggles the Play/Pause state of the currently active audio (Tour or Music).
+    3.  **Back to Top:** Scrolls the user immediately to the top of the page.
+
+**14. User Reviews Feature:**
+* A dedicated UI section with a form for review submission (rating and text).
+* **Mock Functionality:** Submissions are confirmed visually to the user, but the data is **logged to the browser console/`localStorage`** as a placeholder for a real-world API endpoint.
+```eof

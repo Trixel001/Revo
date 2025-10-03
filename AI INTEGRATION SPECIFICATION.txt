@@ -1,0 +1,477 @@
+﻿AI INTEGRATION SPECIFICATION DOCUMENT
+TRIXEL TECHNOLOGIES - GEMINI AI IMPLEMENTATION
+================================================
+
+CRITICAL CONSTRAINTS:
+- TEXT-ONLY RESPONSES (NO TTS/VOICE SYNTHESIS)
+- API CALLS MUST HANDLE RATE LIMITING
+- RESPONSES MUST ADHERE TO BUSINESS CONTEXT
+- NO PRICING INFORMATION IN RESPONSES
+- MUST WORK WITH SINGLE AUDIO CHANNEL CONSTRAINT
+
+=== GEMINI API CONFIGURATION ===
+
+API ENDPOINT & AUTHENTICATION:
+
+const GEMINI_CONFIG = {
+    apiKey: "AIzaSyB4YH8mHAlkJ1wy9IePRE1W1lFTDB4_H4c",
+    apiUrl: "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent",
+    maxTokens: 1000,
+    temperature: 0.7,
+    timeout: 30000 // 30 seconds
+};
+
+REQUEST PAYLOAD STRUCTURE:
+
+function createAIPayload(userMessage, conversationHistory = [], contextType = "general") {
+    const systemInstruction = buildSystemInstruction(contextType);
+    
+    return {
+        contents: [
+            {
+                role: "user",
+                parts: [
+                    {
+                        text: `${systemInstruction}\n\nConversation History:\n${JSON.stringify(conversationHistory)}\n\nCurrent User Message: ${userMessage}`
+                    }
+                ]
+            }
+        ],
+        generationConfig: {
+            temperature: GEMINI_CONFIG.temperature,
+            maxOutputTokens: GEMINI_CONFIG.maxTokens
+        }
+    };
+}
+
+=== SYSTEM INSTRUCTION ENGINEERING ===
+
+CONTEXT-AWARE SYSTEM PROMPTS:
+
+function buildSystemInstruction(contextType) {
+    const baseContext = CMS_DATA.ai.systemInstructions;
+    
+    const contextEnhancements = {
+        general: `
+            ${baseContext}
+            RESPONSE GUIDELINES:
+            - Keep responses under 150 words
+            - Use natural, conversational language
+            - Include relevant emojis occasionally
+            - Focus on benefits and solutions
+            - Never mention specific pricing
+            - Suggest next steps naturally
+        `,
+        
+        service_question: `
+            ${baseContext}
+            FOCUS: Answer specific service questions
+            - Explain features in simple terms
+            - Relate to service business needs
+            - Provide practical examples
+            - Suggest relevant next steps
+        `,
+        
+        explanation: `
+            ${baseContext}
+            FOCUS: Provide clear explanations
+            - Use analogies when helpful
+            - Break down complex concepts
+            - Focus on client benefits
+            - Avoid technical jargon
+        `,
+        
+        ordering: `
+            ${baseContext}
+            FOCUS: Guide through ordering process
+            - Explain the simple 4-step process
+            - Emphasize 5-day delivery
+            - Guide to contact options
+            - Build excitement for results
+        `
+    };
+    
+    return contextEnhancements[contextType] || contextEnhancements.general;
+}
+
+=== CONVERSATION MANAGEMENT ===
+
+CONVERSATION HISTORY STRUCTURE:
+
+class ConversationManager {
+    constructor() {
+        this.history = [];
+        this.maxHistoryLength = 10; // Prevent context overflow
+    }
+    
+    addMessage(role, text, context = null) {
+        this.history.push({
+            role: role,
+            text: text,
+            timestamp: Date.now(),
+            context: context
+        });
+        
+        // Maintain history length
+        if (this.history.length > this.maxHistoryLength) {
+            this.history.shift();
+        }
+    }
+    
+    getRelevantHistory() {
+        // Return only recent, relevant messages
+        return this.history.slice(-6); // Last 3 exchanges
+    }
+    
+    clearHistory() {
+        this.history = [];
+    }
+}
+
+=== API CALL MANAGEMENT ===
+
+RATE LIMITING AND ERROR HANDLING:
+
+class APIManager {
+    constructor() {
+        this.lastCallTime = 0;
+        this.minCallInterval = 2000; // 2 seconds between calls
+        this.consecutiveErrors = 0;
+        this.maxConsecutiveErrors = 3;
+    }
+    
+    async makeAPICall(payload) {
+        // Rate limiting
+        const timeSinceLastCall = Date.now() - this.lastCallTime;
+        if (timeSinceLastCall < this.minCallInterval) {
+            await this.delay(this.minCallInterval - timeSinceLastCall);
+        }
+        
+        try {
+            const response = await fetch(`${GEMINI_CONFIG.apiUrl}?key=${GEMINI_CONFIG.apiKey}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+                signal: AbortSignal.timeout(GEMINI_CONFIG.timeout)
+            });
+            
+            if (!response.ok) {
+                throw new Error(`API Error: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            this.consecutiveErrors = 0; // Reset error count
+            this.lastCallTime = Date.now();
+            
+            return this.extractResponseText(data);
+            
+        } catch (error) {
+            this.consecutiveErrors++;
+            return this.handleAPIError(error);
+        }
+    }
+    
+    extractResponseText(data) {
+        if (data.candidates && data.candidates[0].content.parts) {
+            return data.candidates[0].content.parts[0].text;
+        }
+        throw new Error('Invalid response format from API');
+    }
+    
+    handleAPIError(error) {
+        console.error('AI API Error:', error);
+        
+        if (this.consecutiveErrors >= this.maxConsecutiveErrors) {
+            return "I'm experiencing technical difficulties. Please try again later or contact us directly for immediate assistance.";
+        }
+        
+        const errorResponses = [
+            "I'm having trouble connecting right now. Please try again in a moment.",
+            "There seems to be a connection issue. You can reach us directly via WhatsApp for immediate help.",
+            "I'm temporarily unavailable. Feel free to browse our services or contact us directly."
+        ];
+        
+        return errorResponses[Math.floor(Math.random() * errorResponses.length)];
+    }
+    
+    delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+}
+
+=== RESPONSE PROCESSING ===
+
+RESPONSE SANITIZATION AND ENHANCEMENT:
+
+class ResponseProcessor {
+    processResponse(rawResponse, contextType) {
+        // Remove any accidental pricing mentions
+        let processed = this.removePricingReferences(rawResponse);
+        
+        // Enhance based on context
+        processed = this.enhanceForContext(processed, contextType);
+        
+        // Ensure professional tone
+        processed = this.ensureProfessionalTone(processed);
+        
+        return processed;
+    }
+    
+    removePricingReferences(text) {
+        const pricingPatterns = [
+            /\$\d+/g, // $899, $1900, etc.
+            /\d+\s*(dollars|USD)/gi,
+            /package.*\$\d+/gi
+        ];
+        
+        let cleanText = text;
+        pricingPatterns.forEach(pattern => {
+            cleanText = cleanText.replace(pattern, '[available upon request]');
+        });
+        
+        return cleanText;
+    }
+    
+    enhanceForContext(text, contextType) {
+        const enhancements = {
+            ordering: text + "\n\nReady to get started? We'd love to discuss your project!",
+            explanation: text + "\n\nDoes that help explain how this could work for your business?",
+            service_question: text + "\n\nIs there anything specific about this service you'd like me to elaborate on?"
+        };
+        
+        return enhancements[contextType] || text;
+    }
+    
+    ensureProfessionalTone(text) {
+        // Replace any overly casual language
+        const toneReplacements = {
+            "yeah": "yes",
+            "uh huh": "certainly", 
+            "nope": "no",
+            "awesome": "excellent",
+            "cool": "great"
+        };
+        
+        let professionalText = text;
+        Object.entries(toneReplacements).forEach(([casual, professional]) => {
+            professionalText = professionalText.replace(new RegExp(casual, 'gi'), professional);
+        });
+        
+        return professionalText;
+    }
+}
+
+=== INTERACTIVE CARD INTEGRATION ===
+
+CARD-SPECIFIC AI TRIGGERS:
+
+function handleCardInteraction(cardElement, interactionType) {
+    const cardContext = extractCardContext(cardElement);
+    const prompt = generateContextualPrompt(cardContext, interactionType);
+    
+    // Trigger AI response with specific context
+    triggerAIResponse(prompt, interactionType, cardContext);
+}
+
+function extractCardContext(cardElement) {
+    const title = cardElement.querySelector('h3, h4')?.textContent || '';
+    const description = cardElement.querySelector('p')?.textContent || '';
+    const serviceId = cardElement.id || '';
+    
+    return {
+        title,
+        description: description.substring(0, 200), // Limit context length
+        serviceId,
+        element: cardElement
+    };
+}
+
+function generateContextualPrompt(cardContext, interactionType) {
+    const basePrompts = {
+        ask: `I have questions about ${cardContext.title}. ${cardContext.description}`,
+        explain: `Please explain ${cardContext.title} in simple terms: ${cardContext.description}`,
+        order: `I'm interested in ordering ${cardContext.title}. ${cardContext.description}`
+    };
+    
+    return basePrompts[interactionType];
+}
+
+=== CHAT WIDGET IMPLEMENTATION ===
+
+CHAT INTERFACE MANAGEMENT:
+
+class ChatWidgetManager {
+    constructor() {
+        this.isOpen = false;
+        this.conversationManager = new ConversationManager();
+        this.apiManager = new APIManager();
+        this.responseProcessor = new ResponseProcessor();
+    }
+    
+    async sendMessage(userMessage, contextType = "general") {
+        // Add user message to history
+        this.conversationManager.addMessage('user', userMessage, contextType);
+        
+        // Show typing indicator
+        this.showTypingIndicator();
+        
+        try {
+            // Prepare and make API call
+            const payload = createAIPayload(
+                userMessage, 
+                this.conversationManager.getRelevantHistory(), 
+                contextType
+            );
+            
+            const rawResponse = await this.apiManager.makeAPICall(payload);
+            const processedResponse = this.responseProcessor.processResponse(rawResponse, contextType);
+            
+            // Add AI response to history
+            this.conversationManager.addMessage('assistant', processedResponse, contextType);
+            
+            // Display response
+            this.displayMessage(processedResponse, 'assistant');
+            
+        } catch (error) {
+            const errorMessage = "I apologize, but I'm having trouble responding right now. Please try again or contact us directly.";
+            this.displayMessage(errorMessage, 'assistant');
+        } finally {
+            this.hideTypingIndicator();
+        }
+    }
+    
+    displayMessage(text, sender) {
+        const chatMessages = document.getElementById('chat-messages');
+        const messageElement = this.createMessageElement(text, sender);
+        
+        chatMessages.appendChild(messageElement);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        
+        // Auto-close typing indicator if present
+        this.hideTypingIndicator();
+    }
+    
+    createMessageElement(text, sender) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `flex ${sender === 'user' ? 'justify-end' : 'justify-start'} mb-4`;
+        
+        const bubble = document.createElement('div');
+        bubble.className = `max-w-[85%] p-3 rounded-lg ${
+            sender === 'user' 
+            ? 'bg-blue-500 text-white' 
+            : 'bg-gray-700 text-gray-100 border border-gray-600'
+        }`;
+        
+        // Parse markdown for AI responses
+        bubble.innerHTML = sender === 'assistant' 
+            ? this.parseMarkdown(text)
+            : `<p class="text-sm">${this.escapeHtml(text)}</p>`;
+        
+        messageDiv.appendChild(bubble);
+        return messageDiv;
+    }
+    
+    parseMarkdown(text) {
+        // Simple markdown parsing for bold and lists
+        return text
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\n\n/g, '</p><p>')
+            .replace(/\n/g, '<br>')
+            .replace(/^- (.*?)(?=\n|$)/gm, '<li>$1</li>')
+            .replace(/(<li>.*<\/li>)/s, '<ul class="list-disc list-inside mt-2">$1</ul>')
+            .replace(/^<p>(.*?)<\/p>$/, '<p class="text-sm">$1</p>');
+    }
+}
+
+=== AUDIO CONFLICT PREVENTION ===
+
+AUDIO MANAGEMENT INTEGRATION:
+
+function handleChatOpen() {
+    // Pause any audio playback
+    if (window.audioManager) {
+        window.audioManager.pauseForChat();
+    }
+    
+    // Ensure no TTS attempts
+    window.speechSynthesis?.cancel();
+}
+
+function handleChatClose() {
+    // Resume audio if appropriate
+    if (window.audioManager && !window.tourManager?.isTourActive) {
+        window.audioManager.resumeAfterChat();
+    }
+}
+
+=== PERFORMANCE OPTIMIZATIONS ===
+
+CACHING AND OPTIMIZATION:
+
+class ResponseCache {
+    constructor() {
+        this.cache = new Map();
+        this.maxCacheSize = 50;
+        this.cacheTimeout = 300000; // 5 minutes
+    }
+    
+    getCacheKey(prompt, context) {
+        return `${context}:${prompt.substring(0, 100)}`;
+    }
+    
+    get(cacheKey) {
+        const item = this.cache.get(cacheKey);
+        if (item && Date.now() - item.timestamp < this.cacheTimeout) {
+            return item.response;
+        }
+        this.cache.delete(cacheKey);
+        return null;
+    }
+    
+    set(cacheKey, response) {
+        if (this.cache.size >= this.maxCacheSize) {
+            // Remove oldest item
+            const firstKey = this.cache.keys().next().value;
+            this.cache.delete(firstKey);
+        }
+        
+        this.cache.set(cacheKey, {
+            response,
+            timestamp: Date.now()
+        });
+    }
+}
+
+=== ERROR BOUNDARIES AND FALLBACKS ===
+
+GRACEFAL DEGRADATION:
+
+function getFallbackResponse(contextType) {
+    const fallbacks = {
+        general: "I'd be happy to help! For detailed information about our services, please visit our website sections or contact us directly.",
+        service_question: "That's a great question about our services. For specific details, I recommend checking our services section or contacting our team directly.",
+        explanation: "I'd love to explain this further. Our website contains detailed information, or you can schedule a quick call with our team for a personalized explanation.",
+        ordering: "Ready to get started? The best way to begin is by contacting us directly so we can understand your specific needs and provide accurate information."
+    };
+    
+    return fallbacks[contextType] || fallbacks.general;
+}
+
+=== TESTING AND MONITORING ===
+
+IMPLEMENTATION CHECKLIST:
+
+✅ API key configuration and security
+✅ Rate limiting and error handling
+✅ Response sanitization and processing
+✅ Conversation history management
+✅ Interactive card integration
+✅ Chat widget functionality
+✅ Audio conflict prevention
+✅ Performance optimization
+✅ Fallback mechanisms
+✅ Mobile responsiveness
+
+This specification ensures robust AI integration that enhances user experience while maintaining strict adherence to business constraints and technical requirements.

@@ -1,0 +1,536 @@
+﻿ERROR HANDLING & RECOVERY SPECIFICATION
+TRIXEL TECHNOLOGIES - ROBUST ERROR MANAGEMENT SYSTEM
+======================================================
+
+CRITICAL REQUIREMENTS:
+- GRACEFAL DEGRADATION FOR ALL FEATURES
+- USER-FRIENDLY ERROR MESSAGES
+- NO BROKEN STATES OR CRASHES
+- AUTOMATIC RECOVERY WHERE POSSIBLE
+- COMPREHENSIVE LOGGING FOR DEBUGGING
+
+=== ERROR CATEGORIZATION SYSTEM ===
+
+ERROR SEVERITY LEVELS:
+
+const ERROR_SEVERITY = {
+    CRITICAL: 0,    // Breaks core functionality
+    HIGH: 1,        // Major feature broken
+    MEDIUM: 2,      // Feature degraded
+    LOW: 3,         // Cosmetic issue
+    INFO: 4         // Informational
+};
+
+ERROR DOMAINS:
+
+class ErrorDomain {
+    static AUDIO = 'audio';
+    static ANIMATION = 'animation';
+    static AI = 'ai';
+    static NETWORK = 'network';
+    static STORAGE = 'storage';
+    static RENDERING = 'rendering';
+    static USER_INPUT = 'user_input';
+}
+
+=== CORE ERROR HANDLER ===
+
+CENTRAL ERROR MANAGEMENT:
+
+class ErrorHandler {
+    constructor() {
+        this.errorCounts = new Map();
+        this.maxErrorsPerMinute = 10;
+        this.errorWindow = [];
+        this.userFacing = true;
+    }
+    
+    handle(error, context = {}) {
+        const errorId = this.generateErrorId(error, context);
+        
+        // Rate limiting
+        if (this.isRateLimited(errorId)) {
+            console.warn(`Error rate limited: ${errorId}`);
+            return;
+        }
+        
+        // Categorize and process
+        const processedError = this.processError(error, context);
+        
+        // Log for debugging
+        this.logError(processedError);
+        
+        // User notification if appropriate
+        if (this.shouldNotifyUser(processedError)) {
+            this.showUserNotification(processedError);
+        }
+        
+        // Automatic recovery attempts
+        this.attemptRecovery(processedError);
+    }
+    
+    processError(rawError, context) {
+        return {
+            id: this.generateErrorId(rawError, context),
+            message: rawError.message || String(rawError),
+            stack: rawError.stack,
+            timestamp: Date.now(),
+            domain: context.domain || this.detectDomain(rawError),
+            severity: this.assessSeverity(rawError, context),
+            context: context,
+            userAction: context.userAction || 'unknown'
+        };
+    }
+    
+    assessSeverity(error, context) {
+        // Critical errors that break core functionality
+        if (error.message?.includes('AudioContext') || 
+            error.message?.includes('GSAP') ||
+            error.message?.includes('localStorage')) {
+            return ERROR_SEVERITY.CRITICAL;
+        }
+        
+        // High severity for AI and tour systems
+        if (context.domain === ErrorDomain.AI || 
+            context.domain === ErrorDomain.ANIMATION) {
+            return ERROR_SEVERITY.HIGH;
+        }
+        
+        return ERROR_SEVERITY.MEDIUM;
+    }
+}
+
+=== DOMAIN-SPECIFIC ERROR HANDLING ===
+
+AUDIO ERROR RECOVERY:
+
+class AudioErrorHandler {
+    constructor() {
+        this.fallbackAudioSources = {
+            voiceover: [
+                'audio/main_voiceover.wav',
+                'https://cdn.trixel.tech/fallback/voiceover.wav'
+            ],
+            music: [
+                'audio/background_music_1.mp3',
+                'https://cdn.trixel.tech/fallback/music_1.mp3'
+            ]
+        };
+    }
+    
+    handleAudioError(error, context) {
+        const errorHandler = new ErrorHandler();
+        
+        switch(error.name) {
+            case 'NotAllowedError':
+                // Autoplay blocked - requires user interaction
+                errorHandler.handle(error, { 
+                    domain: ErrorDomain.AUDIO, 
+                    severity: ERROR_SEVERITY.MEDIUM,
+                    userAction: 'wait_for_interaction'
+                });
+                this.scheduleRetryAfterInteraction();
+                break;
+                
+            case 'NetworkError':
+                // Network issue - try fallback sources
+                errorHandler.handle(error, { 
+                    domain: ErrorDomain.AUDIO, 
+                    severity: ERROR_SEVERITY.HIGH 
+                });
+                this.tryFallbackSource(context.audioType);
+                break;
+                
+            case 'NotSupportedError':
+                // Format not supported
+                errorHandler.handle(error, { 
+                    domain: ErrorDomain.AUDIO, 
+                    severity: ERROR_SEVERITY.CRITICAL 
+                });
+                this.disableAudioSystem();
+                break;
+                
+            default:
+                errorHandler.handle(error, { 
+                    domain: ErrorDomain.AUDIO, 
+                    severity: ERROR_SEVERITY.HIGH 
+                });
+        }
+    }
+    
+    tryFallbackSource(audioType) {
+        const fallbacks = this.fallbackAudioSources[audioType];
+        if (!fallbacks) return;
+        
+        for (let i = 1; i < fallbacks.length; i++) {
+            try {
+                universalAudioPlayer.src = fallbacks[i];
+                universalAudioPlayer.load();
+                console.log(`Audio fallback ${i} loaded for ${audioType}`);
+                break;
+            } catch (fallbackError) {
+                console.warn(`Audio fallback ${i} failed:`, fallbackError);
+            }
+        }
+    }
+}
+
+ANIMATION ERROR RECOVERY:
+
+class AnimationErrorHandler {
+    handleAnimationError(error, context) {
+        const errorHandler = new ErrorHandler();
+        
+        if (error.message.includes('ScrollTrigger')) {
+            errorHandler.handle(error, { 
+                domain: ErrorDomain.ANIMATION, 
+                severity: ERROR_SEVERITY.HIGH,
+                context: { animationId: context.animationId }
+            });
+            
+            // Disable problematic animations
+            this.disableFaultyAnimations(context.animationId);
+            
+        } else if (error.message.includes('target not found')) {
+            errorHandler.handle(error, { 
+                domain: ErrorDomain.ANIMATION, 
+                severity: ERROR_SEVERITY.MEDIUM 
+            });
+            
+            // Retry after DOM update
+            this.scheduleRetry(context);
+        }
+    }
+    
+    disableFaultyAnimations(animationId) {
+        // Kill problematic animations
+        const animation = gsap.getById(animationId);
+        if (animation) {
+            animation.kill();
+        }
+        
+        // Disable related ScrollTriggers
+        ScrollTrigger.getAll().forEach(trigger => {
+            if (trigger.animation === animation) {
+                trigger.disable();
+            }
+        });
+    }
+}
+
+AI API ERROR HANDLING:
+
+class AIErrorHandler {
+    constructor() {
+        this.consecutiveFailures = 0;
+        this.maxConsecutiveFailures = 3;
+        this.circuitBreakerOpen = false;
+    }
+    
+    handleAPIError(error, context) {
+        const errorHandler = new ErrorHandler();
+        
+        this.consecutiveFailures++;
+        
+        if (this.consecutiveFailures >= this.maxConsecutiveFailures) {
+            this.openCircuitBreaker();
+        }
+        
+        if (error.status === 429) { // Rate limited
+            errorHandler.handle(error, { 
+                domain: ErrorDomain.AI, 
+                severity: ERROR_SEVERITY.MEDIUM,
+                userAction: 'retry_later'
+            });
+            
+            return this.getRateLimitResponse();
+            
+        } else if (error.status >= 500) { // Server error
+            errorHandler.handle(error, { 
+                domain: ErrorDomain.AI, 
+                severity: ERROR_SEVERITY.HIGH 
+            });
+            
+            return this.getServerErrorResponse();
+            
+        } else { // Other errors
+            errorHandler.handle(error, { 
+                domain: ErrorDomain.AI, 
+                severity: ERROR_SEVERITY.MEDIUM 
+            });
+            
+            return this.getGenericErrorResponse();
+        }
+    }
+    
+    openCircuitBreaker() {
+        this.circuitBreakerOpen = true;
+        
+        // Auto-close after 1 minute
+        setTimeout(() => {
+            this.circuitBreakerOpen = false;
+            this.consecutiveFailures = 0;
+        }, 60000);
+    }
+}
+
+=== USER-FACING ERROR NOTIFICATIONS ===
+
+NON-INTRUSIVE ERROR DISPLAY:
+
+class UserNotificationManager {
+    constructor() {
+        this.notificationQueue = [];
+        this.isShowingNotification = false;
+    }
+    
+    showErrorNotification(error, options = {}) {
+        const notification = {
+            id: 'err_' + Date.now(),
+            type: this.getNotificationType(error.severity),
+            title: this.getUserFriendlyTitle(error),
+            message: this.getUserFriendlyMessage(error),
+            duration: this.getDisplayDuration(error.severity),
+            action: options.action,
+            error: error
+        };
+        
+        this.notificationQueue.push(notification);
+        this.processQueue();
+    }
+    
+    getUserFriendlyTitle(error) {
+        const titles = {
+            [ERROR_SEVERITY.CRITICAL]: 'System Issue',
+            [ERROR_SEVERITY.HIGH]: 'Feature Unavailable',
+            [ERROR_SEVERITY.MEDIUM]: 'Temporary Issue',
+            [ERROR_SEVERITY.LOW]: 'Notice'
+        };
+        
+        return titles[error.severity] || 'Something went wrong';
+    }
+    
+    getUserFriendlyMessage(error) {
+        const messages = {
+            [ErrorDomain.AUDIO]: 'Audio features are temporarily unavailable.',
+            [ErrorDomain.AI]: 'AI assistant is currently unavailable. Please try again later.',
+            [ErrorDomain.ANIMATION]: 'Some animations may not work correctly.',
+            [ErrorDomain.NETWORK]: 'Please check your internet connection.',
+            [ErrorDomain.STORAGE]: 'Your preferences may not be saved.'
+        };
+        
+        return messages[error.domain] || 'Please refresh the page and try again.';
+    }
+    
+    createNotificationElement(notification) {
+        const element = document.createElement('div');
+        element.className = `error-notification ${notification.type}`;
+        element.innerHTML = `
+            <div class="notification-content">
+                <div class="notification-icon">${this.getIcon(notification.type)}</div>
+                <div class="notification-text">
+                    <div class="notification-title">${notification.title}</div>
+                    <div class="notification-message">${notification.message}</div>
+                </div>
+                <button class="notification-close" onclick="this.parentElement.parentElement.remove()">
+                    &times;
+                </button>
+            </div>
+        `;
+        
+        // Auto-remove after duration
+        setTimeout(() => {
+            if (element.parentElement) {
+                element.remove();
+            }
+            this.isShowingNotification = false;
+            this.processQueue();
+        }, notification.duration);
+        
+        return element;
+    }
+}
+
+=== AUTOMATIC RECOVERY STRATEGIES ===
+
+STATE RECOVERY MANAGER:
+
+class StateRecoveryManager {
+    constructor() {
+        this.recoveryAttempts = new Map();
+        this.maxRecoveryAttempts = 3;
+    }
+    
+    attemptRecovery(error) {
+        const recoveryKey = `${error.domain}-${error.severity}`;
+        const attempts = this.recoveryAttempts.get(recoveryKey) || 0;
+        
+        if (attempts >= this.maxRecoveryAttempts) {
+            console.warn(`Max recovery attempts reached for: ${recoveryKey}`);
+            return false;
+        }
+        
+        this.recoveryAttempts.set(recoveryKey, attempts + 1);
+        
+        switch(error.domain) {
+            case ErrorDomain.AUDIO:
+                return this.recoverAudioSystem();
+            case ErrorDomain.ANIMATION:
+                return this.recoverAnimationSystem();
+            case ErrorDomain.AI:
+                return this.recoverAISystem();
+            case ErrorDomain.STORAGE:
+                return this.recoverStorageSystem();
+            default:
+                return this.generalRecovery();
+        }
+    }
+    
+    recoverAudioSystem() {
+        try {
+            // Reset audio context and elements
+            if (window.audioContext) {
+                window.audioContext.close();
+                window.audioContext = null;
+            }
+            
+            universalAudioPlayer.src = '';
+            universalAudioPlayer.load();
+            
+            // Reinitialize with fallbacks
+            audioManager.initializeWithFallbacks();
+            
+            return true;
+        } catch (recoveryError) {
+            console.error('Audio recovery failed:', recoveryError);
+            return false;
+        }
+    }
+    
+    recoverAnimationSystem() {
+        try {
+            // Kill all animations
+            gsap.globalTimeline.getChildren().forEach(tween => tween.kill());
+            
+            // Reinitialize with safer settings
+            animationManager.initialize({ reducedMotion: true });
+            
+            return true;
+        } catch (recoveryError) {
+            console.error('Animation recovery failed:', recoveryError);
+            return false;
+        }
+    }
+}
+
+=== ERROR LOGGING AND REPORTING ===
+
+COMPREHENSIVE ERROR LOGGING:
+
+class ErrorLogger {
+    constructor() {
+        this.logs = [];
+        this.maxLogSize = 100;
+        this.remoteLogging = false;
+    }
+    
+    logError(error) {
+        const logEntry = {
+            timestamp: new Date().toISOString(),
+            error: error,
+            userAgent: navigator.userAgent,
+            url: window.location.href,
+            appState: this.getSafeAppStateSnapshot(),
+            performance: this.getPerformanceSnapshot()
+        };
+        
+        this.logs.push(logEntry);
+        
+        // Maintain log size
+        if (this.logs.length > this.maxLogSize) {
+            this.logs = this.logs.slice(-this.maxLogSize);
+        }
+        
+        // Console output for development
+        if (process.env.NODE_ENV === 'development') {
+            console.group('Error Logged');
+            console.error('Error:', error);
+            console.log('Context:', logEntry);
+            console.groupEnd();
+        }
+        
+        // Optional remote logging
+        if (this.remoteLogging) {
+            this.sendToRemote(logEntry);
+        }
+    }
+    
+    getSafeAppStateSnapshot() {
+        // Return sanitized app state without sensitive data
+        return {
+            audioState: APP_STATE.session.currentAudioState,
+            tourProgress: APP_STATE.session.tourProgress,
+            activeSection: APP_STATE.session.activeSection
+        };
+    }
+    
+    exportLogs() {
+        return JSON.stringify(this.logs, null, 2);
+    }
+}
+
+=== PREVENTATIVE ERROR HANDLING ===
+
+ERROR BOUNDARIES AND SAFETY CHECKS:
+
+function withErrorBoundary(operation, fallback, context = {}) {
+    return function(...args) {
+        try {
+            return operation.apply(this, args);
+        } catch (error) {
+            const errorHandler = new ErrorHandler();
+            errorHandler.handle(error, context);
+            
+            if (typeof fallback === 'function') {
+                return fallback.apply(this, args);
+            }
+            
+            return fallback;
+        }
+    };
+}
+
+// Safe DOM manipulation
+const safeQuerySelector = withErrorBoundary(
+    (selector) => document.querySelector(selector),
+    null,
+    { domain: ErrorDomain.RENDERING }
+);
+
+// Safe API calls
+const safeAPICall = withErrorBoundary(
+    async (url, options) => {
+        const response = await fetch(url, options);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return response;
+    },
+    null,
+    { domain: ErrorDomain.NETWORK }
+);
+
+=== INTEGRATION CHECKLIST ===
+
+ERROR HANDLING VALIDATION:
+
+✅ Central error handler implemented
+✅ Domain-specific error recovery
+✅ User-friendly notifications
+✅ Automatic recovery systems
+✅ Comprehensive logging
+✅ Error boundaries in place
+✅ Rate limiting active
+✅ Circuit breakers functional
+✅ Graceful degradation working
+✅ No silent failures
+
+This error handling specification ensures the website remains stable and user-friendly even when components fail, providing robust recovery mechanisms and clear user communication.

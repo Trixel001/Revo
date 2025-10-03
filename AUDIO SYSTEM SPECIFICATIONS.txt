@@ -1,0 +1,280 @@
+﻿AUDIO SYSTEM SPECIFICATION DOCUMENT
+TRIXEL TECHNOLOGIES - SINGLE AUDIO CHANNEL ARCHITECTURE
+========================================================
+
+CRITICAL CONSTRAINTS:
+- ONLY ONE <audio> ELEMENT IN ENTIRE APPLICATION
+- NO TTS OR SYNTHESIZED VOICE RESPONSES
+- AUDIO MUST PAUSE WHEN AI CHAT IS OPEN
+- DYNAMIC SOURCE SWITCHING BETWEEN VOICEOVER AND MUSIC
+
+=== SINGLE AUDIO ELEMENT IMPLEMENTATION ===
+
+HTML STRUCTURE:
+<audio id="universal-audio-player" preload="auto" style="display: none;">
+    <!-- No source elements - dynamic injection only -->
+</audio>
+
+PROHIBITED ELEMENTS (MUST BE REMOVED):
+- Any additional <audio> elements
+- Voice AI Orb audio players
+- TTS synthesis components
+- Multiple background music elements
+
+=== AUDIO SOURCE MANAGEMENT ===
+
+SUPPORTED SOURCES:
+1. Voice Tour: "audio/main_voiceover.wav"
+2. Background Music: Array of tracks from CMS_DATA
+
+SOURCE SWITCHING PROTOCOL:
+
+function switchAudioSource(sourceType, filePath) {
+    // 1. Pause current playback
+    universalAudioPlayer.pause();
+    
+    // 2. Clear current source
+    universalAudioPlayer.src = '';
+    
+    // 3. Set new source with error handling
+    universalAudioPlayer.src = filePath;
+    
+    // 4. Preload new source
+    universalAudioPlayer.load();
+    
+    // 5. Resume playback based on context
+    if (sourceType === 'music') {
+        universalAudioPlayer.loop = true;
+        universalAudioPlayer.play().catch(handleAudioError);
+    }
+}
+
+=== AUDIO STATE MANAGEMENT ===
+
+GLOBAL AUDIO STATES:
+- 'idle': No audio loaded
+- 'voiceover_playing': Tour narration active
+- 'music_playing': Background music active
+- 'paused': Audio paused by user
+- 'chat_active': Audio muted for AI chat
+
+STATE TRANSITION RULES:
+
+1. VOICEOVER → MUSIC:
+   - Only when tour completes or is skipped
+   - Fade out voiceover, then start music
+
+2. MUSIC → VOICEOVER:
+   - Only when tour starts
+   - Immediate music stop, voiceover start
+
+3. ANY STATE → CHAT_ACTIVE:
+   - Immediate pause and mute
+   - Store current position and state
+
+4. CHAT_ACTIVE → PREVIOUS_STATE:
+   - Restore position and volume
+   - Resume playback
+
+=== CONFLICT PREVENTION SYSTEM ===
+
+AI CHAT AUDIO MUTING:
+
+function handleChatOpen() {
+    // Store current audio state
+    window.audioBackup = {
+        currentTime: universalAudioPlayer.currentTime,
+        state: currentAudioState,
+        volume: universalAudioPlayer.volume
+    };
+    
+    // Immediate audio suspension
+    universalAudioPlayer.pause();
+    universalAudioPlayer.volume = 0;
+    
+    // Update global state
+    currentAudioState = 'chat_active';
+}
+
+function handleChatClose() {
+    if (window.audioBackup) {
+        // Restore previous state
+        universalAudioPlayer.currentTime = window.audioBackup.currentTime;
+        universalAudioPlayer.volume = window.audioBackup.volume;
+        currentAudioState = window.audioBackup.state;
+        
+        // Resume if was playing
+        if (window.audioBackup.state.includes('playing')) {
+            universalAudioPlayer.play().catch(console.warn);
+        }
+    }
+}
+
+=== VOICE TOUR SPECIFIC AUDIO HANDLING ===
+
+TOUR AUDIO CONTROLS:
+
+class TourAudioManager {
+    constructor() {
+        this.isTourActive = false;
+        this.audioSegments = CMS_DATA.audio.voiceTour.segments;
+    }
+    
+    startTour() {
+        // Stop any background music
+        this.stopBackgroundMusic();
+        
+        // Load and play voiceover
+        switchAudioSource('voiceover', CMS_DATA.audio.voiceTour.file);
+        universalAudioPlayer.loop = false;
+        
+        this.isTourActive = true;
+    }
+    
+    skipTour() {
+        universalAudioPlayer.pause();
+        universalAudioPlayer.currentTime = 0;
+        this.isTourActive = false;
+        
+        // Start background music
+        this.startBackgroundMusic();
+    }
+    
+    handleTourCompletion() {
+        this.isTourActive = false;
+        this.startBackgroundMusic();
+    }
+}
+
+=== BACKGROUND MUSIC SYSTEM ===
+
+MUSIC MANAGEMENT:
+
+class BackgroundMusicManager {
+    constructor() {
+        this.tracks = CMS_DATA.audio.backgroundMusic;
+        this.currentTrackIndex = 0;
+        this.isMusicEnabled = true;
+    }
+    
+    startBackgroundMusic() {
+        if (!this.isMusicEnabled) return;
+        
+        const track = this.tracks[this.currentTrackIndex];
+        switchAudioSource('music', track.file);
+    }
+    
+    nextTrack() {
+        this.currentTrackIndex = (this.currentTrackIndex + 1) % this.tracks.length;
+        if (universalAudioPlayer.src.includes('background')) {
+            this.startBackgroundMusic();
+        }
+    }
+    
+    toggleMusic() {
+        this.isMusicEnabled = !this.isMusicEnabled;
+        if (!this.isMusicEnabled) {
+            universalAudioPlayer.pause();
+        } else {
+            this.startBackgroundMusic();
+        }
+    }
+}
+
+=== ERROR HANDLING AND FALLBACKS ===
+
+AUDIO ERROR RECOVERY:
+
+universalAudioPlayer.addEventListener('error', function(e) {
+    console.error('Audio error:', e);
+    
+    switch(universalAudioPlayer.error.code) {
+        case MediaError.MEDIA_ERR_ABORTED:
+            // User initiated - no action needed
+            break;
+        case MediaError.MEDIA_ERR_NETWORK:
+            // Network issue - try alternative source
+            handleNetworkAudioFallback();
+            break;
+        case MediaError.MEDIA_ERR_DECODE:
+            // Corrupted file - skip to next
+            if (currentAudioState === 'music_playing') {
+                backgroundMusicManager.nextTrack();
+            }
+            break;
+        case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
+            // Format not supported
+            console.warn('Audio format not supported');
+            break;
+    }
+});
+
+function handleNetworkAudioFallback() {
+    // Implement CDN fallback or disable audio
+    if (currentAudioState === 'voiceover_playing') {
+        // For voiceover, we must have audio - show error
+        showAudioErrorNotification();
+    } else {
+        // For music, can continue silently
+        backgroundMusicManager.isMusicEnabled = false;
+    }
+}
+
+=== PERFORMANCE OPTIMIZATIONS ===
+
+MEMORY MANAGEMENT:
+- Preload only current audio source
+- Clear unused audio buffers
+- Limit concurrent audio operations
+- Efficient event listener management
+
+BROWSER COMPATIBILITY:
+
+SUPPORTED FORMATS:
+- WAV: Primary for voiceover (high quality)
+- MP3: Fallback for broader compatibility
+- OGG: Alternative for modern browsers
+
+AUTOPLAY HANDLING:
+
+function handleAutoplayRestrictions() {
+    universalAudioPlayer.play().then(() => {
+        // Autoplay successful
+    }).catch(error => {
+        // Autoplay blocked - require user interaction
+        document.addEventListener('click', initAudioOnInteraction, { once: true });
+    });
+}
+
+function initAudioOnInteraction() {
+    // Start with background music on first user interaction
+    backgroundMusicManager.startBackgroundMusic();
+}
+
+=== INTEGRATION POINTS ===
+
+TOUR SYSTEM INTEGRATION:
+- Tour start: stop music, play voiceover
+- Tour skip: stop voiceover, start music  
+- Tour complete: stop voiceover, start music
+
+AI SYSTEM INTEGRATION:
+- Chat open: pause and mute audio
+- Chat close: restore audio state
+- No voice responses allowed
+
+USER CONTROLS INTEGRATION:
+- Audio toggle: play/pause background music
+- Music track cycling
+- Volume controls (if implemented)
+
+=== TESTING REQUIREMENTS ===
+
+AUDIO TEST SCENARIOS:
+1. Tour start/stop during music playback
+2. AI chat open/close during audio playback
+3. Network connectivity changes
+4. Browser autoplay restrictions
+5. Multiple rapid user interactions
+
+This specification ensures the single audio channel constraint is maintained while providing robust audio functionality across all website features.
