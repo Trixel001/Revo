@@ -150,13 +150,29 @@
 <body class="antialiased">
 
     <!-- Welcome Overlay -->
-    <div id="welcome-overlay" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90 backdrop-blur-sm transition-opacity duration-500">
-        <div class="glass-morphism rounded-2xl p-8 max-w-md w-full text-center transform scale-95 opacity-0" id="welcome-card">
-            <h2 class="text-3xl font-bold mb-4">Welcome to Trixel.Tech</h2>
-            <p class="text-[var(--text-secondary)] mb-8">We can give you a quick tour of our services, or you can explore on your own.</p>
-            <div class="flex justify-center gap-4">
-                <button id="start-tour-btn" class="btn-primary">Start Guided Tour</button>
-                <button id="explore-btn" class="btn-secondary">Explore on My Own</button>
+    <div id="welcome-overlay" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm transition-opacity duration-500 opacity-0">
+        <div id="welcome-card" class="bg-card border border-border-color rounded-2xl shadow-2xl w-[90%] max-w-4xl flex flex-col md:flex-row overflow-hidden transform scale-95 opacity-0">
+            <!-- Left side with illustration -->
+            <div class="hidden md:flex md:w-1/2 items-center justify-center p-8 bg-blue-900/20">
+                <div class="text-center">
+                    <i data-lucide="bot" class="w-32 h-32 text-blue-400 mx-auto mb-6"></i>
+                    <h2 class="text-3xl font-bold text-text-primary">Meet Your AI Guide</h2>
+                    <p class="text-text-secondary mt-2">Ready to explore the future of web tech?</p>
+                </div>
+            </div>
+            <!-- Right side with content -->
+            <div class="w-full md:w-1/2 p-8 md:p-12 text-center md:text-left">
+                <h2 class="text-4xl lg:text-5xl font-extrabold mb-3 gradient-text">Welcome!</h2>
+                <p class="text-text-secondary text-lg mb-8">
+                    We've crafted a unique, AI-enhanced experience for you. Take a quick tour to see how we can help your business, or jump right in.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                    <button id="start-tour-btn" class="btn-primary w-full sm:w-auto flex items-center justify-center gap-2">
+                        <i data-lucide="play-circle" class="w-5 h-5"></i>
+                        Start Guided Tour
+                    </button>
+                    <button id="explore-btn" class="btn-secondary w-full sm:w-auto">Explore Freely</button>
+                </div>
             </div>
         </div>
     </div>
@@ -576,18 +592,23 @@
     <audio id="universal-audio-player" preload="none" style="display: none;"></audio>
 
     <!-- AI Chat Widget -->
-    <div id="ai-chat-widget" class="fixed bottom-32 right-5 z-50 w-80 rounded-xl glass-morphism shadow-2xl hidden transform translate-y-10 opacity-0">
-        <div class="p-3 border-b border-[var(--border-color)] flex justify-between items-center">
+    <div id="ai-chat-widget" class="fixed bottom-24 right-5 z-50 w-[calc(100vw-40px)] max-w-md rounded-xl glass-morphism shadow-2xl hidden flex-col" style="transform: translateY(20px); opacity: 0;">
+        <div class="p-3 border-b border-[var(--border-color)] flex justify-between items-center flex-shrink-0">
             <h4 class="font-semibold">Trixel AI Assistant</h4>
             <button id="close-chat-btn" class="p-1 rounded-full hover:bg-gray-700/50">
-                <i data-lucide="x" class="w-4 h-4"></i>
+                <i data-lucide="x" class="w-5 h-5"></i>
             </button>
         </div>
-        <div id="chat-messages" class="p-4 h-48 overflow-y-auto">
-            <!-- Messages will be injected here -->
+        <div id="chat-messages" class="p-4 flex-1 h-80 overflow-y-auto">
+            <!-- Messages will be dynamically injected here -->
         </div>
-        <div class="p-2 border-t border-[var(--border-color)]">
-            <input type="text" placeholder="AI response will appear here..." class="form-input text-sm" disabled>
+        <div class="p-3 border-t border-[var(--border-color)] flex-shrink-0">
+            <form id="chat-input-form" class="flex items-center gap-2">
+                <input type="text" id="chat-input" placeholder="Type your message..." class="form-input text-sm flex-1 bg-transparent" required autocomplete="off">
+                <button type="submit" class="w-10 h-10 rounded-full flex items-center justify-center text-white flex-shrink-0 btn-primary p-0">
+                    <i data-lucide="send" class="w-5 h-5"></i>
+                </button>
+            </form>
         </div>
     </div>
 
@@ -664,8 +685,20 @@
         });
 
         // Always show the welcome overlay on page load
-        gsap.to(welcomeOverlay, { opacity: 1, duration: 0.5, delay: 0.5 });
-        gsap.to(welcomeCard, { scale: 1, opacity: 1, duration: 0.5, ease: "power2.out", delay: 0.7 });
+        gsap.to(welcomeOverlay, {
+            opacity: 1,
+            duration: 0.5,
+            delay: 0.5,
+            onStart: () => welcomeOverlay.classList.remove('opacity-0')
+        });
+        gsap.to(welcomeCard, {
+            scale: 1,
+            opacity: 1,
+            duration: 0.5,
+            ease: "power2.out",
+            delay: 0.7,
+            onStart: () => welcomeCard.classList.remove('scale-95', 'opacity-0')
+        });
 
         // 1. Initialize Lucide Icons
         lucide.createIcons();
@@ -681,32 +714,32 @@
         let isChatOpen = false;
 
         function showAIChat(message) {
-            if (message) {
-                chatMessages.innerHTML = `<div class="text-sm text-[var(--text-secondary)]">${message}</div>`;
-            } else {
-                chatMessages.innerHTML = `<div class="text-sm text-[var(--text-secondary)]">Hello! How can I help you today? You can ask me about our services.</div>`;
-            }
+            const initialMessage = message || "Hello! How can I help you today? You can ask me about our services.";
+            chatMessages.innerHTML = `<div class="text-sm text-text-secondary mb-2 p-3 rounded-lg bg-blue-900/30 self-start max-w-[85%]"><span>${initialMessage}</span></div>`;
 
             aiChatWidget.classList.remove('hidden');
+            aiChatWidget.classList.add('flex'); // Use flex for layout
             gsap.to(aiChatWidget, {
-                translateY: 0,
+                y: 0,
                 opacity: 1,
-                duration: 0.5,
-                ease: 'power2.out'
+                duration: 0.4,
+                ease: 'power3.out'
             });
             isChatOpen = true;
             hideAIOrb();
             lucide.createIcons();
+            document.getElementById('chat-input').focus();
         }
 
         function hideAIChat() {
             gsap.to(aiChatWidget, {
-                translateY: 10,
+                y: 20,
                 opacity: 0,
                 duration: 0.3,
-                ease: 'power2.in',
+                ease: 'power3.in',
                 onComplete: () => {
                     aiChatWidget.classList.add('hidden');
+                    aiChatWidget.classList.remove('flex');
                     isChatOpen = false;
                 }
             });
@@ -721,36 +754,41 @@
             }
         }
 
-        function showAIOrb(service, action) {
-            aiOrb.dataset.service = service;
-            aiOrb.dataset.action = action;
-            aiOrb.classList.remove('hidden');
-            gsap.fromTo(aiOrb, { scale: 0.5, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.3, ease: 'back.out' });
-        }
-
         function hideAIOrb() {
             gsap.to(aiOrb, { scale: 0.5, opacity: 0, duration: 0.2, ease: 'back.in', onComplete: () => aiOrb.classList.add('hidden') });
         }
 
-        function simulateAIResponse(service, action) {
-            const responses = {
-                ask: `Of course! What specific questions do you have about our <strong>${service}</strong> service? We can discuss pricing, timelines, or anything else you need to know.`,
-                explain: `Certainly. Our <strong>${service}</strong> is designed to provide maximum value by focusing on key outcomes. We combine expert implementation with strategic planning to ensure you get the best results.`,
-                order: `Excellent choice! To get started with <strong>${service}</strong>, the first step is a quick discovery call to align on your goals. You can schedule one through our contact form below.`
-            };
-            const responseText = responses[action] || `I can help with ${service}. What would you like to do?`;
-            showAIChat(responseText);
+        function activateVocalOrb(message) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(message);
+                utterance.rate = 1;
+                utterance.pitch = 1.1;
+
+                aiOrb.classList.remove('hidden');
+                gsap.fromTo(aiOrb, { scale: 0.5, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.3, ease: 'back.out' });
+
+                utterance.onend = hideAIOrb;
+                window.speechSynthesis.speak(utterance);
+            } else {
+                console.error("Browser does not support speech synthesis.");
+                showAIChat(message); // Fallback for unsupported browsers
+            }
+        }
+
+        function appendMessage(content, sender = 'ai') {
+            const messageEl = document.createElement('div');
+            const isUser = sender === 'user';
+            const alignment = isUser ? 'self-end' : 'self-start';
+            const bgColor = isUser ? 'bg-gray-700' : 'bg-blue-900/30';
+
+            messageEl.className = `text-sm text-text-primary mb-2 p-3 rounded-lg ${bgColor} ${alignment} max-w-[85%]`;
+            messageEl.innerHTML = `<span>${content}</span>`;
+
+            chatMessages.appendChild(messageEl);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
         aiChatToggle.addEventListener('click', toggleAIChat);
-
-        aiOrb.addEventListener('click', function() {
-            const { service, action } = this.dataset;
-            if (service && action) {
-                simulateAIResponse(service, action);
-            }
-            hideAIOrb();
-        });
 
         interactiveButtons.forEach(button => {
             button.addEventListener('click', function() {
@@ -758,16 +796,36 @@
                 const card = this.closest('.card');
                 const serviceTitle = card.querySelector('h3').textContent;
 
-                if (action === 'ask' || action === 'explain') {
-                    showAIOrb(serviceTitle, action);
-                } else {
-                    // For 'Order' or other buttons, open chat directly
-                    simulateAIResponse(serviceTitle, action);
+                if (action === 'ask') {
+                    const message = `Of course! What specific questions do you have about our <strong>${serviceTitle}</strong> service? We can discuss pricing, timelines, or anything else you need to know.`;
+                    showAIChat(message);
+                } else if (action === 'explain') {
+                    const message = `Certainly. Our <strong>${serviceTitle}</strong> service is designed to provide maximum value by focusing on key outcomes. We combine expert implementation with strategic planning to ensure you get the best results.`;
+                    showAIChat(message);
+                } else if (action === 'order') {
+                    const message = `Excellent choice! To get started with ${serviceTitle}, the first step is a quick discovery call. You can schedule one through our contact form below.`;
+                    activateVocalOrb(message);
                 }
             });
         });
 
         closeChatBtn.addEventListener('click', hideAIChat);
+
+        // Handle chat form submission
+        const chatInputForm = document.getElementById('chat-input-form');
+        const chatInput = document.getElementById('chat-input');
+        chatInputForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const userInput = chatInput.value.trim();
+            if (!userInput) return;
+
+            appendMessage(userInput, 'user');
+            chatInput.value = '';
+
+            setTimeout(() => {
+                appendMessage("Thanks for your message! An AI assistant will respond shortly. This is a simulated response.");
+            }, 800);
+        });
 
         // Enhanced Form Validation
         function enhanceFormValidation() {
