@@ -571,21 +571,21 @@
     </footer>
 
     <!-- Floating Action Buttons -->
-    <div class="fixed bottom-5 right-5 z-40 flex flex-col items-center space-y-3">
+    <div class="fixed bottom-4 right-4 z-40 flex flex-col items-center space-y-2">
         <!-- AI Orb (hidden by default) -->
-        <button id="ai-orb" class="w-14 h-14 rounded-full flex items-center justify-center text-white hidden" style="background: linear-gradient(135deg, #3B82F6, #2563EB); box-shadow: 0 0 20px rgba(59, 130, 246, 0.7);">
-            <i data-lucide="sparkles" class="w-7 h-7"></i>
+        <button id="ai-orb" class="w-12 h-12 rounded-full flex items-center justify-center text-white hidden" style="background: linear-gradient(135deg, #3B82F6, #2563EB); box-shadow: 0 0 20px rgba(59, 130, 246, 0.7);">
+            <i data-lucide="sparkles" class="w-6 h-6"></i>
         </button>
         <!-- Main AI Chat Toggle -->
-        <button id="ai-chat-toggle" class="w-14 h-14 rounded-full flex items-center justify-center text-white" style="background: linear-gradient(135deg, #3B82F6, #2563EB);">
-            <i data-lucide="message-circle" class="w-7 h-7"></i>
+        <button id="ai-chat-toggle" class="w-12 h-12 rounded-full flex items-center justify-center text-white" style="background: linear-gradient(135deg, #3B82F6, #2563EB);">
+            <i data-lucide="message-circle" class="w-6 h-6"></i>
         </button>
         <!-- Audio Toggle -->
-        <button id="audio-toggle" class="w-14 h-14 rounded-full flex items-center justify-center text-white" style="background: linear-gradient(135deg, #3B82F6, #2563EB);">
-            <i data-lucide="volume-2" class="w-7 h-7"></i>
+        <button id="audio-toggle" class="w-12 h-12 rounded-full flex items-center justify-center text-white" style="background: linear-gradient(135deg, #3B82F6, #2563EB);">
+            <i data-lucide="volume-2" class="w-6 h-6"></i>
         </button>
         <!-- Back to Top -->
-       <button id="back-to-top" class="w-14 h-14 rounded-full flex items-center justify-center text-white" style="background: linear-gradient(135deg, #3B82F6, #2563EB);"><i data-lucide="arrow-up" class="w-7 h-7"></i></button>
+       <button id="back-to-top" class="w-12 h-12 rounded-full flex items-center justify-center text-white" style="background: linear-gradient(135deg, #3B82F6, #2563EB);"><i data-lucide="arrow-up" class="w-6 h-6"></i></button>
     </div>
 
     <!-- Universal Audio Player -->
@@ -606,7 +606,7 @@
             <form id="chat-input-form" class="flex items-center gap-2">
                 <input type="text" id="chat-input" placeholder="Type your message..." class="form-input text-sm flex-1 bg-transparent" required autocomplete="off">
                 <button type="submit" class="w-10 h-10 rounded-full flex items-center justify-center text-white flex-shrink-0 btn-primary p-0">
-                    <i data-lucide="send" class="w-5 h-5"></i>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 inline-block"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg>
                 </button>
             </form>
         </div>
@@ -754,25 +754,15 @@
             }
         }
 
-        function hideAIOrb() {
-            gsap.to(aiOrb, { scale: 0.5, opacity: 0, duration: 0.2, ease: 'back.in', onComplete: () => aiOrb.classList.add('hidden') });
+        function showAIOrb(service, action) {
+            aiOrb.dataset.service = service;
+            aiOrb.dataset.action = action;
+            aiOrb.classList.remove('hidden');
+            gsap.fromTo(aiOrb, { scale: 0.5, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.3, ease: 'back.out' });
         }
 
-        function activateVocalOrb(message) {
-            if ('speechSynthesis' in window) {
-                const utterance = new SpeechSynthesisUtterance(message);
-                utterance.rate = 1;
-                utterance.pitch = 1.1;
-
-                aiOrb.classList.remove('hidden');
-                gsap.fromTo(aiOrb, { scale: 0.5, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.3, ease: 'back.out' });
-
-                utterance.onend = hideAIOrb;
-                window.speechSynthesis.speak(utterance);
-            } else {
-                console.error("Browser does not support speech synthesis.");
-                showAIChat(message); // Fallback for unsupported browsers
-            }
+        function hideAIOrb() {
+            gsap.to(aiOrb, { scale: 0.5, opacity: 0, duration: 0.2, ease: 'back.in', onComplete: () => aiOrb.classList.add('hidden') });
         }
 
         function appendMessage(content, sender = 'ai') {
@@ -790,22 +780,30 @@
 
         aiChatToggle.addEventListener('click', toggleAIChat);
 
+        aiOrb.addEventListener('click', function() {
+            const { service, action } = this.dataset;
+            let message = "";
+
+            if (action === 'ask') {
+                message = `Of course! What specific questions do you have about our <strong>${service}</strong> service? We can discuss pricing, timelines, or anything else you need to know.`;
+            } else if (action === 'explain') {
+                message = `Certainly. Our <strong>${service}</strong> service is designed to provide maximum value by focusing on key outcomes. We combine expert implementation with strategic planning to ensure you get the best results.`;
+            } else if (action === 'order') {
+                message = `Excellent choice! To get started with <strong>${service}</strong>, the first step is a quick discovery call. You can schedule one through our contact form below.`;
+            }
+
+            if (message) {
+                showAIChat(message);
+            }
+            hideAIOrb();
+        });
+
         interactiveButtons.forEach(button => {
             button.addEventListener('click', function() {
                 const action = this.textContent.toLowerCase();
                 const card = this.closest('.card');
                 const serviceTitle = card.querySelector('h3').textContent;
-
-                if (action === 'ask') {
-                    const message = `Of course! What specific questions do you have about our <strong>${serviceTitle}</strong> service? We can discuss pricing, timelines, or anything else you need to know.`;
-                    showAIChat(message);
-                } else if (action === 'explain') {
-                    const message = `Certainly. Our <strong>${serviceTitle}</strong> service is designed to provide maximum value by focusing on key outcomes. We combine expert implementation with strategic planning to ensure you get the best results.`;
-                    showAIChat(message);
-                } else if (action === 'order') {
-                    const message = `Excellent choice! To get started with ${serviceTitle}, the first step is a quick discovery call. You can schedule one through our contact form below.`;
-                    activateVocalOrb(message);
-                }
+                showAIOrb(serviceTitle, action);
             });
         });
 
