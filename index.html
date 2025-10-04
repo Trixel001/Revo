@@ -555,10 +555,20 @@
     </footer>
 
     <!-- Floating Action Buttons -->
-    <div class="fixed bottom-5 right-5 z-40 space-y-3">
-        <button id="audio-toggle" class="w-14 h-14 rounded-full flex items-center justify-center text-white bg-green-500/50 hover:bg-green-500/80 transition-colors">
+    <div class="fixed bottom-5 right-5 z-40 flex flex-col items-center space-y-3">
+        <!-- AI Orb (hidden by default) -->
+        <button id="ai-orb" class="w-14 h-14 rounded-full flex items-center justify-center text-white hidden" style="background: linear-gradient(135deg, #3B82F6, #2563EB); box-shadow: 0 0 20px rgba(59, 130, 246, 0.7);">
+            <i data-lucide="sparkles" class="w-7 h-7"></i>
+        </button>
+        <!-- Main AI Chat Toggle -->
+        <button id="ai-chat-toggle" class="w-14 h-14 rounded-full flex items-center justify-center text-white" style="background: linear-gradient(135deg, #3B82F6, #2563EB);">
+            <i data-lucide="message-circle" class="w-7 h-7"></i>
+        </button>
+        <!-- Audio Toggle -->
+        <button id="audio-toggle" class="w-14 h-14 rounded-full flex items-center justify-center text-white" style="background: linear-gradient(135deg, #3B82F6, #2563EB);">
             <i data-lucide="volume-2" class="w-7 h-7"></i>
         </button>
+        <!-- Back to Top -->
        <button id="back-to-top" class="w-14 h-14 rounded-full flex items-center justify-center text-white" style="background: linear-gradient(135deg, #3B82F6, #2563EB);"><i data-lucide="arrow-up" class="w-7 h-7"></i></button>
     </div>
 
@@ -614,7 +624,7 @@
 
         function startTour() {
             dismissOverlay();
-            localStorage.setItem('trixelTourPreference', 'completed');
+            // localStorage.setItem('trixelTourPreference', 'completed'); // Removed to show every time
             tourProgress.classList.remove('hidden');
             gsap.fromTo(tourProgress, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, delay: 0.5 });
             currentTourStep = 0;
@@ -650,16 +660,12 @@
 
         exploreBtn.addEventListener('click', () => {
             dismissOverlay();
-            localStorage.setItem('trixelTourPreference', 'skipped');
+            // localStorage.setItem('trixelTourPreference', 'skipped'); // Removed to show every time
         });
 
-        const tourPreference = localStorage.getItem('trixelTourPreference');
-        if (tourPreference === 'completed' || tourPreference === 'skipped') {
-            welcomeOverlay.style.display = 'none';
-        } else {
-            gsap.to(welcomeOverlay, { opacity: 1, duration: 0.5, delay: 0.5 });
-            gsap.to(welcomeCard, { scale: 1, opacity: 1, duration: 0.5, ease: "power2.out", delay: 0.7 });
-        }
+        // Always show the welcome overlay on page load
+        gsap.to(welcomeOverlay, { opacity: 1, duration: 0.5, delay: 0.5 });
+        gsap.to(welcomeCard, { scale: 1, opacity: 1, duration: 0.5, ease: "power2.out", delay: 0.7 });
 
         // 1. Initialize Lucide Icons
         lucide.createIcons();
@@ -669,9 +675,18 @@
         const chatMessages = document.getElementById('chat-messages');
         const closeChatBtn = document.getElementById('close-chat-btn');
         const interactiveButtons = document.querySelectorAll('.interactive-btn');
+        const aiChatToggle = document.getElementById('ai-chat-toggle');
+        const aiOrb = document.getElementById('ai-orb');
+
+        let isChatOpen = false;
 
         function showAIChat(message) {
-            chatMessages.innerHTML = `<div class="text-sm text-[var(--text-secondary)]">${message}</div>`;
+            if (message) {
+                chatMessages.innerHTML = `<div class="text-sm text-[var(--text-secondary)]">${message}</div>`;
+            } else {
+                chatMessages.innerHTML = `<div class="text-sm text-[var(--text-secondary)]">Hello! How can I help you today? You can ask me about our services.</div>`;
+            }
+
             aiChatWidget.classList.remove('hidden');
             gsap.to(aiChatWidget, {
                 translateY: 0,
@@ -679,7 +694,8 @@
                 duration: 0.5,
                 ease: 'power2.out'
             });
-            // Re-initialize icons if any were added in the message
+            isChatOpen = true;
+            hideAIOrb();
             lucide.createIcons();
         }
 
@@ -689,8 +705,31 @@
                 opacity: 0,
                 duration: 0.3,
                 ease: 'power2.in',
-                onComplete: () => aiChatWidget.classList.add('hidden')
+                onComplete: () => {
+                    aiChatWidget.classList.add('hidden');
+                    isChatOpen = false;
+                }
             });
+            hideAIOrb();
+        }
+
+        function toggleAIChat() {
+            if (isChatOpen) {
+                hideAIChat();
+            } else {
+                showAIChat();
+            }
+        }
+
+        function showAIOrb(service, action) {
+            aiOrb.dataset.service = service;
+            aiOrb.dataset.action = action;
+            aiOrb.classList.remove('hidden');
+            gsap.fromTo(aiOrb, { scale: 0.5, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.3, ease: 'back.out' });
+        }
+
+        function hideAIOrb() {
+            gsap.to(aiOrb, { scale: 0.5, opacity: 0, duration: 0.2, ease: 'back.in', onComplete: () => aiOrb.classList.add('hidden') });
         }
 
         function simulateAIResponse(service, action) {
@@ -703,12 +742,28 @@
             showAIChat(responseText);
         }
 
+        aiChatToggle.addEventListener('click', toggleAIChat);
+
+        aiOrb.addEventListener('click', function() {
+            const { service, action } = this.dataset;
+            if (service && action) {
+                simulateAIResponse(service, action);
+            }
+            hideAIOrb();
+        });
+
         interactiveButtons.forEach(button => {
             button.addEventListener('click', function() {
                 const action = this.textContent.toLowerCase();
                 const card = this.closest('.card');
                 const serviceTitle = card.querySelector('h3').textContent;
-                simulateAIResponse(serviceTitle, action);
+
+                if (action === 'ask' || action === 'explain') {
+                    showAIOrb(serviceTitle, action);
+                } else {
+                    // For 'Order' or other buttons, open chat directly
+                    simulateAIResponse(serviceTitle, action);
+                }
             });
         });
 
