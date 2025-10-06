@@ -133,6 +133,10 @@
         .interactive-btn:hover {
             transform: scale(1.05);
         }
+
+        .no-scroll {
+            overflow: hidden !important;
+        }
         
         /* Mobile Hero Spacing Fix */
         @media (max-width: 640px) {
@@ -150,7 +154,7 @@
 <body class="antialiased">
 
     <!-- Tour Interaction Blocker -->
-    <div id="tour-blocker" class="fixed inset-0 z-50 hidden" style="background-color: rgba(0,0,0,0.4);"></div>
+    <div id="tour-blocker" class="fixed inset-0 z-[100] hidden" style="background-color: rgba(0,0,0,0.4);"></div>
 
     <!-- Welcome Overlay -->
     <div id="welcome-overlay" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm transition-opacity duration-500 opacity-0">
@@ -591,14 +595,14 @@
     <audio id="universal-audio-player" preload="none" style="display: none;"></audio>
 
     <!-- AI Chat Widget -->
-    <div id="ai-chat-widget" class="fixed bottom-20 right-4 z-50 w-[calc(100vw-32px)] max-w-md rounded-xl glass-morphism shadow-2xl hidden flex-col" style="transform: translateY(20px); opacity: 0;">
+    <div id="ai-chat-widget" class="fixed bottom-20 right-4 z-50 h-[60vh] max-h-[450px] w-[calc(100vw-32px)] max-w-[400px] rounded-xl glass-morphism shadow-2xl hidden flex-col" style="transform: translateY(20px); opacity: 0;">
         <div class="p-3 border-b border-[var(--border-color)] flex justify-between items-center flex-shrink-0">
             <h4 class="font-semibold">Trixel AI Assistant</h4>
             <button id="close-chat-btn" class="p-1 rounded-full hover:bg-gray-700/50">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
         </div>
-        <div id="chat-messages" class="p-4 flex-1 h-64 md:h-80 overflow-y-auto">
+        <div id="chat-messages" class="p-4 flex-1 overflow-y-auto">
             <!-- Messages will be dynamically injected here -->
         </div>
         <div class="p-3 border-t border-[var(--border-color)] flex-shrink-0">
@@ -645,6 +649,7 @@
         function startTour() {
             dismissOverlay();
             document.getElementById('tour-blocker').classList.remove('hidden');
+            document.body.classList.add('no-scroll');
             tourProgress.classList.remove('hidden');
             gsap.fromTo(tourProgress, { y: -20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5 });
 
@@ -667,6 +672,7 @@
                 tourTimeline = null;
             }
             document.getElementById('tour-blocker').classList.add('hidden');
+            document.body.classList.remove('no-scroll');
             gsap.to(tourProgress, { y: -20, opacity: 0, duration: 0.3, onComplete: () => tourProgress.classList.add('hidden') });
         }
 
