@@ -778,6 +778,27 @@
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
+        function showTypingIndicator() {
+            if (document.getElementById('typing-indicator-wrapper')) return;
+            const indicatorWrapper = document.createElement('div');
+            indicatorWrapper.id = 'typing-indicator-wrapper';
+            indicatorWrapper.className = 'self-start mb-2';
+            indicatorWrapper.innerHTML = `
+                <div class="text-sm text-text-secondary p-3 rounded-lg bg-blue-900/30">
+                    <span>Trixel AI is typing...</span>
+                </div>
+            `;
+            chatMessages.appendChild(indicatorWrapper);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function hideTypingIndicator() {
+            const indicator = document.getElementById('typing-indicator-wrapper');
+            if (indicator) {
+                indicator.remove();
+            }
+        }
+
         aiChatToggle.addEventListener('click', toggleAIChat);
 
         aiOrb.addEventListener('click', function() {
@@ -820,9 +841,23 @@
             appendMessage(userInput, 'user');
             chatInput.value = '';
 
+            showTypingIndicator();
+
             setTimeout(() => {
-                appendMessage("Thanks for your message! An AI assistant will respond shortly. This is a simulated response.");
-            }, 800);
+                hideTypingIndicator();
+                const aiResponse = `
+                    <p class="mb-2">Trixel Technologies is a modern web development agency that specializes in building high-converting websites for service-based businesses.</p>
+                    <p class="mb-3">Our goal is to help you win more clients by creating an online presence that builds trust and generates leads.</p>
+                    <strong class="font-semibold">Key Features:</strong>
+                    <ul class="list-disc list-inside mt-1 space-y-1">
+                        <li>Premium Design</li>
+                        <li>Fast 5-Day Delivery</li>
+                        <li>Lead-Focused Strategy</li>
+                        <li>SEO Optimized</li>
+                    </ul>
+                `;
+                appendMessage(aiResponse);
+            }, 1500);
         });
 
         // Enhanced Form Validation
