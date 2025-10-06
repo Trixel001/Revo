@@ -137,6 +137,21 @@
         .no-scroll {
             overflow: hidden !important;
         }
+
+        .star-rating {
+            @apply flex items-center justify-center gap-1 mb-4;
+        }
+        .star-rating svg {
+            @apply w-8 h-8 cursor-pointer transition-colors duration-200;
+            color: var(--border-color);
+        }
+        .star-rating svg:hover,
+        .star-rating svg.hovered {
+            color: #FBBF24; /* A lighter gold for hover */
+        }
+        .star-rating svg.selected {
+            color: #F59E0B; /* The final selected gold */
+        }
         
         /* Mobile Hero Spacing Fix */
         @media (max-width: 640px) {
@@ -201,9 +216,9 @@
                 <a href="#contact" class="hover:text-blue-500 transition-colors">Contact</a>
             </div>
             <div class="flex items-center space-x-4">
-                <a href="https://wa.me/2347042998527" target="_blank" rel="noopener noreferrer" class="p-2 rounded-full hover:bg-gray-700/50" aria-label="Chat on WhatsApp">
-        <i data-lucide="message-square"></i>
-    </a>
+                <a href="https://wa.me/2347042998527" target="_blank" rel="noopener noreferrer" class="p-2 rounded-full hover:bg-gray-700/50 text-green-500 hover:text-green-400 transition-colors" aria-label="Chat on WhatsApp">
+                    <i data-lucide="message-square"></i>
+                </a>
                 <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-700/50">
                     <i data-lucide="sun" class="hidden"></i>
                     <i data-lucide="moon"></i>
@@ -497,19 +512,34 @@
                     <h2 class="text-4xl font-bold">Client Reviews</h2>
                     <p class="max-w-2xl mx-auto text-lg text-[var(--text-secondary)] mt-4">See what our clients say about our service</p>
                 </div>
-                <div id="reviews-container" class="min-h-[200px] flex items-center justify-center mb-12">
-                    <div class="text-center text-[var(--text-secondary)] p-8">
-                        No reviews yet. Be the first to share your experience!
-                    </div>
+                <div id="reviews-container" class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12 min-h-[150px]">
+                    <!-- Reviews will be dynamically injected here -->
                 </div>
                 <div class="card max-w-2xl mx-auto">
                     <h3 class="text-2xl font-bold mb-4">Share Your Experience</h3>
-                    <form id="review-form" required>
-                        <div class="mb-4">
-                            <textarea rows="4" placeholder="Tell us about your experience..." class="form-input" required></textarea>
+                    <form id="review-form" class="space-y-4" required>
+                        <div class="star-rating" id="star-rating-container">
+                            <!-- Stars will be dynamically generated here -->
                         </div>
+                        <input type="hidden" name="rating" id="rating-value" value="0" required>
+                        <input type="text" name="name" placeholder="Full Name" class="form-input" required>
+                        <input type="text" name="company" placeholder="Company / Project (Optional)" class="form-input">
+                        <textarea name="review" rows="4" placeholder="Tell us about your experience..." class="form-input" required></textarea>
                         <button type="submit" class="btn-primary w-full">Submit Review</button>
                     </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Special Projects Section -->
+        <section id="special-projects" class="py-20 bg-[var(--bg-card)] border-y border-[var(--border-color)]">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="card max-w-4xl mx-auto text-center">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-4">Beyond Our Niche: Custom Tech Solutions</h2>
+                    <p class="text-[var(--text-secondary)] text-lg max-w-3xl mx-auto mb-8">
+                        While we specialize in websites for service businesses, our expertise doesn't stop there. On special occasions, we partner with clients on unique digital projects. If you need a custom web application, a specialized e-commerce platform, or other advanced web development services, we're ready to build the custom solution your vision requires.
+                    </p>
+                    <a href="#contact" class="btn-secondary self-center">Discuss a Custom Project</a>
                 </div>
             </div>
         </section>
@@ -535,6 +565,10 @@
                                 <option value="Remodeling">Remodeling</option>
                                 <option value="Other">Other</option>
                             </select>
+                            <div class="space-y-2">
+                                <label for="budget-range" class="block text-sm font-medium text-[var(--text-secondary)]">Budget Range: <span id="budget-value" class="font-bold text-[var(--text-primary)]">$2500</span></label>
+                                <input type="range" id="budget-range" min="500" max="5000" step="100" value="2500" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-500">
+                            </div>
                             <textarea rows="4" placeholder="Project Details" class="form-input" required></textarea>
                             <button type="submit" class="btn-primary w-full">Get Started</button>
                         </form>
@@ -563,11 +597,16 @@
     <footer class="bg-[var(--bg-card)] border-t border-[var(--border-color)] py-12">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center text-[var(--text-secondary)]">
             <a href="#" class="text-2xl font-bold text-[var(--text-primary)]">Trixel<span class="text-blue-500">.</span>Tech</a>
+            <p class="mt-2 text-sm">Websites That Win Clients — Delivered Within 5 Days.</p>
             <div class="flex justify-center space-x-6 my-6">
                 <a href="#home" class="hover:text-blue-500">Home</a>
                 <a href="#services" class="hover:text-blue-500">Services</a>
                 <a href="#portfolio" class="hover:text-blue-500">Portfolio</a>
                 <a href="#why-us" class="hover:text-blue-500">Why Us</a>
+            </div>
+            <div class="mb-6">
+                <h4 class="font-semibold text-text-primary mb-2">We Serve</h4>
+                <p class="text-sm">Roofing Companies • HVAC Contractors • Landscaping • Remodeling</p>
             </div>
             <p class="text-sm mt-6">© 2025 Trixel Technologies. All rights reserved.</p>
         </div>
@@ -975,23 +1014,134 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
 
-        // 5. Form Submission Handlers
+        // 5. Form Submission Handlers & Interactive Elements
         const contactForm = document.getElementById('contact-form');
         const reviewForm = document.getElementById('review-form');
+        const budgetRange = document.getElementById('budget-range');
+        const budgetValue = document.getElementById('budget-value');
+
+        if (budgetRange && budgetValue) {
+            budgetRange.addEventListener('input', (e) => {
+                budgetValue.textContent = `$${e.target.value}`;
+            });
+        }
 
         if (contactForm) {
             contactForm.addEventListener('submit', (e) => {
                 e.preventDefault();
                 alert('Thank you for your message! We will get back to you within 24 hours.');
                 contactForm.reset();
+                budgetValue.textContent = '$2500'; // Reset budget display
             });
         }
+
+        // Star Rating System & Review Logic
+        const starRatingContainer = document.getElementById('star-rating-container');
+        const ratingValueInput = document.getElementById('rating-value');
+        const reviewsContainer = document.getElementById('reviews-container');
+        let reviews = [];
+        let currentRating = 0;
+
+        function renderStars(rating = 0) {
+            let starsHTML = '';
+            for (let i = 1; i <= 5; i++) {
+                starsHTML += `<svg class="${i <= rating ? 'selected' : ''}" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg>`;
+            }
+            return starsHTML;
+        }
+
+        function renderReviews() {
+            reviewsContainer.innerHTML = '';
+            if (reviews.length === 0) {
+                reviewsContainer.innerHTML = `
+                    <div class="md:col-span-2 text-center text-[var(--text-secondary)] p-8">
+                        No reviews yet. Be the first to share your experience!
+                    </div>
+                `;
+            } else {
+                reviews.forEach(review => {
+                    const reviewCard = document.createElement('div');
+                    reviewCard.className = 'card';
+                    reviewCard.innerHTML = `
+                        <div class="star-rating !justify-start mb-2">${renderStars(review.rating)}</div>
+                        <p class="text-[var(--text-secondary)] mb-4 flex-1 italic">"${review.text}"</p>
+                        <p class="font-bold text-right text-[var(--text-primary)]">- ${review.name}</p>
+                        ${review.company ? `<p class="text-sm text-right text-[var(--text-secondary)]">${review.company}</p>` : ''}
+                    `;
+                    reviewsContainer.appendChild(reviewCard);
+                });
+            }
+        }
+
+        if (starRatingContainer && ratingValueInput) {
+            const maxStars = 5;
+
+            for (let i = 1; i <= maxStars; i++) {
+                const star = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                star.setAttribute('viewBox', '0 0 24 24');
+                star.setAttribute('fill', 'currentColor');
+                star.dataset.value = i;
+                star.innerHTML = `<path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path>`;
+                starRatingContainer.appendChild(star);
+            }
+
+            const stars = starRatingContainer.querySelectorAll('svg');
+
+            function updateStarsUI(rating, isHover = false) {
+                stars.forEach(star => {
+                    star.classList.remove('selected', 'hovered');
+                    if (star.dataset.value <= rating) {
+                        star.classList.add(isHover ? 'hovered' : 'selected');
+                    }
+                });
+            }
+
+            starRatingContainer.addEventListener('mouseover', e => {
+                if (e.target.closest('svg')) {
+                    updateStarsUI(e.target.closest('svg').dataset.value, true);
+                }
+            });
+
+            starRatingContainer.addEventListener('mouseout', () => {
+                updateStarsUI(currentRating);
+            });
+
+            starRatingContainer.addEventListener('click', e => {
+                const star = e.target.closest('svg');
+                if (star) {
+                    currentRating = star.dataset.value;
+                    ratingValueInput.value = currentRating;
+                    updateStarsUI(currentRating);
+                }
+            });
+
+             // Initial render
+            renderReviews();
+        }
+
 
         if (reviewForm) {
             reviewForm.addEventListener('submit', (e) => {
                 e.preventDefault();
-                alert('Thank you for your review!');
+                if (ratingValueInput.value === "0") {
+                    alert("Please select a star rating before submitting.");
+                    return;
+                }
+
+                const formData = new FormData(reviewForm);
+                reviews.push({
+                    rating: formData.get('rating'),
+                    name: formData.get('name'),
+                    company: formData.get('company'),
+                    text: formData.get('review')
+                });
+
+                alert('Thank you for your review! It has been submitted successfully.');
                 reviewForm.reset();
+                ratingValueInput.value = "0";
+                currentRating = 0;
+                updateStarsUI(0);
+                renderReviews();
             });
         }
         
