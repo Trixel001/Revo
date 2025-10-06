@@ -149,6 +149,9 @@
 </head>
 <body class="antialiased">
 
+    <!-- Tour Interaction Blocker -->
+    <div id="tour-blocker" class="fixed inset-0 z-50 hidden" style="background-color: rgba(0,0,0,0.4);"></div>
+
     <!-- Welcome Overlay -->
     <div id="welcome-overlay" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm transition-opacity duration-500 opacity-0">
         <div id="welcome-card" class="bg-card border border-border-color rounded-2xl shadow-2xl w-[90%] max-w-4xl flex flex-col md:flex-row overflow-hidden transform scale-95 opacity-0">
@@ -178,12 +181,8 @@
     </div>
 
     <!-- Tour Progress Indicator -->
-    <div id="tour-progress" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 p-2 rounded-full glass-morphism hidden">
-        <div class="flex items-center gap-4">
-            <span id="tour-progress-text" class="text-sm text-[var(--text-primary)]"></span>
-            <button id="tour-next-btn" class="btn-primary py-2 px-4 text-sm">Next</button>
-            <button id="tour-exit-btn" class="btn-secondary py-2 px-4 text-sm">Exit Tour</button>
-        </div>
+    <div id="tour-progress" class="fixed top-5 right-5 z-[101] hidden">
+        <button id="skip-tour-btn" class="btn-secondary py-2 px-4 text-sm bg-card hover:bg-border-color">Skip Tour</button>
     </div>
 
     <!-- Navigation Bar -->
@@ -592,14 +591,14 @@
     <audio id="universal-audio-player" preload="none" style="display: none;"></audio>
 
     <!-- AI Chat Widget -->
-    <div id="ai-chat-widget" class="fixed bottom-24 right-5 z-50 w-[calc(100vw-40px)] max-w-md rounded-xl glass-morphism shadow-2xl hidden flex-col" style="transform: translateY(20px); opacity: 0;">
+    <div id="ai-chat-widget" class="fixed bottom-20 right-4 z-50 w-[calc(100vw-32px)] max-w-md rounded-xl glass-morphism shadow-2xl hidden flex-col" style="transform: translateY(20px); opacity: 0;">
         <div class="p-3 border-b border-[var(--border-color)] flex justify-between items-center flex-shrink-0">
             <h4 class="font-semibold">Trixel AI Assistant</h4>
             <button id="close-chat-btn" class="p-1 rounded-full hover:bg-gray-700/50">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
         </div>
-        <div id="chat-messages" class="p-4 flex-1 h-80 overflow-y-auto">
+        <div id="chat-messages" class="p-4 flex-1 h-64 md:h-80 overflow-y-auto">
             <!-- Messages will be dynamically injected here -->
         </div>
         <div class="p-3 border-t border-[var(--border-color)] flex-shrink-0">
@@ -623,17 +622,17 @@
         const startTourBtn = document.getElementById('start-tour-btn');
         const exploreBtn = document.getElementById('explore-btn');
         const tourProgress = document.getElementById('tour-progress');
-        const tourProgressText = document.getElementById('tour-progress-text');
-        const tourNextBtn = document.getElementById('tour-next-btn');
-        const tourExitBtn = document.getElementById('tour-exit-btn');
+        const skipTourBtn = document.getElementById('skip-tour-btn');
 
         const tourSteps = [
-            { selector: '#services', description: 'This is our Services section, where we outline what we offer.' },
-            { selector: '#portfolio', description: 'Here you can see our recent work.' },
-            { selector: '#why-us', description: 'Discover why Trixel is the right choice for you.' },
-            { selector: '#contact', description: 'And finally, our contact section to get in touch.' }
+            { selector: '#services' },
+            { selector: '#portfolio' },
+            { selector: '#why-us' },
+            { selector: '#contact' },
+            { selector: '#home' } // Return to top at the end
         ];
-        let currentTourStep = -1;
+
+        let tourTimeline; // To hold the GSAP timeline instance
 
         function dismissOverlay() {
             gsap.to(welcomeOverlay, {
@@ -645,44 +644,35 @@
 
         function startTour() {
             dismissOverlay();
-            // localStorage.setItem('trixelTourPreference', 'completed'); // Removed to show every time
+            document.getElementById('tour-blocker').classList.remove('hidden');
             tourProgress.classList.remove('hidden');
-            gsap.fromTo(tourProgress, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, delay: 0.5 });
-            currentTourStep = 0;
-            advanceTour();
-        }
+            gsap.fromTo(tourProgress, { y: -20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5 });
 
-        function advanceTour() {
-            if (currentTourStep >= tourSteps.length) {
-                endTour();
-                return;
-            }
-
-            const step = tourSteps[currentTourStep];
-            tourProgressText.textContent = step.description;
-            gsap.to(window, { duration: 1, scrollTo: { y: step.selector, offsetY: 100 }, ease: "power2.inOut" });
-
-            if (currentTourStep === tourSteps.length - 1) {
-                tourNextBtn.textContent = 'Finish';
-            } else {
-                tourNextBtn.textContent = 'Next';
-            }
-
-            currentTourStep++;
+            // Add a small delay to prevent immediate scroll if user clicks fast
+            gsap.delayedCall(0.5, () => {
+                tourTimeline = gsap.timeline({ onComplete: endTour });
+                tourSteps.forEach(step => {
+                    tourTimeline.to(window, {
+                        duration: 1.2,
+                        scrollTo: { y: step.selector, offsetY: 70 },
+                        ease: "power2.inOut"
+                    }).to({}, {duration: 1.5}); // Pause at each section
+                });
+            });
         }
 
         function endTour() {
-            gsap.to(tourProgress, { y: 20, opacity: 0, duration: 0.5, onComplete: () => tourProgress.classList.add('hidden') });
+            if (tourTimeline) {
+                tourTimeline.kill();
+                tourTimeline = null;
+            }
+            document.getElementById('tour-blocker').classList.add('hidden');
+            gsap.to(tourProgress, { y: -20, opacity: 0, duration: 0.3, onComplete: () => tourProgress.classList.add('hidden') });
         }
 
         startTourBtn.addEventListener('click', startTour);
-        tourNextBtn.addEventListener('click', advanceTour);
-        tourExitBtn.addEventListener('click', endTour);
-
-        exploreBtn.addEventListener('click', () => {
-            dismissOverlay();
-            // localStorage.setItem('trixelTourPreference', 'skipped'); // Removed to show every time
-        });
+        skipTourBtn.addEventListener('click', endTour);
+        exploreBtn.addEventListener('click', dismissOverlay);
 
         // Always show the welcome overlay on page load
         gsap.to(welcomeOverlay, {
