@@ -1,0 +1,1673 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trixel Technologies - Websites That Win Clients</title>
+    <meta name="description" content="We build high-converting websites for service businesses that generate leads and build trust with your potential clients. Delivered within 5 Days.">
+    
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lexend:wght@600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+<!-- GSAP Core -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<!-- GSAP ScrollTrigger -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<!-- GSAP ScrollToPlugin -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
+    <style type="text/tailwindcss">
+        :root {
+            --bg-primary: #0D1117;
+            --bg-card: #161B22;
+            --border-color: #30363D;
+            --text-primary: #F0F6FC;
+            --text-secondary: #8B949E;
+        }
+
+        .light-theme {
+            --bg-primary: #F0F6FC;
+            --bg-card: #FFFFFF;
+            --border-color: #D0D7DE;
+            --text-primary: #0D1117;
+            --text-secondary: #57606A;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Lexend', sans-serif;
+            color: var(--text-primary);
+        }
+        .glass-morphism {
+            background: rgba(22, 27, 34, 0.6);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .light-theme .glass-morphism {
+            background: rgba(255, 255, 255, 0.6);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #3B82F6, #2563EB);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .btn-primary {
+            @apply px-6 py-3 rounded-lg font-semibold text-white transition-all duration-300;
+            background: linear-gradient(135deg, #3B82F6, #2563EB);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+        }
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(59, 130, 246, 0.8);
+        }
+        .btn-secondary {
+            @apply px-6 py-3 rounded-lg font-semibold border border-blue-500 text-blue-500 transition-all duration-300;
+        }
+        .btn-secondary:hover {
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+        .card {
+            @apply bg-[var(--bg-card)] border border-[var(--border-color)] rounded-xl p-6 transition-all duration-300 flex flex-col;
+        }
+        .card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+            border-color: #3B82F6;
+        }
+        .hero-grid-pattern {
+            background-image: linear-gradient(rgba(13, 17, 23, 0) 1px, var(--bg-primary) 1px), linear-gradient(90deg, rgba(13, 17, 23, 0) 1px, var(--bg-primary) 1px);
+            background-size: 40px 40px;
+            mask-image: radial-gradient(ellipse 80% 50% at 50% 50%, black 40%, transparent 100%);
+        }
+        .form-input {
+            @apply w-full bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 text-[var(--text-primary)];
+        }
+        .light-theme .form-input {
+            color: var(--text-primary);
+        }
+        .light-theme select.form-input {
+            color: var(--text-primary);
+        }
+        #back-to-top {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        #back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+    #mobile-menu {
+    @apply fixed top-0 right-0 h-screen w-64 bg-[var(--bg-card)] z-50;
+    transition: transform 0.3s ease-in-out;
+    transform: translateX(100%);
+}
+#mobile-menu.active {
+    transform: translateX(0);
+}
+#mobile-menu-backdrop {
+    @apply fixed inset-0 bg-black/50 z-40;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+}
+#mobile-menu-backdrop.active {
+    opacity: 1;
+    visibility: visible;
+}
+        .interactive-btn {
+            @apply px-3 py-1 rounded-md text-sm transition-all duration-200;
+        }
+        .interactive-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .no-scroll {
+            overflow: hidden !important;
+        }
+
+        .star-rating {
+            @apply flex items-center justify-center gap-1 mb-4;
+        }
+        .star-rating svg {
+            @apply w-8 h-8 cursor-pointer transition-colors duration-200;
+            color: var(--border-color);
+        }
+        .star-rating svg:hover,
+        .star-rating svg.hovered {
+            color: #FBBF24; /* A lighter gold for hover */
+        }
+        .star-rating svg.selected {
+            color: #F59E0B; /* The final selected gold */
+        }
+        
+        /* Mobile Hero Spacing Fix */
+        @media (max-width: 640px) {
+            #home {
+                padding-top: 5rem !important;
+            }
+            h1.hero-headline {
+                margin-top: 1rem;
+                margin-bottom: 1.5rem;
+            }
+            }
+        
+      /* Tour-specific styles */
+.tour-hidden {
+    opacity: 0 !important;
+    visibility: hidden !important;
+}
+
+.tour-element {
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* Hide interactive buttons initially for tour */
+.interactive-btn {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+}
+
+/* Show buttons when tour is complete or skipped */
+body:not(.tour-active) .interactive-btn {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Tour Interaction Blocker -->
+    <div id="tour-blocker" class="fixed inset-0 z-[100] hidden" style="background-color: rgba(0,0,0,0.4);"></div>
+
+    <!-- Welcome Overlay -->
+    <div id="welcome-overlay" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm transition-opacity duration-500 opacity-0">
+        <div id="welcome-card" class="bg-card border border-border-color rounded-2xl shadow-2xl w-[90%] max-w-4xl flex flex-col md:flex-row overflow-hidden transform scale-95 opacity-0">
+            <!-- Left side with illustration -->
+            <div class="hidden md:flex md:w-1/2 items-center justify-center p-8 bg-blue-900/20">
+                <div class="text-center">
+                    <i data-lucide="bot" class="w-32 h-32 text-blue-400 mx-auto mb-6"></i>
+                    <h2 class="text-3xl font-bold text-text-primary">Meet Your AI Guide</h2>
+                    <p class="text-text-secondary mt-2">Ready to explore the future of web tech?</p>
+                </div>
+            </div>
+            <!-- Right side with content -->
+            <div class="w-full md:w-1/2 p-8 md:p-12 text-center md:text-left">
+                <h2 class="text-4xl lg:text-5xl font-extrabold mb-3 gradient-text">Welcome!</h2>
+                <p class="text-text-secondary text-lg mb-8">
+                    We've crafted a unique, AI-enhanced experience for you. Take a quick tour to see how we can help your business, or jump right in.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                    <button id="start-tour-btn" class="btn-primary w-full sm:w-auto flex items-center justify-center gap-2">
+                        <i data-lucide="play-circle" class="w-5 h-5"></i>
+                        Start Guided Tour
+                    </button>
+                    <button id="explore-btn" class="btn-secondary w-full sm:w-auto">Explore Freely</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tour Progress Indicator -->
+    <div id="tour-progress" class="fixed top-5 right-5 z-[101] hidden">
+        <button id="skip-tour-btn" class="btn-secondary py-2 px-4 text-sm bg-card hover:bg-border-color">Skip Tour</button>
+    </div>
+
+    <!-- Navigation Bar -->
+    <header class="fixed top-0 left-0 right-0 z-40 glass-morphism h-16">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-full">
+            <a href="#" class="text-2xl font-bold">Trixel<span class="text-blue-500">.</span>Tech</a>
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#home" class="hover:text-blue-500 transition-colors">Home</a>
+                <a href="#services" class="hover:text-blue-500 transition-colors">Services</a>
+                <a href="#portfolio" class="hover:text-blue-500 transition-colors">Portfolio</a>
+                <a href="#why-us" class="hover:text-blue-500 transition-colors">Why Us</a>
+                <a href="#contact" class="hover:text-blue-500 transition-colors">Contact</a>
+            </div>
+            <div class="flex items-center space-x-4">
+                <a href="https://wa.me/2347042998527" target="_blank" rel="noopener noreferrer" class="p-2 rounded-full hover:bg-gray-700/50 text-green-500 hover:text-green-400 transition-colors" aria-label="Chat on WhatsApp">
+                    <i data-lucide="message-square"></i>
+                </a>
+                <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-700/50">
+                    <i data-lucide="sun" class="hidden"></i>
+                    <i data-lucide="moon"></i>
+                </button>
+                <button id="mobile-menu-toggle" class="md:hidden p-2 rounded-full hover:bg-gray-700/50"><i data-lucide="menu"></i></button>
+            </div>
+        </nav>
+    </header>
+    
+ 
+    <!-- Mobile Menu -->
+<div id="mobile-menu" class="p-8 md:hidden">
+    <div class="flex flex-col space-y-6 text-left">
+        <a href="#home" class="hover:text-blue-500 transition-colors py-2 text-lg">Home</a>
+        <a href="#services" class="hover:text-blue-500 transition-colors py-2 text-lg">Services</a>
+        <a href="#portfolio" class="hover:text-blue-500 transition-colors py-2 text-lg">Portfolio</a>
+        <a href="#why-us" class="hover:text-blue-500 transition-colors py-2 text-lg">Why Us</a>
+        <a href="#contact" class="hover:text-blue-500 transition-colors py-2 text-lg">Contact</a>
+    </div>
+</div>
+<div id="mobile-menu-backdrop" class="md:hidden"></div>
+
+    <main>
+        <!-- Hero Section -->
+        <section id="home" class="relative min-h-screen flex items-center justify-center text-center overflow-hidden pt-16">
+            <div class="absolute inset-0 hero-grid-pattern"></div>
+            <div class="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
+                <h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter hero-headline">Websites That <span class="gradient-text">Win Clients</span></h1>
+                <p class="text-xl md:text-2xl font-bold mb-6 hero-subheadline">Delivered within 5 Days.</p>
+                <p class="max-w-3xl mx-auto text-lg text-[var(--text-secondary)] mb-10">We build high-converting websites for service businesses that generate leads and build trust with your potential clients.</p>
+                <a href="#contact" class="btn-primary text-lg">Get Your Website</a>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-20 text-left">
+                    <div class="card">
+                        <i data-lucide="rocket" class="w-8 h-8 text-blue-500 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">Fast Delivery</h3>
+                        <p class="text-[var(--text-secondary)]">Your complete website ready within just 5 business days.</p>
+                    </div>
+                    <div class="card">
+                        <i data-lucide="target" class="w-8 h-8 text-blue-500 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">Lead-Focused Design</h3>
+                        <p class="text-[var(--text-secondary)]">Optimized to convert visitors into paying customers.</p>
+                    </div>
+                    <div class="card">
+                        <i data-lucide="trending-up" class="w-8 h-8 text-blue-500 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">SEO Optimized</h3>
+                        <p class="text-[var(--text-secondary)]">Built to rank higher in Google search results.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Services Section -->
+        <section id="services" class="py-20">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold">Our Services</h2>
+                    <p class="max-w-2xl mx-auto text-lg text-[var(--text-secondary)] mt-4">We specialize in creating websites that generate leads and build trust for service-based businesses.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="card">
+                        <i data-lucide="gem" class="w-8 h-8 text-blue-500 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">Premium Design</h3>
+                        <p class="text-[var(--text-secondary)] mb-4 flex-1">Eye-catching, professional designs that reflect your brand's quality and build instant trust.</p>
+                        <div class="flex flex-wrap gap-2 mt-auto">
+                            <button class="interactive-btn bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">Ask</button>
+                            <button class="interactive-btn bg-purple-500/20 text-purple-400 hover:bg-purple-500/30">Explain</button>
+                            <button class="interactive-btn bg-green-500/20 text-green-400 hover:bg-green-500/30">Order</button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <i data-lucide="layout-template" class="w-8 h-8 text-blue-500 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">Strategic Structure</h3>
+                        <p class="text-[var(--text-secondary)] mb-4 flex-1">Conversion-focused layouts that guide visitors toward becoming leads and customers.</p>
+                        <div class="flex flex-wrap gap-2 mt-auto">
+                            <button class="interactive-btn bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">Ask</button>
+                            <button class="interactive-btn bg-purple-500/20 text-purple-400 hover:bg-purple-500/30">Explain</button>
+                            <button class="interactive-btn bg-green-500/20 text-green-400 hover:bg-green-500/30">Order</button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <i data-lucide="search" class="w-8 h-8 text-blue-500 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">SEO Foundation</h3>
+                        <p class="text-[var(--text-secondary)] mb-4 flex-1">Built-in search engine optimization to help your business get found by local customers.</p>
+                        <div class="flex flex-wrap gap-2 mt-auto">
+                            <button class="interactive-btn bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">Ask</button>
+                            <button class="interactive-btn bg-purple-500/20 text-purple-400 hover:bg-purple-500/30">Explain</button>
+                            <button class="interactive-btn bg-green-500/20 text-green-400 hover:bg-green-500/30">Order</button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <i data-lucide="headphones" class="w-8 h-8 text-blue-500 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">AI Customer Service</h3>
+                        <p class="text-[var(--text-secondary)] mb-4 flex-1">Intelligent chatbots and virtual assistants that handle customer inquiries 24/7, improving satisfaction and reducing response times.</p>
+                        <div class="flex flex-wrap gap-2 mt-auto">
+                            <button class="interactive-btn bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">Ask</button>
+                            <button class="interactive-btn bg-purple-500/20 text-purple-400 hover:bg-purple-500/30">Explain</button>
+                            <button class="interactive-btn bg-green-500/20 text-green-400 hover:bg-green-500/30">Order</button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <i data-lucide="settings" class="w-8 h-8 text-blue-500 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">Productivity Gem Setup</h3>
+                        <p class="text-[var(--text-secondary)] mb-4 flex-1">Custom implementation of productivity tools and automation gems that streamline your business operations and boost efficiency.</p>
+                        <div class="flex flex-wrap gap-2 mt-auto">
+                            <button class="interactive-btn bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">Ask</button>
+                            <button class="interactive-btn bg-purple-500/20 text-purple-400 hover:bg-purple-500/30">Explain</button>
+                            <button class="interactive-btn bg-green-500/20 text-green-400 hover:bg-green-500/30">Order</button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <i data-lucide="life-buoy" class="w-8 h-8 text-blue-500 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">Ongoing Support</h3>
+                        <p class="text-[var(--text-secondary)] mb-4 flex-1">Reliable technical support and website maintenance to keep your site running smoothly.</p>
+                        <div class="flex flex-wrap gap-2 mt-auto">
+                            <button class="interactive-btn bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">Ask</button>
+                            <button class="interactive-btn bg-purple-500/20 text-purple-400 hover:bg-purple-500/30">Explain</button>
+                            <button class="interactive-btn bg-green-500/20 text-green-400 hover:bg-green-500/30">Order</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Portfolio Section -->
+        <section id="portfolio" class="py-20 bg-[var(--bg-card)] border-y border-[var(--border-color)]">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold">Our Recent Work</h2>
+                    <p class="max-w-2xl mx-auto text-lg text-[var(--text-secondary)] mt-4">See how we can help service businesses attract more clients with strategic web design.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="card overflow-hidden p-0">
+                        <img src="https://via.placeholder.com/400x250/1a202c/808080?text=Elite+Roofing" alt="Elite Roofing Solutions" class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold">Elite Roofing Solutions</h3>
+                            <p class="text-[var(--text-secondary)] mb-4">Roofing Services Website</p>
+                        </div>
+                    </div>
+                    <div class="card overflow-hidden p-0">
+                        <img src="https://via.placeholder.com/400x250/1a202c/808080?text=AirTech+Pro" alt="AirTech Pro" class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold">AirTech Pro</h3>
+                            <p class="text-[var(--text-secondary)] mb-4">HVAC Services Website</p>
+                        </div>
+                    </div>
+                    <div class="card overflow-hidden p-0">
+                        <img src="https://via.placeholder.com/400x250/1a202c/808080?text=GreenScape+Pro" alt="GreenScape Pro" class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold">GreenScape Pro</h3>
+                            <p class="text-[var(--text-secondary)] mb-4">Landscaping Services Website</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Why Us Section -->
+        <section id="why-us" class="py-20">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold">Why Choose Trixel</h2>
+                    <p class="max-w-2xl mx-auto text-lg text-[var(--text-secondary)] mt-4">We understand the unique needs of service businesses and build websites that actually work for you.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+                    <div class="card">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 rounded-lg bg-blue-500/20 flex-shrink-0 flex items-center justify-center mr-4"><i data-lucide="zap" class="w-6 h-6 text-blue-500"></i></div>
+                            <h3 class="text-xl font-semibold">5-Day Delivery</h3>
+                        </div>
+                        <p class="text-[var(--text-secondary)] mb-4 flex-1">Our streamlined process delivers your complete website in just 5 business days, so you can start generating leads faster.</p>
+                        <div class="flex flex-wrap gap-2 mt-auto">
+                            <button class="interactive-btn bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">Ask</button>
+                            <button class="interactive-btn bg-purple-500/20 text-purple-400 hover:bg-purple-500/30">Explain</button>
+                            <button class="interactive-btn bg-green-500/20 text-green-400 hover:bg-green-500/30">Order</button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 rounded-lg bg-blue-500/20 flex-shrink-0 flex items-center justify-center mr-4"><i data-lucide="magnet" class="w-6 h-6 text-blue-500"></i></div>
+                            <h3 class="text-xl font-semibold">Lead Generation Focus</h3>
+                        </div>
+                        <p class="text-[var(--text-secondary)] mb-4 flex-1">Every element is strategically designed to convert visitors into leads with clear calls-to-action and trust-building elements.</p>
+                        <div class="flex flex-wrap gap-2 mt-auto">
+                            <button class="interactive-btn bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">Ask</button>
+                            <button class="interactive-btn bg-purple-500/20 text-purple-400 hover:bg-purple-500/30">Explain</button>
+                            <button class="interactive-btn bg-green-500/20 text-green-400 hover:bg-green-500/30">Order</button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 rounded-lg bg-blue-500/20 flex-shrink-0 flex items-center justify-center mr-4"><i data-lucide="shield-check" class="w-6 h-6 text-blue-500"></i></div>
+                            <h3 class="text-xl font-semibold">SEO Built-In</h3>
+                        </div>
+                        <p class="text-[var(--text-secondary)] mb-4 flex-1">Your website is optimized for local search from day one, helping your business appear in Google searches for your services.</p>
+                        <div class="flex flex-wrap gap-2 mt-auto">
+                            <button class="interactive-btn bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">Ask</button>
+                            <button class="interactive-btn bg-purple-500/20 text-purple-400 hover:bg-purple-500/30">Explain</button>
+                            <button class="interactive-btn bg-green-500/20 text-green-400 hover:bg-green-500/30">Order</button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 rounded-lg bg-blue-500/20 flex-shrink-0 flex items-center justify-center mr-4"><i data-lucide="wrench" class="w-6 h-6 text-blue-500"></i></div>
+                            <h3 class="text-xl font-semibold">Service Business Specialists</h3>
+                        </div>
+                        <p class="text-[var(--text-secondary)] mb-4 flex-1">We exclusively work with service businesses, giving us deep insight into what works for roofing, HVAC, landscaping, and more.</p>
+                        <div class="flex flex-wrap gap-2 mt-auto">
+                            <button class="interactive-btn bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">Ask</button>
+                            <button class="interactive-btn bg-purple-500/20 text-purple-400 hover:bg-purple-500/30">Explain</button>
+                            <button class="interactive-btn bg-green-500/20 text-green-400 hover:bg-green-500/30">Order</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- START: Our Process is Simple Section -->
+<div id="process-timeline" class="card max-w-4xl mx-auto">
+    <h3 class="text-2xl font-bold text-center mb-8">Our Process is Simple</h3>
+    <div class="relative">
+        <!-- Timeline line for desktop -->
+        <div class="absolute left-1/2 -translate-x-1/2 h-full w-0.5 bg-[var(--border-color)] hidden md:block" aria-hidden="true"></div>
+
+        <div class="space-y-12">
+            <!-- Step 1 -->
+            <div class="md:flex items-center md:space-x-8 relative">
+                <div class="md:w-1/2 md:text-right">
+                    <div class="flex items-center justify-center md:justify-end mb-2 md:mb-0">
+                        <div class="md:order-2 text-center">
+                            <h4 class="text-lg font-semibold">DISCOVERY CALL</h4>
+                            <p class="text-[var(--text-secondary)]">We learn about your business, goals, and what sets you apart from competitors.</p>
+                        </div>
+                        <div class="md:order-1 bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold mx-4">1</div>
+                    </div>
+                </div>
+                <div class="hidden md:block w-1/2"></div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="md:flex items-center md:space-x-8 relative">
+                <div class="hidden md:block w-1/2"></div>
+                <div class="md:w-1/2 md:text-left">
+                     <div class="flex items-center justify-center md:justify-start mb-2 md:mb-0">
+                        <div class="bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold mx-4">2</div>
+                        <div class="text-center">
+                            <h4 class="text-lg font-semibold">DESIGN & DEVELOPMENT</h4>
+                            <p class="text-[var(--text-secondary)]">Our team creates your custom website with a focus on lead generation.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="md:flex items-center md:space-x-8 relative">
+                <div class="md:w-1/2 md:text-right">
+                    <div class="flex items-center justify-center md:justify-end mb-2 md:mb-0">
+                        <div class="md:order-2 text-center">
+                            <h4 class="text-lg font-semibold">REVIEW & REFINEMENT</h4>
+                            <p class="text-[var(--text-secondary)]">You review the site and we make any necessary adjustments.</p>
+                        </div>
+                        <div class="md:order-1 bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold mx-4">3</div>
+                    </div>
+                </div>
+                <div class="hidden md:block w-1/2"></div>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="md:flex items-center md:space-x-8 relative">
+                <div class="hidden md:block w-1/2"></div>
+                <div class="md:w-1/2 md:text-left">
+                    <div class="flex items-center justify-center md:justify-start mb-2 md:mb-0">
+                        <div class="bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold mx-4">4</div>
+                        <div class="text-center">
+                            <h4 class="text-lg font-semibold">LAUNCH</h4>
+                            <p class="text-[var(--text-secondary)]">Your new website goes live and starts generating leads for your business.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END: Our Process is Simple Section -->
+        </section>
+        
+       
+
+        <!-- User Reviews Section -->
+        <section id="reviews" class="py-20">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold">Client Reviews</h2>
+                    <p class="max-w-2xl mx-auto text-lg text-[var(--text-secondary)] mt-4">See what our clients say about our service</p>
+                </div>
+                <div id="reviews-container" class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12 min-h-[150px]">
+                    <!-- Reviews will be dynamically injected here -->
+                </div>
+                <div class="card max-w-2xl mx-auto">
+                    <h3 class="text-2xl font-bold mb-4">Share Your Experience</h3>
+                    <form id="review-form" class="space-y-4" required>
+                        <div class="star-rating" id="star-rating-container">
+                            <!-- Stars will be dynamically generated here -->
+                        </div>
+                        <input type="hidden" name="rating" id="rating-value" value="0" required>
+                        <input type="text" name="name" placeholder="Full Name" class="form-input" required>
+                        <input type="text" name="company" placeholder="Company / Project (Optional)" class="form-input">
+                        <textarea name="review" rows="4" placeholder="Tell us about your experience..." class="form-input" required></textarea>
+                        <button type="submit" class="btn-primary w-full">Submit Review</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Special Projects Section -->
+        <section id="special-projects" class="py-20 bg-[var(--bg-card)] border-y border-[var(--border-color)]">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="card max-w-4xl mx-auto text-center">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-4">Beyond Our Niche: Custom Tech Solutions</h2>
+                    <p class="text-[var(--text-secondary)] text-lg max-w-3xl mx-auto mb-8">
+                        While we specialize in websites for service businesses, our expertise doesn't stop there. On special occasions, we partner with clients on unique digital projects. If you need a custom web application, a specialized e-commerce platform, or other advanced web development services, we're ready to build the custom solution your vision requires.
+                    </p>
+                    <a href="#contact" class="btn-secondary self-center">Discuss a Custom Project</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="py-20">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold">Get Your Website within 5 Days</h2>
+                    <p class="max-w-2xl mx-auto text-lg text-[var(--text-secondary)] mt-4">Fill out the form below to start the conversation. We'll get back to you within 24 hours.</p>
+                </div>
+                <div class="flex flex-col lg:flex-row gap-12">
+                    <div class="lg:w-2/3">
+                        <form id="contact-form" class="space-y-4" required>
+                            <input type="text" placeholder="Full Name" class="form-input" required>
+                            <input type="email" placeholder="Email Address" class="form-input" required>
+                            <input type="tel" placeholder="Phone Number" class="form-input">
+                            <select class="form-input" required>
+                                <option value="" disabled selected>Select a business type</option>
+                                <option value="Roofing">Roofing</option>
+                                <option value="HVAC">HVAC</option>
+                                <option value="Landscaping">Landscaping</option>
+                                <option value="Remodeling">Remodeling</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <div class="space-y-2">
+                                <label for="budget-range" class="block text-sm font-medium text-[var(--text-secondary)]">Budget Range: <span id="budget-value" class="font-bold text-[var(--text-primary)]">$2500</span></label>
+                                <input type="range" id="budget-range" min="500" max="5000" step="100" value="2500" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-500">
+                            </div>
+                            <textarea rows="4" placeholder="Project Details" class="form-input" required></textarea>
+                            <button type="submit" class="btn-primary w-full">Get Started</button>
+                        </form>
+                    </div>
+                    <div class="lg:w-1/3 space-y-8">
+                        <div class="card">
+                            <h3 class="text-xl font-semibold mb-4">Contact Information</h3>
+                            <div class="space-y-3">
+                                <p class="flex items-center"><i data-lucide="mail" class="w-5 h-5 mr-3"></i> trixeltechnologies@gmail.com</p>
+                                <p class="flex items-center"><i data-lucide="phone" class="w-5 h-5 mr-3"></i> (234) 704-299-8527</p>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <i data-lucide="message-circle" class="w-8 h-8 text-blue-500 mb-4"></i>
+                            <p class="italic text-[var(--text-secondary)]">"I highly recommend Trixel, their ability to truly listen and understand a client's needs sets them apart..."</p>
+                            <p class="font-semibold mt-4">- Wesley Estrella</p>
+                            <p class="text-sm text-[var(--text-secondary)]">Spotlight Management</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[var(--bg-card)] border-t border-[var(--border-color)] py-12">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center text-[var(--text-secondary)]">
+            <a href="#" class="text-2xl font-bold text-[var(--text-primary)]">Trixel<span class="text-blue-500">.</span>Tech</a>
+            <p class="mt-2 text-sm">Websites That Win Clients — Delivered Within 5 Days.</p>
+            <div class="flex justify-center space-x-6 my-6">
+                <a href="#home" class="hover:text-blue-500">Home</a>
+                <a href="#services" class="hover:text-blue-500">Services</a>
+                <a href="#portfolio" class="hover:text-blue-500">Portfolio</a>
+                <a href="#why-us" class="hover:text-blue-500">Why Us</a>
+            </div>
+            <div class="mb-6">
+                <h4 class="font-semibold text-text-primary mb-2">We Serve</h4>
+                <p class="text-sm">Roofing Companies • HVAC Contractors • Landscaping • Remodeling</p>
+            </div>
+            <p class="text-sm mt-6">© 2025 Trixel Technologies. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Floating Action Buttons -->
+    <div class="fixed bottom-4 right-4 z-40 flex flex-col items-center space-y-2">
+        <!-- AI Orb (hidden by default) -->
+        <button id="ai-orb" class="w-12 h-12 rounded-full flex items-center justify-center text-white hidden" style="background: linear-gradient(135deg, #3B82F6, #2563EB); box-shadow: 0 0 20px rgba(59, 130, 246, 0.7);">
+            <i data-lucide="sparkles" class="w-6 h-6"></i>
+        </button>
+        <!-- Main AI Chat Toggle -->
+        <button id="ai-chat-toggle" class="w-12 h-12 rounded-full flex items-center justify-center text-white" style="background: linear-gradient(135deg, #3B82F6, #2563EB);">
+            <i data-lucide="message-circle" class="w-6 h-6"></i>
+        </button>
+        <!-- Audio Toggle -->
+        <button id="audio-toggle" class="w-12 h-12 rounded-full flex items-center justify-center text-white" style="background: linear-gradient(135deg, #3B82F6, #2563EB);">
+            <i data-lucide="volume-2" class="w-6 h-6"></i>
+        </button>
+        <!-- Back to Top -->
+       <button id="back-to-top" class="w-12 h-12 rounded-full flex items-center justify-center text-white" style="background: linear-gradient(135deg, #3B82F6, #2563EB);"><i data-lucide="arrow-up" class="w-6 h-6"></i></button>
+    </div>
+
+    <!-- Universal Audio Player -->
+    <audio id="universal-audio-player" preload="none" style="display: none;"></audio>
+
+    <!-- AI Chat Widget -->
+    <div id="ai-chat-widget" class="fixed bottom-20 right-4 z-50 h-[60vh] max-h-[450px] w-[calc(100vw-32px)] max-w-[400px] rounded-xl glass-morphism shadow-2xl hidden flex-col" style="transform: translateY(20px); opacity: 0;">
+        <div class="p-3 border-b border-[var(--border-color)] flex justify-between items-center flex-shrink-0">
+            <h4 class="font-semibold">Trixel AI Assistant</h4>
+            <button id="close-chat-btn" class="p-1 rounded-full hover:bg-gray-700/50">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+        <div id="chat-messages" class="p-4 flex-1 overflow-y-auto">
+            <!-- Messages will be dynamically injected here -->
+        </div>
+        <div class="p-3 border-t border-[var(--border-color)] flex-shrink-0">
+            <form id="chat-input-form" class="flex items-center gap-2">
+                <input type="text" id="chat-input" placeholder="Type your message..." class="form-input text-sm flex-1 bg-transparent" required autocomplete="off">
+                <button type="submit" class="w-10 h-10 rounded-full flex items-center justify-center text-white flex-shrink-0 btn-primary p-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 inline-block"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg>
+                </button>
+            </form>
+        </div>
+    </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+  gsap.registerPlugin(ScrollToPlugin, ScrollTrigger);
+
+  const welcomeOverlay = document.getElementById('welcome-overlay');
+  const welcomeCard = document.getElementById('welcome-card');
+  const startTourBtn = document.getElementById('start-tour-btn');
+  const exploreBtn = document.getElementById('explore-btn');
+  const tourProgress = document.getElementById('tour-progress');
+  const skipTourBtn = document.getElementById('skip-tour-btn');
+  const audioPlayer = document.getElementById('universal-audio-player');
+  const tourAudioSrc = 'Main_voiceover.wav';
+  
+  let masterTourTimeline = null;
+  let typingIntervals = [];
+
+  function dismissOverlay() {
+    gsap.to(welcomeOverlay, {
+      opacity: 0,
+      duration: 0.5,
+      onComplete: () => welcomeOverlay.style.display = 'none'
+    });
+  }
+
+  function startTour() {
+    dismissOverlay();
+    document.getElementById('tour-blocker').classList.remove('hidden');
+    document.body.classList.add('no-scroll');
+    tourProgress.classList.remove('hidden');
+    gsap.fromTo(tourProgress, { y: -20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5 });
+
+    if (!masterTourTimeline) {
+      initializeTourTimeline();
+    }
+
+    audioPlayer.src = tourAudioSrc;
+    audioPlayer.load();
+    audioPlayer.play().catch(err => {
+      console.error('Audio failed:', err);
+      alert('Audio unavailable. Continuing with visual tour.');
+    });
+
+    masterTourTimeline.restart();
+  }
+
+  function initializeTourTimeline() {
+    const isMobile = window.innerWidth < 768;
+    const isTablet = window.innerWidth >= 768 && window.innerWidth < 1024;
+
+    const tourSelectors = [
+      'nav a:first-child',
+      '.hidden.md\\:flex a',
+      'h1.hero-headline',
+      '.hero-subheadline',
+      'p.max-w-3xl',
+      'a.btn-primary',
+      '#home .card',
+      '#services h2',
+      '#services p.text-lg',
+      '#services .card',
+      '#services .interactive-btn',
+      '#process-timeline h3',
+      '#process-timeline .bg-blue-500',
+      '#special-projects h2',
+      '#special-projects p',
+      '#special-projects a',
+      '#contact h2',
+      '#contact form',
+      '#contact .card',
+      'footer a:first-child'
+    ];
+
+    tourSelectors.forEach(sel => {
+      document.querySelectorAll(sel).forEach(el => {
+        gsap.set(el, { opacity: 0 });
+        el.classList.add('tour-element');
+      });
+    });
+
+    masterTourTimeline = gsap.timeline({ 
+      paused: true,
+      onComplete: endTour
+    });
+
+    if (isMobile) {
+      buildMobileTimeline(masterTourTimeline);
+    } else if (isTablet) {
+      buildTabletTimeline(masterTourTimeline);
+    } else {
+      buildDesktopTimeline(masterTourTimeline);
+    }
+
+    // Audio event listeners with null checks
+    audioPlayer.addEventListener('play', () => {
+      if (masterTourTimeline) {
+        masterTourTimeline.play();
+      }
+    });
+    
+    audioPlayer.addEventListener('pause', () => {
+      if (masterTourTimeline) {
+        masterTourTimeline.pause();
+      }
+    });
+    
+    audioPlayer.addEventListener('ended', () => {
+      if (typeof endTour === 'function') {
+        endTour();
+      }
+    });
+  }
+
+  function buildMobileTimeline(tl) {
+    tl.fromTo('nav a:first-child', { x: -100, opacity: 0 }, { x: 0, opacity: 1, duration: 2, ease: 'power2.out' }, 0);
+    
+    tl.call(() => typeElement('h1.hero-headline', 5000), null, 6);
+    
+    tl.fromTo('.hero-subheadline', { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 2, ease: 'power2.out' }, 11);
+    tl.fromTo('p.max-w-3xl', { opacity: 0 }, { opacity: 1, duration: 1 }, 13);
+    tl.fromTo('a.btn-primary', { opacity: 0 }, { opacity: 1, duration: 1 }, 14);
+    tl.fromTo('#home .card', { y: 30, opacity: 0 }, { y: 0, opacity: 1, stagger: 0.3, duration: 0.8, ease: 'power2.out' }, 15);
+    
+    tl.to(window, { duration: 3, scrollTo: { y: '#services', offsetY: 80 }, ease: 'power2.inOut' }, 19);
+
+    tl.fromTo('#services h2, #services p.text-lg', { opacity: 0 }, { opacity: 1, duration: 2 }, 22);
+
+    const sCards = gsap.utils.toArray('#services .card');
+    
+    if (sCards[0]) {
+      tl.call(() => smartScroll(sCards[0], 100), null, 22.5);
+      tl.fromTo(sCards[0], { opacity: 0 }, { opacity: 1, duration: 0.8 }, 23);
+      tl.to(sCards[0], { boxShadow: '0 0 25px rgba(59,130,246,0.7)', borderColor: '#3B82F6', duration: 0.5 }, 23.5);
+      tl.to(sCards[0], { boxShadow: 'none', borderColor: 'var(--border-color)', duration: 0.3 }, 25.5);
+    }
+
+    if (sCards[1]) {
+      tl.call(() => smartScroll(sCards[1], 100), null, 26);
+      tl.fromTo(sCards[1], { opacity: 0 }, { opacity: 1, duration: 0.8 }, 27);
+      tl.to(sCards[1], { boxShadow: '0 0 25px rgba(59,130,246,0.7)', borderColor: '#3B82F6', duration: 0.5 }, 27.5);
+      tl.to(sCards[1], { boxShadow: 'none', borderColor: 'var(--border-color)', duration: 0.3 }, 31.5);
+    }
+
+    if (sCards[2]) {
+      tl.call(() => smartScroll(sCards[2], 100), null, 32);
+      tl.fromTo(sCards[2], { opacity: 0 }, { opacity: 1, duration: 0.8 }, 33);
+      tl.to(sCards[2], { boxShadow: '0 0 25px rgba(59,130,246,0.7)', borderColor: '#3B82F6', duration: 0.5 }, 33.5);
+      tl.to(sCards[2], { boxShadow: 'none', borderColor: 'var(--border-color)', duration: 0.3 }, 38.5);
+    }
+
+    if (sCards[3]) {
+      tl.call(() => smartScroll(sCards[3], 100), null, 40);
+      tl.fromTo(sCards[3], { opacity: 0 }, { opacity: 1, duration: 0.8 }, 41);
+      tl.to(sCards[3], { boxShadow: '0 0 25px rgba(59,130,246,0.7)', borderColor: '#3B82F6', duration: 0.5 }, 41.5);
+      tl.to(sCards[3], { boxShadow: 'none', borderColor: 'var(--border-color)', duration: 0.3 }, 48.5);
+    }
+
+    tl.to('#ai-chat-toggle', { x: -5, duration: 0.1, yoyo: true, repeat: 9 }, 49);
+
+    if (sCards[4]) tl.fromTo(sCards[4], { opacity: 0 }, { opacity: 1, duration: 0.5 }, 52);
+    if (sCards[5]) tl.fromTo(sCards[5], { opacity: 0 }, { opacity: 1, duration: 0.5 }, 52.5);
+
+    tl.to('#services .card', { boxShadow: '0 0 25px rgba(59,130,246,0.6)', duration: 0.3, stagger: 0.2, yoyo: true, repeat: 1 }, 53);
+
+    if (sCards[0]) {
+      tl.call(() => smartScroll(sCards[0], 150), null, 66);
+      const btns = sCards[0].querySelectorAll('.interactive-btn');
+      tl.fromTo(btns, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.3, stagger: 0.15, ease: 'back.out' }, 67);
+      tl.to(btns, { opacity: 0, duration: 0.5 }, 72);
+    }
+
+    tl.to('#audio-toggle', { boxShadow: '0 0 30px rgba(59,130,246,0.9)', scale: 1.15, duration: 0.5, yoyo: true, repeat: 5 }, 78);
+    tl.to(window, { duration: 3, scrollTo: { y: '#process-timeline', offsetY: 80 }, ease: 'power2.inOut' }, 82);
+
+    tl.call(() => typeElement('#process-timeline h3', 4000), null, 86);
+
+    const steps = gsap.utils.toArray('#process-timeline .bg-blue-500');
+    steps.forEach((step, i) => {
+      tl.to(step, { opacity: 1, boxShadow: '0 0 15px rgba(59,130,246,1)', scale: 1.1, duration: 0.5 }, 90 + i * 2);
+    });
+
+    tl.to(steps, { opacity: 0.3, duration: 0.2, stagger: 0.3, yoyo: true, repeat: 1 }, 98);
+
+    const sp = document.getElementById('special-projects');
+    tl.to(window, { duration: 1, scrollTo: { y: sp ? '#special-projects' : '#contact', offsetY: 80 }, ease: 'power2.inOut' }, 104);
+
+    if (sp) {
+      tl.call(() => typeElement('#special-projects h2', 2000), null, 105);
+      tl.fromTo('#special-projects p', { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 2 }, 107);
+      tl.to('#special-projects a', { opacity: 1, boxShadow: '0 0 40px rgba(59,130,246,1)', scale: 1.1, duration: 1 }, 114);
+      tl.to(window, { duration: 1, scrollTo: { y: '#contact', offsetY: 80 }, ease: 'power2.inOut' }, 115);
+    }
+
+    const cStart = sp ? 116 : 105;
+    tl.call(() => typeElement('#contact h2', 4000), null, cStart);
+    tl.to(window, { duration: 6, scrollTo: { y: '#contact form', offsetY: 200 }, ease: 'power1.inOut' }, cStart + 4);
+    tl.fromTo('#contact form, #contact .card', { opacity: 0 }, { opacity: 1, boxShadow: '0 0 25px rgba(59,130,246,0.5)', duration: 2 }, cStart + 5);
+    tl.to('#contact button[type="submit"]', { boxShadow: '0 0 30px rgba(59,130,246,1)', scale: 1.05, duration: 0.5, yoyo: true, repeat: 7 }, cStart + 10);
+    tl.to(window, { duration: 3, scrollTo: { y: 'footer', offsetY: 0 }, ease: 'power2.inOut' }, cStart + 14);
+    tl.to('footer a:first-child', { opacity: 1, scale: 1.1, duration: 1, yoyo: true, repeat: 1 }, cStart + 15);
+  }
+
+  function buildTabletTimeline(tl) {
+    tl.fromTo('nav a:first-child', { x: -100, opacity: 0 }, { x: 0, opacity: 1, duration: 2 }, 0);
+    tl.fromTo('.hidden.md\\:flex a', { y: -30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, stagger: 0.15 }, 2);
+    
+    tl.call(() => typeElement('h1.hero-headline', 5000), null, 6);
+    
+    tl.fromTo('.hero-subheadline', { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 2 }, 11);
+    tl.fromTo('p.max-w-3xl', { opacity: 0 }, { opacity: 1, duration: 1 }, 13);
+    tl.fromTo('#home .card', { y: 20, opacity: 0 }, { y: 0, opacity: 1, stagger: 0.4, duration: 0.8 }, 13);
+    tl.to('#home .card', { y: -20, boxShadow: '0 0 30px rgba(59,130,246,0.8)', duration: 0.8, stagger: 0.4, yoyo: true, repeat: 1 }, 13.5);
+    tl.to('a.btn-primary', { opacity: 1, boxShadow: '0 0 40px rgba(59,130,246,1)', scale: 1.08, duration: 0.5, yoyo: true, repeat: 3 }, 17);
+    tl.to(window, { duration: 3, scrollTo: { y: '#services', offsetY: 70 }, ease: 'power2.inOut' }, 19);
+
+    tl.fromTo('#services h2, #services p.text-lg', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 1 }, 22);
+
+    const sCards = gsap.utils.toArray('#services .card');
+    
+    if (sCards[0]) {
+      tl.call(() => smartScroll(sCards[0], 120), null, 22.5);
+      tl.fromTo(sCards[0], { opacity: 0 }, { opacity: 1, duration: 0.8 }, 23);
+      tl.to(sCards[0], { boxShadow: '0 0 30px rgba(59,130,246,0.7)', borderColor: '#3B82F6', duration: 0.5 }, 23.5);
+      tl.to(sCards[0], { boxShadow: 'none', borderColor: 'var(--border-color)', duration: 0.3 }, 25.5);
+    }
+
+    if (sCards[1]) {
+      tl.call(() => smartScroll(sCards[1], 120), null, 26);
+      tl.fromTo(sCards[1], { opacity: 0 }, { opacity: 1, duration: 0.8 }, 27);
+      tl.to(sCards[1], { boxShadow: '0 0 30px rgba(59,130,246,0.7)', borderColor: '#3B82F6', duration: 0.5 }, 27.5);
+      tl.to(sCards[1], { boxShadow: 'none', borderColor: 'var(--border-color)', duration: 0.3 }, 31.5);
+    }
+
+    if (sCards[2]) {
+      tl.call(() => smartScroll(sCards[2], 120), null, 32);
+      tl.fromTo(sCards[2], { opacity: 0 }, { opacity: 1, duration: 0.8 }, 33);
+      tl.to(sCards[2], { boxShadow: '0 0 30px rgba(59,130,246,0.7)', borderColor: '#3B82F6', duration: 0.5 }, 33.5);
+      tl.to(sCards[2], { boxShadow: 'none', borderColor: 'var(--border-color)', duration: 0.3 }, 38.5);
+    }
+
+    if (sCards[3]) {
+      tl.call(() => smartScroll(sCards[3], 120), null, 40);
+      tl.fromTo(sCards[3], { opacity: 0 }, { opacity: 1, duration: 0.8 }, 41);
+      tl.to(sCards[3], { boxShadow: '0 0 30px rgba(59,130,246,0.7)', borderColor: '#3B82F6', duration: 0.5 }, 41.5);
+      tl.to(sCards[3], { boxShadow: 'none', borderColor: 'var(--border-color)', duration: 0.3 }, 48.5);
+    }
+
+    tl.to('#ai-chat-toggle', { x: -5, duration: 0.1, yoyo: true, repeat: 9 }, 49);
+
+    if (sCards[4]) tl.fromTo(sCards[4], { opacity: 0 }, { opacity: 1, duration: 0.5 }, 52);
+    if (sCards[5]) tl.fromTo(sCards[5], { opacity: 0 }, { opacity: 1, duration: 0.5 }, 52.5);
+
+    tl.to('#services .card', { boxShadow: '0 0 25px rgba(59,130,246,0.6)', duration: 0.3, stagger: 0.2, yoyo: true, repeat: 1 }, 53);
+
+    if (sCards[0]) {
+      tl.call(() => smartScroll(sCards[0], 150), null, 66);
+      const btns = sCards[0].querySelectorAll('.interactive-btn');
+      tl.fromTo(btns, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.3, stagger: 0.15, ease: 'back.out' }, 67);
+      tl.to(btns, { opacity: 0, duration: 0.5 }, 72);
+    }
+
+    tl.to('#audio-toggle', { boxShadow: '0 0 30px rgba(59,130,246,0.9)', scale: 1.15, duration: 0.5, yoyo: true, repeat: 5 }, 78);
+    tl.to(window, { duration: 3, scrollTo: { y: '#process-timeline', offsetY: 70 }, ease: 'power2.inOut' }, 82);
+
+    tl.call(() => typeElement('#process-timeline h3', 4000), null, 86);
+
+    const steps = gsap.utils.toArray('#process-timeline .bg-blue-500');
+    steps.forEach((step, i) => {
+      tl.to(step, { opacity: 1, boxShadow: '0 0 20px rgba(59,130,246,1)', scale: 1.2, duration: 0.5 }, 90 + i * 2);
+    });
+
+    tl.to(steps, { opacity: 0.3, duration: 0.2, stagger: 0.3, yoyo: true, repeat: 1 }, 98);
+
+    const sp = document.getElementById('special-projects');
+    tl.to(window, { duration: 1, scrollTo: { y: sp ? '#special-projects' : '#contact', offsetY: 70 }, ease: 'power2.inOut' }, 104);
+
+    if (sp) {
+      tl.call(() => typeElement('#special-projects h2', 2000), null, 105);
+      tl.fromTo('#special-projects p', { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 2 }, 107);
+      tl.to('#special-projects a', { opacity: 1, boxShadow: '0 0 40px rgba(59,130,246,1)', borderColor: '#3B82F6', scale: 1.1, duration: 1 }, 114);
+      tl.to(window, { duration: 1, scrollTo: { y: '#contact', offsetY: 70 }, ease: 'power2.inOut' }, 115);
+    }
+
+    const cStart = sp ? 116 : 105;
+    tl.call(() => typeElement('#contact h2', 4000), null, cStart);
+    tl.to(window, { duration: 6, scrollTo: { y: '#contact form', offsetY: 200 }, ease: 'power1.inOut' }, cStart + 4);
+    tl.fromTo('#contact form, #contact .card', { opacity: 0 }, { opacity: 1, boxShadow: '0 0 25px rgba(59,130,246,0.5)', duration: 2 }, cStart + 5);
+    tl.to('#contact button[type="submit"]', { boxShadow: '0 0 35px rgba(59,130,246,1)', scale: 1.08, duration: 0.5, yoyo: true, repeat: 7 }, cStart + 10);
+    tl.to(window, { duration: 2, scrollTo: { y: 'footer', offsetY: 0 }, ease: 'power2.inOut' }, cStart + 14);
+    tl.to('footer a:first-child', { opacity: 1, scale: 1.15, duration: 0.8, yoyo: true, repeat: 1 }, cStart + 15);
+  }
+
+  function buildDesktopTimeline(tl) {
+    tl.fromTo('nav a:first-child', { x: -100, opacity: 0 }, { x: 0, opacity: 1, duration: 2 }, 0);
+    tl.fromTo('.hidden.md\\:flex a', { y: -30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, stagger: 0.15 }, 2);
+    
+    tl.call(() => typeElement('h1.hero-headline', 5000), null, 6);
+    
+    tl.fromTo('.hero-subheadline', { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 2 }, 11);
+    tl.fromTo('p.max-w-3xl', { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 1 }, 13);
+    tl.fromTo('#home .card', { y: 20, opacity: 0 }, { y: 0, opacity: 1, stagger: 0.4, duration: 0.8 }, 13);
+    tl.to('#home .card', { y: -20, boxShadow: '0 0 30px rgba(59,130,246,0.8)', duration: 0.8, stagger: 0.4, yoyo: true, repeat: 1 }, 13.5);
+    tl.to('a.btn-primary', { opacity: 1, boxShadow: '0 0 40px rgba(59,130,246,1)', scale: 1.08, duration: 0.5, yoyo: true, repeat: 3 }, 17);
+    tl.to(window, { duration: 3, scrollTo: { y: '#services', offsetY: 70 }, ease: 'power2.inOut' }, 19);
+
+    tl.fromTo('#services h2, #services p.text-lg', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 1 }, 22);
+
+    const sCards = gsap.utils.toArray('#services .card');
+
+    if (sCards[0]) {
+      tl.fromTo(sCards[0], { opacity: 0 }, { opacity: 1, duration: 0.5 }, 22);
+      tl.to(sCards[0], { boxShadow: '0 0 30px rgba(59,130,246,0.7)', borderColor: '#3B82F6', duration: 0.5 }, 23);
+      tl.fromTo(sCards[0].querySelector('i'), { x: -30, opacity: 0 }, { x: 0, opacity: 1, duration: 0.5 }, 23);
+      tl.to(sCards[0], { boxShadow: 'none', borderColor: 'var(--border-color)', duration: 0.3 }, 25.7);
+    }
+
+    if (sCards[1]) {
+      tl.fromTo(sCards[1], { opacity: 0 }, { opacity: 1, duration: 0.5 }, 26);
+      tl.to(sCards[1], { boxShadow: '0 0 30px rgba(59,130,246,0.7)', borderColor: '#3B82F6', duration: 0.5 }, 27);
+      tl.fromTo(sCards[1].querySelector('i'), { x: -30, opacity: 0 }, { x: 0, opacity: 1, duration: 0.5 }, 27);
+      tl.to(sCards[1], { boxShadow: 'none', borderColor: 'var(--border-color)', duration: 0.3 }, 31.7);
+    }
+
+    if (sCards[2]) {
+      tl.fromTo(sCards[2], { opacity: 0 }, { opacity: 1, duration: 0.5 }, 32);
+      tl.to(sCards[2], { boxShadow: '0 0 30px rgba(59,130,246,0.7)', borderColor: '#3B82F6', duration: 0.5 }, 33);
+      tl.fromTo(sCards[2].querySelector('i'), { x: -30, opacity: 0 }, { x: 0, opacity: 1, duration: 0.5 }, 33);
+      tl.to(sCards[2], { boxShadow: 'none', borderColor: 'var(--border-color)', duration: 0.3 }, 39.7);
+    }
+
+    if (sCards[3]) {
+      tl.fromTo(sCards[3], { opacity: 0 }, { opacity: 1, duration: 0.5 }, 40);
+      tl.to(sCards[3], { boxShadow: '0 0 30px rgba(59,130,246,0.7)', borderColor: '#3B82F6', duration: 0.5 }, 41);
+      tl.fromTo(sCards[3].querySelector('i'), { x: -30, opacity: 0 }, { x: 0, opacity: 1, duration: 0.5 }, 41);
+      tl.to(sCards[3], { boxShadow: 'none', borderColor: 'var(--border-color)', duration: 0.3 }, 48.7);
+    }
+
+    tl.to('#ai-chat-toggle', { x: -5, duration: 0.1, yoyo: true, repeat: 9 }, 49);
+
+    if (sCards[4]) tl.fromTo(sCards[4], { opacity: 0 }, { opacity: 1, duration: 0.5 }, 52);
+    if (sCards[5]) tl.fromTo(sCards[5], { opacity: 0 }, { opacity: 1, duration: 0.5 }, 52.5);
+
+    tl.to('#services .card', { boxShadow: '0 0 25px rgba(59,130,246,0.6)', duration: 0.3, stagger: 0.2, yoyo: true, repeat: 1 }, 53);
+
+    if (sCards[0]) {
+      tl.call(() => smartScroll(sCards[0], 150), null, 66);
+      const btns = sCards[0].querySelectorAll('.interactive-btn');
+      tl.fromTo(btns, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.3, stagger: 0.15, ease: 'back.out' }, 67);
+      tl.to(btns, { opacity: 0, duration: 0.5 }, 72);
+    }
+
+    tl.to('#audio-toggle', { boxShadow: '0 0 30px rgba(59,130,246,0.9)', scale: 1.15, duration: 0.5, yoyo: true, repeat: 5 }, 78);
+    tl.to(window, { duration: 3, scrollTo: { y: '#process-timeline', offsetY: 70 }, ease: 'power2.inOut' }, 82);
+
+    tl.call(() => typeElement('#process-timeline h3', 4000), null, 86);
+
+    const steps = gsap.utils.toArray('#process-timeline .bg-blue-500');
+    if (steps[0]) {
+      tl.to(steps[0], { opacity: 1, boxShadow: '0 0 20px rgba(59,130,246,1)', scale: 1.2, duration: 0.5 }, 90);
+    }
+    steps.forEach((step, i) => {
+      if (i > 0) {
+        tl.to(step, { opacity: 1, boxShadow: '0 0 20px rgba(59,130,246,1)', scale: 1.2, duration: 0.5 }, 90 + i * 2);
+      }
+    });
+
+    tl.to(steps, { opacity: 0.3, duration: 0.2, stagger: 0.3, yoyo: true, repeat: 1 }, 98);
+    tl.to(window, { duration: 1, scrollTo: { y: '#special-projects', offsetY: 70 }, ease: 'power2.inOut' }, 104);
+
+    const sp = document.getElementById('special-projects');
+    if (sp) {
+      tl.call(() => typeElement('#special-projects h2', 2000), null, 105);
+      tl.fromTo('#special-projects p', { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 2 }, 107);
+      tl.to('#special-projects a', { opacity: 1, boxShadow: '0 0 40px rgba(59,130,246,1)', borderColor: '#3B82F6', scale: 1.1, duration: 1 }, 114);
+      tl.to(window, { duration: 1, scrollTo: { y: '#contact', offsetY: 70 }, ease: 'power2.inOut' }, 115);
+    }
+
+    tl.call(() => typeElement('#contact h2', 4000), null, 116);
+    tl.to(window, { duration: 6, scrollTo: { y: '#contact form', offsetY: 200 }, ease: 'power1.inOut' }, 120);
+    tl.fromTo('#contact form, #contact .card', { opacity: 0 }, { opacity: 1, boxShadow: '0 0 25px rgba(59,130,246,0.5)',duration: 2 }, 122);
+    tl.to('#contact button[type="submit"]', { boxShadow: '0 0 35px rgba(59,130,246,1)', scale: 1.08, duration: 0.5, yoyo: true, repeat: 7 }, 126);
+    tl.to(window, { duration: 2, scrollTo: { y: 'footer', offsetY: 0 }, ease: 'power2.inOut' }, 130);
+    tl.to('footer a:first-child', { opacity: 1, scale: 1.15, duration: 0.8, yoyo: true, repeat: 1 }, 131);
+  }
+
+  function typeElement(selector, duration) {
+    const el = document.querySelector(selector);
+    if (!el) return;
+    
+    const text = el.textContent;
+    el.textContent = '';
+    el.style.opacity = '1';
+    
+    let i = 0;
+    const delay = duration / text.length;
+    const interval = setInterval(() => {
+      if (i < text.length) {
+        el.textContent += text[i];
+        i++;
+      } else {
+        clearInterval(interval);
+        typingIntervals = typingIntervals.filter(t => t !== interval);
+      }
+    }, delay);
+    
+    typingIntervals.push(interval);
+  }
+
+  function smartScroll(element, offset) {
+    gsap.to(window, {
+      duration: 1,
+      scrollTo: { y: element, offsetY: offset },
+      ease: 'power2.inOut'
+    });
+  }
+
+function endTour() {
+    // Safely pause and clear timeline
+    if (masterTourTimeline) {
+      try {
+        masterTourTimeline.pause();
+        masterTourTimeline.kill();
+      } catch(e) {
+        console.warn('Timeline cleanup warning:', e);
+      }
+      masterTourTimeline = null;
+    }
+
+    // Safely pause audio
+    if (audioPlayer) {
+      try {
+        audioPlayer.pause();
+        audioPlayer.currentTime = 0;
+      } catch(e) {
+        console.warn('Audio cleanup warning:', e);
+      }
+    }
+
+    // Clear typing animations
+    typingIntervals.forEach(interval => {
+      try {
+        clearInterval(interval);
+      } catch(e) {
+        console.warn('Interval cleanup warning:', e);
+      }
+    });
+    typingIntervals = [];
+
+    // Remove tour-active class
+    document.body.classList.remove('tour-active');
+
+    // Show all tour elements
+    gsap.to('.tour-element', {
+      opacity: 1,
+      duration: 0.5,
+      onComplete: () => {
+        document.querySelectorAll('.tour-element').forEach(el => {
+          el.classList.remove('tour-element');
+        });
+      }
+    });
+
+    // Hide tour blocker
+    const tourBlocker = document.getElementById('tour-blocker');
+    if (tourBlocker) {
+      tourBlocker.classList.add('hidden');
+    }
+    
+    // Restore scrolling
+    document.body.classList.remove('no-scroll');
+    
+    // Hide tour progress
+    if (tourProgress) {
+      gsap.to(tourProgress, { 
+        y: -20, 
+        opacity: 0, 
+        duration: 0.3, 
+        onComplete: () => tourProgress.classList.add('hidden')
+      });
+    }
+
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  
+  startTourBtn.addEventListener('click', startTour);
+  skipTourBtn.addEventListener('click', endTour);
+  exploreBtn.addEventListener('click', () => {
+    dismissOverlay();
+    gsap.set('.tour-element', { opacity: 1 });
+  });
+
+  gsap.to(welcomeOverlay, {
+    opacity: 1,
+    duration: 0.5,
+    delay: 0.5,
+    onStart: () => welcomeOverlay.classList.remove('opacity-0')
+  });
+  
+  gsap.to(welcomeCard, {
+    scale: 1,
+    opacity: 1,
+    duration: 0.5,
+    ease: "power2.out",
+    delay: 0.7,
+    onStart: () => welcomeCard.classList.remove('scale-95', 'opacity-0')
+  });
+
+  lucide.createIcons();
+
+  const aiChatWidget = document.getElementById('ai-chat-widget');
+  const chatMessages = document.getElementById('chat-messages');
+  const closeChatBtn = document.getElementById('close-chat-btn');
+  const interactiveButtons = document.querySelectorAll('.interactive-btn');
+  const aiChatToggle = document.getElementById('ai-chat-toggle');
+  const aiOrb = document.getElementById('ai-orb');
+
+  let isChatOpen = false;
+
+  function showAIChat(message) {
+    const initialMessage = message || "Hello! How can I help you today? You can ask me about our services.";
+    chatMessages.innerHTML = `<div class="text-sm text-text-secondary mb-2 p-3 rounded-lg bg-blue-900/30 self-start max-w-[85%]"><span>${initialMessage}</span></div>`;
+
+    aiChatWidget.classList.remove('hidden');
+    aiChatWidget.classList.add('flex');
+    gsap.to(aiChatWidget, { y: 0, opacity: 1, duration: 0.4, ease: 'power3.out' });
+    
+    isChatOpen = true;
+    hideAIOrb();
+    lucide.createIcons();
+    document.getElementById('chat-input').focus();
+  }
+
+  function hideAIChat() {
+    gsap.to(aiChatWidget, {
+      y: 20,
+      opacity: 0,
+      duration: 0.3,
+      ease: 'power3.in',
+      onComplete: () => {
+        aiChatWidget.classList.add('hidden');
+        aiChatWidget.classList.remove('flex');
+        isChatOpen = false;
+      }
+    });
+    hideAIOrb();
+  }
+
+  function toggleAIChat() {
+    if (isChatOpen) {
+      hideAIChat();
+    } else {
+      showAIChat();
+    }
+  }
+
+  function showAIOrb(service, action) {
+    aiOrb.dataset.service = service;
+    aiOrb.dataset.action = action;
+    aiOrb.classList.remove('hidden');
+    gsap.fromTo(aiOrb, { scale: 0.5, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.3, ease: 'back.out' });
+  }
+
+  function hideAIOrb() {
+    gsap.to(aiOrb, { scale: 0.5, opacity: 0, duration: 0.2, ease: 'back.in', onComplete: () => aiOrb.classList.add('hidden') });
+  }
+
+  function appendMessage(content, sender = 'ai') {
+    const messageEl = document.createElement('div');
+    const isUser = sender === 'user';
+    const alignment = isUser ? 'self-end' : 'self-start';
+    const bgColor = isUser ? 'bg-gray-700' : 'bg-blue-900/30';
+
+    messageEl.className = `text-sm text-text-primary mb-2 p-3 rounded-lg ${bgColor} ${alignment} max-w-[85%]`;
+    messageEl.innerHTML = `<span>${content}</span>`;
+
+    chatMessages.appendChild(messageEl);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  function showTypingIndicator() {
+    if (document.getElementById('typing-indicator-wrapper')) return;
+    const indicatorWrapper = document.createElement('div');
+    indicatorWrapper.id = 'typing-indicator-wrapper';
+    indicatorWrapper.className = 'self-start mb-2';
+    indicatorWrapper.innerHTML = `
+      <div class="text-sm text-text-secondary p-3 rounded-lg bg-blue-900/30">
+        <span>Trixel AI is typing...</span>
+      </div>
+    `;
+    chatMessages.appendChild(indicatorWrapper);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  function hideTypingIndicator() {
+    const indicator = document.getElementById('typing-indicator-wrapper');
+    if (indicator) indicator.remove();
+  }
+
+  aiChatToggle.addEventListener('click', toggleAIChat);
+
+  aiOrb.addEventListener('click', function() {
+    const { service, action } = this.dataset;
+    let message = "";
+
+    if (action === 'ask') {
+      message = `Of course! What specific questions do you have about our <strong>${service}</strong> service? We can discuss pricing, timelines, or anything else you need to know.`;
+    } else if (action === 'explain') {
+      message = `Certainly. Our <strong>${service}</strong> service is designed to provide maximum value by focusing on key outcomes. We combine expert implementation with strategic planning to ensure you get the best results.`;
+    } else if (action === 'order') {
+      message = `Excellent choice! To get started with <strong>${service}</strong>, the first step is a quick discovery call. You can schedule one through our contact form below.`;
+    }
+
+    if (message) showAIChat(message);
+    hideAIOrb();
+  });
+
+  interactiveButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      const action = this.textContent.toLowerCase();
+      const card = this.closest('.card');
+      const serviceTitle = card.querySelector('h3').textContent;
+      showAIOrb(serviceTitle, action);
+    });
+  });
+
+  closeChatBtn.addEventListener('click', hideAIChat);
+
+  const chatInputForm = document.getElementById('chat-input-form');
+  const chatInput = document.getElementById('chat-input');
+  chatInputForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const userInput = chatInput.value.trim();
+    if (!userInput) return;
+
+    appendMessage(userInput, 'user');
+    chatInput.value = '';
+
+    showTypingIndicator();
+
+    setTimeout(() => {
+      hideTypingIndicator();
+      const aiResponse = `
+        <p class="mb-2">Trixel Technologies is a modern web development agency that specializes in building high-converting websites for service-based businesses.</p>
+        <p class="mb-3">Our goal is to help you win more clients by creating an online presence that builds trust and generates leads.</p>
+        <strong class="font-semibold">Key Features:</strong>
+        <ul class="list-disc list-inside mt-1 space-y-1">
+          <li>Premium Design</li>
+          <li>Fast 5-Day Delivery</li>
+          <li>Lead-Focused Strategy</li>
+          <li>SEO Optimized</li>
+        </ul>
+      `;
+      appendMessage(aiResponse);
+    }, 1500);
+  });
+
+  function enhanceFormValidation() {
+    const forms = document.querySelectorAll('form[required]');
+    forms.forEach(form => {
+      form.setAttribute('novalidate', true);
+      form.addEventListener('submit', function(event) {
+        if (!this.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+
+          this.querySelectorAll('input[required], textarea[required], select[required]').forEach(input => {
+            if (!input.validity.valid) {
+              input.classList.add('border-red-500');
+              input.classList.remove('focus:ring-blue-500');
+            } else {
+              input.classList.remove('border-red-500');
+            }
+          });
+
+          const firstInvalidField = this.querySelector('.border-red-500');
+          if(firstInvalidField) {
+            firstInvalidField.focus();
+            alert('Please fill out all required fields correctly.');
+          }
+        } else {
+          this.querySelectorAll('.border-red-500').forEach(input => {
+            input.classList.remove('border-red-500');
+          });
+        }
+      });
+    });
+  }
+  enhanceFormValidation();
+
+  const audioToggle = document.getElementById('audio-toggle');
+  const audioIcon = audioToggle.querySelector('i');
+
+  let isAudioPlaying = false;
+
+  audioToggle.addEventListener('click', () => {
+    isAudioPlaying = !isAudioPlaying;
+    audioIcon.setAttribute('data-lucide', isAudioPlaying ? 'volume-x' : 'volume-2');
+    lucide.createIcons();
+  });
+
+  const themeToggle = document.getElementById('theme-toggle');
+  const sunIcon = themeToggle.querySelector('[data-lucide="sun"]');
+  const moonIcon = themeToggle.querySelector('[data-lucide="moon"]');
+
+  function applyTheme(theme) {
+    if (theme === 'light') {
+      document.body.classList.add('light-theme');
+      sunIcon.classList.remove('hidden');
+      moonIcon.classList.add('hidden');
+    } else {
+      document.body.classList.remove('light-theme');
+      sunIcon.classList.add('hidden');
+      moonIcon.classList.remove('hidden');
+    }
+  }
+
+  themeToggle.addEventListener('click', () => {
+    const isLight = document.body.classList.toggle('light-theme');
+    const newTheme = isLight ? 'light' : 'dark';
+    localStorage.setItem('theme', newTheme);
+    applyTheme(newTheme);
+  });
+
+  const savedTheme = localStorage.getItem('theme') || 'dark';
+  applyTheme(savedTheme);
+
+  const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const mobileMenuBackdrop = document.getElementById('mobile-menu-backdrop');
+
+  const closeMobileMenu = () => {
+    mobileMenu.classList.remove('active');
+    mobileMenuBackdrop.classList.remove('active');
+  };
+
+  mobileMenuToggle.addEventListener('click', () => {
+    mobileMenu.classList.add('active');
+    mobileMenuBackdrop.classList.add('active');
+  });
+
+  document.querySelectorAll('#mobile-menu a').forEach(link => {
+    link.addEventListener('click', closeMobileMenu);
+  });
+
+  mobileMenuBackdrop.addEventListener('click', closeMobileMenu);
+
+  const backToTopButton = document.getElementById('back-to-top');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 300) {
+      backToTopButton.classList.add('visible');
+    } else {
+      backToTopButton.classList.remove('visible');
+    }
+  });
+  
+  backToTopButton.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  const contactForm = document.getElementById('contact-form');
+  const reviewForm = document.getElementById('review-form');
+  const budgetRange = document.getElementById('budget-range');
+  const budgetValue = document.getElementById('budget-value');
+
+  if (budgetRange && budgetValue) {
+    budgetRange.addEventListener('input', (e) => {
+      budgetValue.textContent = `$${e.target.value}`;
+    });
+  }
+
+  if (contactForm) {
+    contactForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      alert('Thank you for your message! We will get back to you within 24 hours.');
+      contactForm.reset();
+      budgetValue.textContent = '$2500';
+    });
+  }
+
+  const starRatingContainer = document.getElementById('star-rating-container');
+  const ratingValueInput = document.getElementById('rating-value');
+  const reviewsContainer = document.getElementById('reviews-container');
+  let reviews = [];
+  let currentRating = 0;
+
+  function renderStars(rating = 0) {
+    let starsHTML = '';
+    for (let i = 1; i <= 5; i++) {
+      starsHTML += `<svg class="${i <= rating ? 'selected' : ''}" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg>`;
+    }
+    return starsHTML;
+  }
+
+  function renderReviews() {
+    reviewsContainer.innerHTML = '';
+    if (reviews.length === 0) {
+      reviewsContainer.innerHTML = `
+        <div class="md:col-span-2 text-center text-[var(--text-secondary)] p-8">
+          No reviews yet. Be the first to share your experience!
+        </div>
+      `;
+    } else {
+      reviews.forEach(review => {
+        const reviewCard = document.createElement('div');
+        reviewCard.className = 'card';
+        reviewCard.innerHTML = `
+          <div class="star-rating !justify-start mb-2">${renderStars(review.rating)}</div>
+          <p class="text-[var(--text-secondary)] mb-4 flex-1 italic">"${review.text}"</p>
+          <p class="font-bold text-right text-[var(--text-primary)]">- ${review.name}</p>
+          ${review.company ? `<p class="text-sm text-right text-[var(--text-secondary)]">${review.company}</p>` : ''}
+        `;
+        reviewsContainer.appendChild(reviewCard);
+      });
+    }
+  }
+
+  if (starRatingContainer && ratingValueInput) {
+    const maxStars = 5;
+
+    for (let i = 1; i <= maxStars; i++) {
+      const star = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      star.setAttribute('viewBox', '0 0 24 24');
+      star.setAttribute('fill', 'currentColor');
+      star.dataset.value = i;
+      star.innerHTML = `<path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path>`;
+      starRatingContainer.appendChild(star);
+    }
+
+    const stars = starRatingContainer.querySelectorAll('svg');
+
+    function updateStarsUI(rating, isHover = false) {
+      stars.forEach(star => {
+        star.classList.remove('selected', 'hovered');
+        if (star.dataset.value <= rating) {
+          star.classList.add(isHover ? 'hovered' : 'selected');
+        }
+      });
+    }
+
+    starRatingContainer.addEventListener('mouseover', e => {
+      if (e.target.closest('svg')) {
+        updateStarsUI(e.target.closest('svg').dataset.value, true);
+      }
+    });
+
+    starRatingContainer.addEventListener('mouseout', () => {
+      updateStarsUI(currentRating);
+    });
+
+    starRatingContainer.addEventListener('click', e => {
+      const star = e.target.closest('svg');
+      if (star) {
+        currentRating = star.dataset.value;
+        ratingValueInput.value = currentRating;
+        updateStarsUI(currentRating);
+      }
+    });
+
+    renderReviews();
+  }
+
+  if (reviewForm) {
+    reviewForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (ratingValueInput.value === "0") {
+        alert("Please select a star rating before submitting.");
+        return;
+      }
+
+      const formData = new FormData(reviewForm);
+      reviews.push({
+        rating: formData.get('rating'),
+        name: formData.get('name'),
+        company: formData.get('company'),
+        text: formData.get('review')
+      });
+
+      alert('Thank you for your review! It has been submitted successfully.');
+      reviewForm.reset();
+      ratingValueInput.value = "0";
+      currentRating = 0;
+      updateStarsUI(0);
+      renderReviews();
+    });
+  }
+  
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+      const targetId = this.getAttribute('href');
+      gsap.to(window, {
+        duration: 1,
+        scrollTo: { y: targetId, offsetY: 70 },
+        ease: 'power2.inOut'
+      });
+    });
+  });
+
+  function initHeroAnimations() {
+    const heroTl = gsap.timeline();
+    
+    heroTl.fromTo('h1.hero-headline', 
+      { y: 50, opacity: 0 },
+      { duration: 1, y: 0, opacity: 1, ease: "power2.out" }
+    )
+    .fromTo('p.text-xl', 
+      { y: 30, opacity: 0 },
+      { duration: 0.8, y: 0, opacity: 1, ease: "power2.out" },
+      "-=0.5"
+    )
+    .fromTo('p.text-lg', 
+      { y: 30, opacity: 0 },
+      { duration: 0.8, y: 0, opacity: 1, ease: "power2.out" },
+      "-=0.3"
+    )
+    .fromTo('a.btn-primary', 
+      { y: 20, opacity: 0 },
+      { duration: 0.6, y: 0, opacity: 1, ease: "power2.out" },
+      "-=0.2"
+    )
+    .fromTo('#home .card', 
+      { y: 40, opacity: 0 },
+      { 
+        duration: 0.8, 
+        y: 0, 
+        opacity: 1, 
+        stagger: 0.2,
+        ease: "power2.out" 
+      },
+      "-=0.3"
+    );
+  }
+  
+  function initScrollAnimations() {
+    gsap.utils.toArray('section:not(#home) .card').forEach(card => {
+      gsap.from(card, {
+        scrollTrigger: {
+          trigger: card,
+          start: "top 85%",
+          toggleActions: "play none none none"
+        },
+        y: 60,
+        opacity: 0,
+        duration: 0.8,
+        ease: "power2.out"
+      });
+    });
+
+    gsap.utils.toArray('section h2').forEach(heading => {
+      gsap.from(heading, {
+        scrollTrigger: {
+          trigger: heading,
+          start: "top 85%",
+          toggleActions: "play none none none"
+        },
+        y: 40,
+        opacity: 0,
+        duration: 1,
+        ease: "power2.out"
+      });
+    });
+
+    const processTimeline = document.getElementById('process-timeline');
+    if (processTimeline) {
+      const steps = gsap.utils.toArray("#process-timeline .relative > div");
+      gsap.from(steps, {
+        scrollTrigger: {
+          trigger: processTimeline,
+          start: "top 70%",
+          toggleActions: "play none none none"
+        },
+        opacity: 0,
+        y: 50,
+        stagger: 0.3,
+        duration: 0.8,
+        ease: 'power2.out'
+      });
+    }
+
+    document.querySelectorAll('.interactive-btn').forEach(btn => {
+      btn.addEventListener('mouseenter', () => gsap.to(btn, { y: -2, duration: 0.2, ease: 'power2.out' }));
+      btn.addEventListener('mouseleave', () => gsap.to(btn, { y: 0, duration: 0.2, ease: 'power2.out' }));
+    });
+  }
+
+  initHeroAnimations();
+  initScrollAnimations();
+});
+
+   </script>
+</body>
+</html>
