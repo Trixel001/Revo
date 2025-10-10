@@ -189,6 +189,37 @@ body:not(.tour-active) .interactive-btn {
     transform: translateY(0);
 }
 
+@keyframes listening-pulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 30px rgba(59, 130, 246, 0.8);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 40px rgba(59, 130, 246, 1);
+    }
+}
+
+.listening-animation {
+    animation: listening-pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes speaking-ripple {
+    0% {
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 20px rgba(59, 130, 246, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+    }
+}
+
+.speaking-animation {
+    animation: speaking-ripple 1.5s infinite;
+}
+
     </style>
 </head>
 <body class="antialiased">
@@ -636,6 +667,19 @@ body:not(.tour-active) .interactive-btn {
             <p class="text-sm mt-6">© 2025 Trixel Technologies. All rights reserved.</p>
         </div>
     </footer>
+
+    <!-- AI Voice Orb Interface -->
+    <div id="ai-voice-orb-container" class="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm hidden">
+        <div class="relative">
+            <div id="ai-voice-orb" class="w-24 h-24 rounded-full flex items-center justify-center text-white cursor-pointer transition-all duration-300" style="background: linear-gradient(135deg, #3B82F6, #2563EB); box-shadow: 0 0 30px rgba(59, 130, 246, 0.8);">
+                <!-- Initial Icon -->
+                <i data-lucide="mic" class="w-10 h-10"></i>
+            </div>
+            <button id="cancel-voice-session" class="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center hover:bg-red-700 transition-colors">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+    </div>
 
     <!-- Floating Action Buttons -->
     <div class="fixed bottom-4 right-4 z-40 flex flex-col items-center space-y-2">
@@ -1669,5 +1713,6 @@ function endTour() {
 });
 
    </script>
+<script src="orb.js"></script>
 </body>
 </html>
