@@ -46,7 +46,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const exploreBtn = document.getElementById('explore-btn');
     const tourProgress = document.getElementById('tour-progress');
     const skipTourBtn = document.getElementById('skip-tour-btn');
-    const audioPlayer = document.getElementById('universal-audio-player');
+    const tourAudioPlayer = document.getElementById('tour-audio-player');
+    const bgMusicPlayer = document.getElementById('bg-music-player');
     const tourAudioSrc = 'Main_voiceover.wav';
     
     let masterTourTimeline = null;
@@ -103,9 +104,9 @@ function startTour() {
         else if (isTablet) buildTabletTimeline(masterTourTimeline);
         else buildDesktopTimeline(masterTourTimeline);
 
-        audioPlayer.addEventListener('play', () => masterTourTimeline && masterTourTimeline.play());
-        audioPlayer.addEventListener('pause', () => masterTourTimeline && masterTourTimeline.pause());
-        audioPlayer.addEventListener('ended', () => typeof endTour === 'function' && endTour());
+        tourAudioPlayer.addEventListener('play', () => masterTourTimeline && masterTourTimeline.play());
+        tourAudioPlayer.addEventListener('pause', () => masterTourTimeline && masterTourTimeline.pause());
+        tourAudioPlayer.addEventListener('ended', () => typeof endTour === 'function' && endTour());
     }
 
     function buildMobileTimeline(tl) {
@@ -352,9 +353,8 @@ function endTour() {
             masterTourTimeline = null;
         }
         
-        // Use the manager to stop all audio, then start the background music
-        AudioManager.stopAllAudio();
-        AudioManager.playBackgroundMusic();
+        // Use the new manager to stop the tour audio and restore bg music volume
+        AudioManager.stopTourAudio();
 
         typingIntervals.forEach(clearInterval);
         typingIntervals = [];
@@ -369,13 +369,15 @@ function endTour() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
         
-    startTourBtn.addEventListener('click', startTour);
+    startTourBtn.addEventListener('click', () => {
+        AudioManager.startExperience();
+        startTour();
+    });
     skipTourBtn.addEventListener('click', endTour);
     exploreBtn.addEventListener('click', () => {
         dismissOverlay();
         gsap.set('.tour-element', { opacity: 1 });
-        // When exploring freely, start the background music
-        AudioManager.playBackgroundMusic();
+        AudioManager.startExperience();
     });
 
     gsap.to(welcomeOverlay, { opacity: 1, duration: 0.5, delay: 0.5, onStart: () => welcomeOverlay.classList.remove('opacity-0') });
@@ -392,7 +394,6 @@ function endTour() {
     const aiOrbContainer = document.getElementById('ai-orb-container');
     const aiOrb = document.getElementById('ai-orb');
     const cancelAIOrbBtn = document.getElementById('cancel-ai-orb');
-    const mainAudioPlayer = document.getElementById('universal-audio-player');
 
     let recognition;
     let isListening = false;
@@ -472,14 +473,20 @@ function endTour() {
         
         utterance.onstart = () => {
             stopListening();
-            originalAudioVolume = mainAudioPlayer.volume;
-            gsap.to(mainAudioPlayer, { volume: 0.2, duration: 0.5 });
+            // Duck the background music if it's playing
+            if (AudioManager.getState().music === 'playing') {
+                originalAudioVolume = bgMusicPlayer.volume;
+                gsap.to(bgMusicPlayer, { volume: 0.2, duration: 0.5 });
+            }
             aiOrb.querySelector('i').setAttribute('data-lucide', 'volume-2');
             lucide.createIcons();
         };
         
         utterance.onend = () => {
-            gsap.to(mainAudioPlayer, { volume: originalAudioVolume, duration: 0.5 });
+            // Restore background music volume if it was ducked
+            if (AudioManager.getState().music === 'playing') {
+                 gsap.to(bgMusicPlayer, { volume: originalAudioVolume, duration: 0.5 });
+            }
             startListening();
         };
         
@@ -510,7 +517,10 @@ function endTour() {
         if (synthesis.speaking) {
             synthesis.cancel();
         }
-        gsap.to(mainAudioPlayer, { volume: originalAudioVolume, duration: 0.5 });
+        // Restore background music volume if it was ducked
+        if (AudioManager.getState().music === 'playing') {
+            gsap.to(bgMusicPlayer, { volume: originalAudioVolume, duration: 0.5 });
+        }
         gsap.to(aiOrbContainer, { scale: 0.5, opacity: 0, duration: 0.2, ease: 'back.in', onComplete: () => aiOrbContainer.classList.add('hidden') });
     }
 
@@ -526,11 +536,37 @@ function endTour() {
 
     let isChatOpen = false;
 
-    function showAIChat() {
-    if (chatMessages.children.length === 0) {
-         chatMessages.innerHTML = `<div class="text-sm text-text-secondary mb-2 p-3 rounded-lg bg-blue-900/30 self-start max-w-[85%]"><span>Hello! How can I help you today? You can ask me about our services.</span></div>`;
+    // --- START: CHAT PERSISTENCE ---
+    // 1. User ID Management
+    let userId = localStorage.getItem('trixelUserId');
+    if (!userId) {
+        userId = `trixel-user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        localStorage.setItem('trixelUserId', userId);
     }
-    aiChatWidget.classList.remove('hidden');
+
+    // 2. Load conversation history from localStorage
+    function loadConversation() {
+        const savedHistory = localStorage.getItem(`conversationHistory_${userId}`);
+        if (savedHistory) {
+            conversationHistory = JSON.parse(savedHistory);
+            chatMessages.innerHTML = ''; // Clear existing messages
+            conversationHistory.forEach(msg => appendMessage(msg.content, msg.role, false)); // Don't save again
+        } else {
+             // If no history, add the initial welcome message
+            chatMessages.innerHTML = `<div class="text-sm text-text-secondary mb-2 p-3 rounded-lg bg-blue-900/30 self-start max-w-[85%]"><span>Hello! How can I help you today? You can ask me about our services.</span></div>`;
+        }
+    }
+
+    // 3. Save conversation history to localStorage
+    function saveConversation() {
+        localStorage.setItem(`conversationHistory_${userId}`, JSON.stringify(conversationHistory));
+    }
+    // --- END: CHAT PERSISTENCE ---
+
+
+    function showAIChat() {
+        loadConversation(); // Load history when chat is opened
+        aiChatWidget.classList.remove('hidden');
     aiChatWidget.classList.add('flex');
     gsap.to(aiChatWidget, { y: 0, opacity: 1, duration: 0.4, ease: 'power3.out' });
     
@@ -593,18 +629,21 @@ function endTour() {
             .replace(/\n/g, '<br>');
     }
 
-    function appendMessage(content, sender = 'ai') {
+    function appendMessage(content, sender = 'ai', save = true) {
         const messageEl = document.createElement('div');
         const isUser = sender === 'user';
         const alignment = isUser ? 'self-end' : 'self-start';
         const bgColor = isUser ? 'bg-blue-600' : 'bg-[var(--bg-card)]';
         const textColor = isUser ? 'text-white' : 'text-[var(--text-primary)]';
         messageEl.className = `text-sm mb-3 p-3 rounded-lg ${bgColor} ${textColor} ${alignment} max-w-[85%] w-fit`;
-        if (sender === 'ai') {
+
+        // Render markdown for AI/assistant messages
+        if (sender === 'ai' || sender === 'assistant') {
             messageEl.innerHTML = parseMarkdownToHTML(content);
         } else {
             messageEl.textContent = content;
         }
+
         chatMessages.appendChild(messageEl);
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
@@ -613,12 +652,17 @@ function endTour() {
         e.preventDefault();
         const userInput = chatInput.value.trim();
         if (!userInput) return;
-        appendMessage(userInput, 'user');
+
+        appendMessage(userInput, 'user', false); // Display immediately, but don't save yet
         chatInput.value = '';
         showTypingIndicator();
+
         const aiTextResponse = await fetchAIResponse(userInput);
+
         hideTypingIndicator();
-        appendMessage(aiTextResponse, 'ai');
+        appendMessage(aiTextResponse, 'ai', false); // Display AI response, don't save yet
+
+        saveConversation(); // Save the updated history after both user and AI messages are processed
     });
 
     async function fetchAIResponse(prompt) {
@@ -697,105 +741,184 @@ function endTour() {
     enhanceFormValidation();
 
 // =================================================================
-    // START: UNIFIED AUDIO MANAGER
-    // =================================================================
-    const audioToggle = document.getElementById('audio-toggle');
-    const backgroundMusicSrc = 'background_music_1.mp3';
+// START: NEW AUDIO MANAGER V2
+// =================================================================
+const audioToggle = document.getElementById('audio-toggle');
 
-    let currentAudioState = 'off'; // Can be 'off', 'tour', 'music_playing', 'music_paused'
-    let hasUserInteracted = false;
+const backgroundMusicPlaylist = [
+    'background_music_1.mp3',
+    // Placeholders for future tracks
+    // 'path/to/calm_music_2.mp3',
+    // 'path/to/ambient_music_3.mp3'
+];
+let currentTrackIndex = 0;
+let hasUserInteracted = false;
 
-    const AudioManager = {
-        // This function must be called on the first user click to enable audio
-        unlockAudio() {
-            if (!hasUserInteracted) {
-                hasUserInteracted = true;
-                audioPlayer.volume = 0.5; // Set a default volume
-                console.log("Audio context unlocked.");
-            }
-        },
+const AudioManager = {
+    state: {
+        music: 'stopped', // 'playing', 'paused', 'stopped'
+        tour: 'stopped',  // 'playing', 'stopped'
+    },
 
-        playTourAudio() {
-            this.unlockAudio();
-            audioPlayer.pause();
-            currentAudioState = 'tour';
-            audioPlayer.src = tourAudioSrc;
-            audioPlayer.loop = false;
-            audioPlayer.play().catch(e => console.error("Tour audio failed:", e));
-            this.updateButtonUI();
-        },
+    unlockAudio() {
+        if (hasUserInteracted) return;
+        hasUserInteracted = true;
+        // A common trick to unlock audio on mobile browsers
+        tourAudioPlayer.play().then(() => tourAudioPlayer.pause()).catch(e => {});
+        bgMusicPlayer.play().then(() => bgMusicPlayer.pause()).catch(e => {});
+        bgMusicPlayer.volume = 0.5; // Set a default volume
+        console.log("Audio context unlocked.");
+    },
 
-        playBackgroundMusic() {
-            // Don't start music if the tour is still running
-            if (currentAudioState === 'tour') return;
-            
-            this.unlockAudio();
-            currentAudioState = 'music_playing';
-            // Only change the source if it's not already the background music
-            if (!audioPlayer.src.includes(backgroundMusicSrc)) {
-                audioPlayer.src = backgroundMusicSrc;
-                audioPlayer.loop = true;
-            }
-            audioPlayer.play().catch(e => console.error("Background music failed:", e));
-            this.updateButtonUI();
-        },
+    playTourAudio() {
+        this.unlockAudio();
+        this.state.tour = 'playing';
+        gsap.to(bgMusicPlayer, { volume: bgMusicPlayer.volume * 0.3, duration: 0.8 }); // Duck volume to 30% of current
 
-        pauseBackgroundMusic() {
-            currentAudioState = 'music_paused';
-            audioPlayer.pause();
-            this.updateButtonUI();
-        },
+        tourAudioPlayer.src = tourAudioSrc;
+        tourAudioPlayer.currentTime = 0;
+        tourAudioPlayer.play().catch(e => console.error("Tour audio failed:", e));
+    },
 
-        stopAllAudio() {
-            currentAudioState = 'off';
-            audioPlayer.pause();
-            audioPlayer.currentTime = 0;
-            this.updateButtonUI();
-        },
+    stopTourAudio() {
+        this.state.tour = 'stopped';
+        tourAudioPlayer.pause();
+        tourAudioPlayer.currentTime = 0;
+        // Restore volume to the slider's value
+        const savedVolume = document.getElementById('volume-slider')?.value || 0.5;
+        gsap.to(bgMusicPlayer, { volume: savedVolume, duration: 1.5 });
+    },
 
-        // This function updates the floating button's appearance and state
-        updateButtonUI() {
-            if (!audioToggle) return;
+    playBackgroundMusic() {
+        if (this.state.music === 'playing') return;
+        this.unlockAudio();
 
-            const iconContainer = audioToggle;
-            const isMusicActive = currentAudioState === 'music_playing';
-            const isTourActive = currentAudioState === 'tour';
-
-            // Set the icon based on the state
-            const iconName = isMusicActive ? 'volume-2' : 'volume-x';
-            
-            // Disable the button during the tour
-            audioToggle.disabled = isTourActive;
-            audioToggle.style.cursor = isTourActive ? 'not-allowed' : 'pointer';
-            audioToggle.style.opacity = isTourActive ? '0.5' : '1';
-
-            // Re-create the icon to ensure it updates correctly
-            if (iconContainer.querySelector('svg')) {
-                iconContainer.querySelector('svg').remove();
-            }
-            const newIcon = document.createElement('i');
-            newIcon.setAttribute('data-lucide', iconName);
-            newIcon.className = 'w-6 h-6';
-            iconContainer.appendChild(newIcon);
-            lucide.createIcons();
+        // Only change src if it's a new track
+        if (bgMusicPlayer.src.split('/').pop() !== backgroundMusicPlaylist[currentTrackIndex].split('/').pop()) {
+             bgMusicPlayer.src = backgroundMusicPlaylist[currentTrackIndex];
         }
-    };
 
-    // The audio button now only controls background music
-    if (audioToggle) {
-        audioToggle.addEventListener('click', () => {
-            if (currentAudioState === 'music_playing') {
-                AudioManager.pauseBackgroundMusic();
-            } else {
-                AudioManager.playBackgroundMusic();
-            }
-        });
+        this.state.music = 'playing';
+        bgMusicPlayer.play().catch(e => console.error("BG music failed:", e));
+    },
+
+    pauseBackgroundMusic() {
+        this.state.music = 'paused';
+        bgMusicPlayer.pause();
+    },
+
+    nextTrack() {
+        currentTrackIndex = (currentTrackIndex + 1) % backgroundMusicPlaylist.length;
+        this.playBackgroundMusic(); // This will handle loading and playing the new track
+    },
+
+    prevTrack() {
+        currentTrackIndex = (currentTrackIndex - 1 + backgroundMusicPlaylist.length) % backgroundMusicPlaylist.length;
+        this.playBackgroundMusic();
+    },
+
+    setVolume(volume) {
+        if (!hasUserInteracted) this.unlockAudio(); // Unlock if volume is the first interaction
+        bgMusicPlayer.volume = volume;
+    },
+
+    // To be called on first user interaction (tour start or explore)
+    startExperience() {
+        this.unlockAudio();
+        this.playBackgroundMusic();
+    },
+
+    // Getter for external scripts that might need state info
+    getState() {
+        return this.state;
     }
-    // Initialize the button UI on page load
-    AudioManager.updateButtonUI();
-    // =================================================================
-    // END: UNIFIED AUDIO MANAGER
-    // =================================================================
+};
+
+// Auto-play next track when one finishes
+bgMusicPlayer.addEventListener('ended', () => {
+    AudioManager.nextTrack();
+});
+
+// =================================================================
+// START: AUDIO PANEL WIRING
+// =================================================================
+const audioControlPanel = document.getElementById('audio-control-panel');
+const closeAudioPanelBtn = document.getElementById('close-audio-panel-btn');
+const playPauseBtn = document.getElementById('play-pause-btn');
+const nextTrackBtn = document.getElementById('next-track-btn');
+const prevTrackBtn = document.getElementById('prev-track-btn');
+const volumeSlider = document.getElementById('volume-slider');
+
+function showAudioPanel() {
+    audioControlPanel.classList.remove('hidden');
+    audioControlPanel.classList.add('flex');
+    gsap.fromTo(audioControlPanel, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out' });
+}
+
+function hideAudioPanel() {
+    gsap.to(audioControlPanel, { opacity: 0, y: 20, duration: 0.3, ease: 'power2.in', onComplete: () => {
+        audioControlPanel.classList.add('hidden');
+        audioControlPanel.classList.remove('flex');
+    }});
+}
+
+function updatePlayPauseIcon() {
+    const icon = playPauseBtn.querySelector('i');
+    const newIconName = AudioManager.getState().music === 'playing' ? 'pause' : 'play';
+    icon.setAttribute('data-lucide', newIconName);
+    lucide.createIcons();
+}
+
+audioToggle.addEventListener('click', () => {
+    if (audioControlPanel.classList.contains('hidden')) {
+        showAudioPanel();
+    } else {
+        hideAudioPanel();
+    }
+});
+
+closeAudioPanelBtn.addEventListener('click', hideAudioPanel);
+
+playPauseBtn.addEventListener('click', () => {
+    if (AudioManager.getState().music === 'playing') {
+        AudioManager.pauseBackgroundMusic();
+    } else {
+        AudioManager.playBackgroundMusic();
+    }
+    updatePlayPauseIcon();
+});
+
+nextTrackBtn.addEventListener('click', () => {
+    AudioManager.nextTrack();
+    updatePlayPauseIcon(); // Ensure icon is correct if music was paused
+});
+
+prevTrackBtn.addEventListener('click', () => {
+    AudioManager.prevTrack();
+    updatePlayPauseIcon(); // Ensure icon is correct if music was paused
+});
+
+volumeSlider.addEventListener('input', (e) => {
+    AudioManager.setVolume(e.target.value);
+});
+
+// Update UI when music starts or stops externally
+bgMusicPlayer.addEventListener('play', updatePlayPauseIcon);
+bgMusicPlayer.addEventListener('pause', updatePlayPauseIcon);
+
+// Initialize slider and icon states on load
+volumeSlider.value = bgMusicPlayer.volume;
+updatePlayPauseIcon();
+// =================================================================
+// END: AUDIO PANEL WIRING
+// =================================================================
+
+
+// The main toggle button now opens the panel, it doesn't control play/pause directly
+// This functionality will be added in the next step.
+// =================================================================
+// END: NEW AUDIO MANAGER V2
+// =================================================================
 
     const sunIcon = themeToggle.querySelector('[data-lucide="sun"]');
     const moonIcon = themeToggle.querySelector('[data-lucide="moon"]');

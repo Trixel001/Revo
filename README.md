@@ -1,100 +1,38 @@
-# Trixel Technologies Website
+# Trixel.Tech Website
 
-## Project Overview
+This is the enhanced single-page website for Trixel.Tech.
 
-This is a complete, single-file HTML website for Trixel Technologies, built according to the comprehensive specifications provided. The website includes:
+## How to Run
 
-### 🚀 Key Features Implemented
+This project is a frontend-only application and does not require a backend server to run.
 
-1. **Single HTML File Architecture** - Everything embedded in one file
-2. **CMS Data Management** - Centralized content in `CMS_DATA` object
-3. **Single Audio Channel** - One universal audio player for tour and music
-4. **GSAP Animations** - Smooth, cinematic animations throughout
-5. **AI Integration** - Gemini API for text-only responses
-6. **Mobile Responsive** - Optimized for all device sizes
-7. **Welcome Overlay** - Interactive tour option
-8. **Voice Tour System** - Synchronized audio and visual tour
-9. **Interactive Service Cards** - Ask/Explain/Order buttons
-10. **Reviews System** - User review submission and display
-11. **Hidden CMS Panel** - Press Ctrl+Shift+C to access
-12. **Error Handling** - Comprehensive error recovery
-13. **LocalStorage Persistence** - Saves user preferences and reviews
+1.  **Clone the repository** to your local machine.
+2.  **Open the `n1.html` file** directly in your preferred web browser (e.g., Google Chrome, Firefox, Safari).
 
-### 🎨 Design Features
+### For Best Results (Recommended)
 
-- **Dark Theme** with cinematic glass morphism effects
-- **Grid background** patterns with radial fade masks
-- **Floating Action Buttons** for key interactions
-- **Interactive Cards** with hover animations
-- **Custom Scrollbar** and smooth scrolling
-- **Professional Typography** using Lexend and Inter fonts
+To ensure all features work as expected, especially those sensitive to browser security policies (like some JavaScript animations and potential future API calls), it's best to serve the files from a simple local web server.
 
-### 🤖 AI Integration
+If you have Python installed, you can easily start a server:
 
-- **Gemini API** integration for intelligent responses
-- **Context-aware** responses based on service interactions
-- **Text-only responses** (no TTS as per constraints)
-- **Rate limiting** and error handling
-- **Conversation history** management
+1.  Open your terminal or command prompt.
+2.  Navigate to the directory where the `n1.html` and `script.js` files are located.
+3.  Run one of the following commands:
 
-### 📱 Mobile Optimization
+    *   For **Python 3**: `python3 -m http.server`
+    *   For **Python 2**: `python -m SimpleHTTPServer`
 
-- **Touch-friendly** interfaces with 44px minimum targets
-- **Responsive layouts** that adapt to screen size
-- **Mobile menu** with slide-down animation
-- **Optimized forms** for mobile input
+4.  Once the server is running, open your web browser and go to `http://localhost:8000`.
 
-### 🔧 Technical Implementation
+## Features Implemented (Frontend-Only)
 
-- **Error Boundaries** with graceful degradation
-- **Performance Optimized** with lazy loading and debouncing
-- **Accessibility Features** including keyboard navigation
-- **Cross-browser Compatible** with fallback support
+*   **Advanced Audio System**:
+    *   Simultaneous playback of a guided tour voiceover and background music.
+    *   Volume ducking for background music when the tour or AI voice is active.
+    *   A functional audio control panel to play/pause, skip tracks, and adjust the volume of the background music.
+    *   A background music playlist that loops automatically.
+*   **Persistent Chatbot**:
+    *   Chat history is saved for each user individually using the browser's `localStorage`.
+    *   When a user returns to the site, their previous conversation with the AI assistant is restored.
 
-### 📂 File Structure
-
-```
-trixel-technologies/
-├── index.html (main application file)
-├── audio/ (placeholder audio files)
-│   ├── main_voiceover.wav
-│   ├── background_music_1.mp3
-│   ├── background_music_2.mp3
-│   └── background_music_3.mp3
-├── images/ (placeholder for images)
-│   ├── portfolio/
-│   └── ui/
-└── documentation/ (this folder)
-```
-
-### 🎯 Key Constraints Met
-
-✅ Single HTML file with embedded CSS and JavaScript
-✅ No backend systems or databases
-✅ Only one audio element for all audio content
-✅ No TTS or synthesized voice responses
-✅ All animations use GSAP (no CSS animations)
-✅ Mobile-responsive design
-✅ AI integration with text-only responses
-✅ CMS system for content management
-✅ Error handling and recovery
-✅ LocalStorage for minimal persistence
-
-### 🚀 Getting Started
-
-1. Open `index.html` in a modern web browser
-2. Choose "Start Guided Tour" or "Explore on My Own"
-3. Use Ctrl+Shift+C to access the hidden CMS panel
-4. Interact with service cards using Ask/Explain/Order buttons
-5. Try the AI chat widget in the bottom-right corner
-
-### 📧 Contact Information
-
-- **Email**: trixeltechnologies@gmail.com
-- **Phone**: (234) 704-299-8527
-- **WhatsApp**: https://wa.link/0kclb7
-
----
-
-**Built by MiniMax Agent**
-*Following comprehensive specifications for a cinematic, high-converting service business website*
+**Note**: As this is a frontend-only implementation, there is no centralized admin panel to view all user conversations or analytics. All data is stored locally in each user's browser.
