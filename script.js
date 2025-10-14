@@ -376,7 +376,8 @@ function endTour() {
     skipTourBtn.addEventListener('click', endTour);
     exploreBtn.addEventListener('click', () => {
         dismissOverlay();
-        gsap.set('.tour-element', { opacity: 1 });
+        // This line is the fix: ensure tour elements become visible
+        gsap.to('.tour-element', { opacity: 1, duration: 0.5 });
         AudioManager.startExperience();
     });
 
@@ -547,13 +548,16 @@ function endTour() {
     // 2. Load conversation history from localStorage
     function loadConversation() {
         const savedHistory = localStorage.getItem(`conversationHistory_${userId}`);
-        if (savedHistory) {
+        // First, clear any existing content like the default welcome message.
+        chatMessages.innerHTML = '';
+
+        if (savedHistory && JSON.parse(savedHistory).length > 0) {
             conversationHistory = JSON.parse(savedHistory);
-            chatMessages.innerHTML = ''; // Clear existing messages
-            conversationHistory.forEach(msg => appendMessage(msg.content, msg.role, false)); // Don't save again
+            conversationHistory.forEach(msg => appendMessage(msg.content, msg.role, false));
         } else {
-             // If no history, add the initial welcome message
+            // If there's no history, show the welcome message.
             chatMessages.innerHTML = `<div class="text-sm text-text-secondary mb-2 p-3 rounded-lg bg-blue-900/30 self-start max-w-[85%]"><span>Hello! How can I help you today? You can ask me about our services.</span></div>`;
+            conversationHistory = []; // Ensure history is empty
         }
     }
 
@@ -616,6 +620,13 @@ function endTour() {
         });
     });
     closeChatBtn.addEventListener('click', hideAIChat);
+
+    const clearChatBtn = document.getElementById('clear-chat-btn');
+    clearChatBtn.addEventListener('click', () => {
+        localStorage.removeItem(`conversationHistory_${userId}`);
+        conversationHistory = [];
+        chatMessages.innerHTML = `<div class="text-sm text-text-secondary mb-2 p-3 rounded-lg bg-blue-900/30 self-start max-w-[85%]"><span>Chat history cleared. How can I help you today?</span></div>`;
+    });
 
     const chatInputForm = document.getElementById('chat-input-form');
     const chatInput = document.getElementById('chat-input');
@@ -863,9 +874,15 @@ function hideAudioPanel() {
 }
 
 function updatePlayPauseIcon() {
-    const icon = playPauseBtn.querySelector('i');
+    const iconContainer = playPauseBtn;
+    const existingIcon = iconContainer.querySelector('svg');
+    if (existingIcon) {
+        existingIcon.remove();
+    }
+    const newIcon = document.createElement('i');
     const newIconName = AudioManager.getState().music === 'playing' ? 'pause' : 'play';
-    icon.setAttribute('data-lucide', newIconName);
+    newIcon.setAttribute('data-lucide', newIconName);
+    iconContainer.appendChild(newIcon);
     lucide.createIcons();
 }
 
